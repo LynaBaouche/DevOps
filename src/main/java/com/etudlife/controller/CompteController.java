@@ -2,33 +2,39 @@ package com.etudlife.controller;
 
 import com.etudlife.model.Compte;
 import com.etudlife.service.CompteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/comptes")
+@CrossOrigin(origins = "*") // pour autoriser Postman / front local
 public class CompteController {
 
-    @Autowired
-    private CompteService compteService;
+    private final CompteService compteService;
 
-    // Pour créer un nouvel utilisateur
-    @PostMapping
+    public CompteController(CompteService compteService) {
+        this.compteService = compteService;
+    }
+
+    // Créer un compte
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public Compte creerCompte(@RequestBody Compte compte) {
         return compteService.creerCompte(compte);
     }
 
-    // Pour "se connecter" ou chercher un utilisateur par nom/prénom
-    @GetMapping("/search")
-    public Compte trouverCompte(@RequestParam String nom, @RequestParam String prenom) {
-        return compteService.trouverCompteParNomEtPrenom(nom, prenom);
+    // Lister tous les comptes
+    @GetMapping
+    public List<Compte> getAllComptes() {
+        return compteService.listerComptes();
     }
 
-    // Pour voir tous les utilisateurs (utile pour le développement)
-    @GetMapping
-    public List<Compte> listerComptes() {
-        return compteService.listerComptes();
+    // Chercher un compte par nom et prénom
+    @GetMapping("/search")
+    public Compte getCompteParNomEtPrenom(
+            @RequestParam String nom,
+            @RequestParam String prenom
+    ) {
+        return compteService.trouverCompteParNomEtPrenom(nom, prenom);
     }
 }

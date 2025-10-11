@@ -1,9 +1,11 @@
 package com.etudlife.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Lien {
 
     @Id
@@ -12,13 +14,15 @@ public class Lien {
 
     @ManyToOne
     @JoinColumn(name = "compte_source_id")
+    @JsonIgnoreProperties({"liens", "groupes"})
     private Compte compteSource;
 
     @ManyToOne
     @JoinColumn(name = "compte_cible_id")
+    @JsonIgnoreProperties({"liens", "groupes"})
     private Compte compteCible;
 
-    private LocalDateTime dateCreation;
+    private LocalDateTime dateCreation = LocalDateTime.now();
 
     public Lien() {}
 
@@ -28,8 +32,9 @@ public class Lien {
         this.dateCreation = LocalDateTime.now();
     }
 
-    // --- Getters et Setters ---
+    // --- Getters & Setters ---
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Compte getCompteSource() { return compteSource; }
     public void setCompteSource(Compte compteSource) { this.compteSource = compteSource; }

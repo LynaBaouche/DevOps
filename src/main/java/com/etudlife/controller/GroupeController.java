@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/groupes")
+@CrossOrigin(origins = "*")
 public class GroupeController {
 
     private final GroupeService groupeService;
@@ -17,18 +18,25 @@ public class GroupeController {
         this.groupeService = groupeService;
     }
 
-    @PostMapping
-    public Groupe creerGroupe(@RequestParam String nom, @RequestParam String description) {
-        return groupeService.creerGroupe(nom, description);
+    //  Créer un groupe
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public Groupe creerGroupe(@RequestBody Groupe groupe) {
+        return groupeService.creerGroupe(groupe.getNom(), groupe.getDescription());
     }
 
-    @GetMapping
-    public List<Groupe> getAll() {
+    //  Lister tous les groupes
+    @GetMapping(produces = "application/json")
+    public List<Groupe> getAllGroupes() {
         return groupeService.getAllGroupes();
     }
 
-    @PostMapping("/{groupeId}/ajouterMembre/{compteId}")
-    public Optional<Groupe> ajouterMembre(@PathVariable Long groupeId, @PathVariable Long compteId) {
-        return groupeService.ajouterMembre(groupeId, compteId);
+    //  Ajouter un membre à un groupe
+    @PostMapping("/{groupeId}/ajouter/{compteId}")
+    public Groupe ajouterMembre(
+            @PathVariable Long groupeId,
+            @PathVariable Long compteId
+    ) {
+        Optional<Groupe> groupeOpt = groupeService.ajouterMembre(groupeId, compteId);
+        return groupeOpt.orElseThrow(() -> new RuntimeException("Groupe ou compte introuvable"));
     }
 }

@@ -20,28 +20,32 @@ public class GroupeService {
         this.compteRepository = compteRepository;
     }
 
+    // Créer un nouveau groupe
     public Groupe creerGroupe(String nom, String description) {
-        Groupe g = new Groupe(nom, description);
-        return groupeRepository.save(g);
+        Groupe groupe = new Groupe(nom, description);
+        return groupeRepository.save(groupe);
     }
 
+    // Lister tous les groupes
     public List<Groupe> getAllGroupes() {
         return groupeRepository.findAll();
     }
 
-    public Optional<Groupe> getById(Long id) {
-        return groupeRepository.findById(id);
-    }
-
+    // Ajouter un membre à un groupe
     public Optional<Groupe> ajouterMembre(Long groupeId, Long compteId) {
-        Optional<Groupe> groupe = groupeRepository.findById(groupeId);
-        Optional<Compte> compte = compteRepository.findById(compteId);
+        Optional<Groupe> groupeOpt = groupeRepository.findById(groupeId);
+        Optional<Compte> compteOpt = compteRepository.findById(compteId);
 
-        if (groupe.isPresent() && compte.isPresent()) {
-            Groupe g = groupe.get();
-            g.ajouterMembre(compte.get());
-            return Optional.of(groupeRepository.save(g));
+        if (groupeOpt.isPresent() && compteOpt.isPresent()) {
+            Groupe groupe = groupeOpt.get();
+            Compte compte = compteOpt.get();
+
+            groupe.ajouterMembre(compte);
+            groupeRepository.save(groupe);
+
+            return Optional.of(groupe);
         }
+
         return Optional.empty();
     }
 }

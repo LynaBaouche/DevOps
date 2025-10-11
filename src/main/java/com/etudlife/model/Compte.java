@@ -1,10 +1,13 @@
 package com.etudlife.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Compte {
 
     @Id
@@ -14,10 +17,14 @@ public class Compte {
     private String nom;
     private String prenom;
 
-    @OneToMany(mappedBy = "compteSource", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "compteSource", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonIgnoreProperties({"compteSource", "compteCible"})
     private List<Lien> liens = new ArrayList<>();
 
+
     @ManyToMany(mappedBy = "membres")
+    @JsonIgnoreProperties({"membres"})
     private List<Groupe> groupes = new ArrayList<>();
 
     public Compte() {}
@@ -27,8 +34,9 @@ public class Compte {
         this.prenom = prenom;
     }
 
-    // --- Getters et Setters ---
+
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
