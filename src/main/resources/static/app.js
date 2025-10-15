@@ -31,11 +31,20 @@ async function chargerProfilEtudiant(id) {
         const data = await response.json();
 
         // Remplissage du profil
-        document.getElementById("nomComplet")?.textContent = `${data.prenom} ${data.nom}`;
-        document.getElementById("user-name")?.textContent = data.prenom;
-        document.getElementById("email")?.textContent = data.email || "non renseigné";
-        document.getElementById("ville")?.textContent = data.ville || "Paris, France";
-        document.getElementById("age")?.textContent = data.age ? `${data.age} ans` : "21 ans";
+        const nomComplet = document.getElementById("nomComplet");
+        if (nomComplet) nomComplet.textContent = `${data.prenom} ${data.nom}`;
+
+        const userName = document.getElementById("user-name");
+        if (userName) userName.textContent = data.prenom;
+
+        const email = document.getElementById("email");
+        if (email) email.textContent = data.email || "non renseigné";
+
+        const ville = document.getElementById("ville");
+        if (ville) ville.textContent = data.ville || "Paris, France";
+
+        const age = document.getElementById("age");
+        if (age) age.textContent = data.age ? `${data.age} ans` : "21 ans";
 
         // Exemple pour afficher les groupes ou liens s’ils existent
         if (data.groupes?.length) {
