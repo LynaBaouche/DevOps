@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plateforme Étudiante</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+        /* === Animation d'apparition vers le haut === */
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            opacity: 0;
+            animation: slideUpFade 1s ease forwards;
+        }
+
+        /* Delais progressifs pour effet séquentiel */
+        .fade-delay-1 { animation-delay: 0.2s; }
+        .fade-delay-2 { animation-delay: 0.4s; }
+        .fade-delay-3 { animation-delay: 0.6s; }
+        .fade-delay-4 { animation-delay: 0.8s; }
+    </style>
+</head>
+
+<body>
+
+<!-- Logo -->
+<header class="site-header" style="border:none; background:transparent; box-shadow:none;">
+    <div class="hero-inner fade-up fade-delay-1" style="text-align:center; padding-top:40px;">
+        <img src="images/logo.png" alt="logo" style="height:50px; margin-bottom:10px;">
+    </div>
+</header>
+
+<!-- Section principale -->
+<section class="hero fade-up fade-delay-2">
+    <div class="hero-inner">
+        <h1 class="hero-title">Plateforme Étudiante</h1>
+        <p class="hero-subtitle">
+            Gérez votre parcours académique, suivez vos cours et consultez vos résultats
+        </p>
+
+        <div class="hero-actions fade-up fade-delay-3">
+            <a href="ProfilEtudiant.html" class="btn btn-primary" id="btn-profile">Voir mon profil</a>
+            <a href="#" class="btn btn-outline">Explorer les cours</a>
+        </div>
+
+        <!-- Cartes principales -->
+        <div class="cards fade-up fade-delay-4">
+            <div class="card">
+                <div class="card-icon bg-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0v.75H4.5v-.75z" />
+                    </svg>
+                </div>
+                <h3>Profil Personnel</h3>
+                <p>Consultez et modifiez vos informations personnelles et académiques.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon bg-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M9 12h6m-6 4h6m-6-8h6m2-4.5A1.5 1.5 0 0015.5 2h-7A1.5 1.5 0 007 3.5V5h10V3.5zM4.5 5A1.5 1.5 0 003 6.5v13A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-13A1.5 1.5 0 0019.5 5h-15z" />
+                    </svg>
+                </div>
+                <h3>Mes Cours</h3>
+                <p>Suivez vos cours, consultez vos notes et votre progression.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon bg-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M8 7V3m8 4V3m-9 8h10m-12 6h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3>Planning</h3>
+                <p>Organisez votre emploi du temps et vos échéances.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer fade-up fade-delay-4">
+    <div class="container" style="justify-content:center; text-align:center;">
+        <p>© 2025 • <strong>EtudLife</strong> — Projet DevOps 1</p>
+    </div>
+</footer>
+
+<script>
+    // Fait apparaître l'animation quand la page est chargée
+    window.addEventListener("load", () => {
+        document.querySelectorAll(".fade-up").forEach(el => {
+            el.style.opacity = "1";
+        });
+    });
+</script>
+
+</body>
+</html>
