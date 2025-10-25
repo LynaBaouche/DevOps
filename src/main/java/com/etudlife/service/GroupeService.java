@@ -5,6 +5,7 @@ import com.etudlife.model.Groupe;
 import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.GroupeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // <-- 1. AJOUTE CET IMPORT
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class GroupeService {
     }
 
     // Ajouter un membre à un groupe
+    @Transactional // <-- 2. AJOUTE CETTE ANNOTATION
     public Optional<Groupe> ajouterMembre(Long groupeId, Long compteId) {
         Optional<Groupe> groupeOpt = groupeRepository.findById(groupeId);
         Optional<Compte> compteOpt = compteRepository.findById(compteId);
@@ -40,7 +42,7 @@ public class GroupeService {
             Groupe groupe = groupeOpt.get();
             Compte compte = compteOpt.get();
 
-            groupe.ajouterMembre(compte);
+            groupe.ajouterMembre(compte); // Cette ligne fonctionnera maintenant
             groupeRepository.save(groupe);
 
             return Optional.of(groupe);

@@ -25,6 +25,10 @@ public class Groupe {
     @JsonIgnoreProperties({"groupes", "liens"}) // ✅ on coupe la récursion
     private List<Compte> membres = new ArrayList<>();
 
+    @OneToMany(mappedBy = "groupe")
+    @JsonIgnoreProperties({"groupe"})
+    private List<Post> posts = new ArrayList<>();
+
     public Groupe() {}
 
     public Groupe(String nom, String description) {
@@ -50,4 +54,7 @@ public class Groupe {
 
     public List<Compte> getMembres() { return membres; }
     public void setMembres(List<Compte> membres) { this.membres = membres; }
+
+    public List<Post> getPosts() { return posts; }
+    public void setPosts(List<Post> posts) { this.posts = posts; }
 }

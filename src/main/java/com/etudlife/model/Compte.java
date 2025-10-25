@@ -27,11 +27,17 @@ public class Compte {
     @JsonIgnoreProperties({"membres"})
     private List<Groupe> groupes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "auteur")
+    @JsonIgnoreProperties({"auteur"})
+    private List<Post> posts = new ArrayList<>();
+
     public Compte() {}
 
-    public Compte(String nom, String prenom) {
-        this.nom = nom;
+    public Compte(String prenom,String nom) {
         this.prenom = prenom;
+        this.nom = nom;
+
+
     }
 
 
@@ -46,6 +52,9 @@ public class Compte {
 
     public List<Lien> getLiens() { return liens; }
     public void setLiens(List<Lien> liens) { this.liens = liens; }
+
+    public List<Post> getPosts() { return posts; }
+    public void setPosts(List<Post> posts) { this.posts = posts; }
 
     public List<Groupe> getGroupes() { return groupes; }
     public void setGroupes(List<Groupe> groupes) { this.groupes = groupes; }
