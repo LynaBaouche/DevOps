@@ -4,7 +4,11 @@
 
 **EtudLife** est une application web collaborative destinée aux étudiants de l’Université de Nanterre.  
 Elle centralise les fonctionnalités essentielles à la vie étudiante : création de liens entre étudiants,
-publication et consultation de posts, et regroupement selon des centres d’intérêt communs. (à compléter ensuite)
+publication et consultation de posts, et regroupement selon des centres d’intérêt communs.
+
+Cette deuxième version (Sprint 2) introduit un un système de gestion des comptes étudinats:  
+inscription, connexion sécurisée, validation d’adresse institutionnelle et mot de passe conforme.
+(à compléter ensuite)
 
 Le projet est développé dans le cadre du cours de Projet DevOps 1
 ---
@@ -61,18 +65,24 @@ Base de données (MySQL)
 
 ```
 EtudLife/
-├── src/
-│   ├── main/
-│   │   ├── java/com/etudlife/
-│   │   │   ├── controller/
-│   │   │   ├── model/
-│   │   │   ├── repository/
-│   │   │   ├── service/
-│   │   │   └── EtudlifeApplication.java
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       └── static/
-│   └── test/
+src/
+├── main/
+│ ├── java/com/etudlife/
+│ │ ├── controller/ → API REST
+│ │ ├── model/ → Entités JPA
+│ │ ├── repository/ → DAO (Spring Data JPA)
+│ │ ├── service/ → Logique métier et validations
+│ │ └── EtudlifeApp.java
+│ └── resources/
+│ ├── static/
+│ │ ├── app.js
+│ │ ├── styles.css
+│ │ ├── index.html
+│ │ ├── login.html
+│ │ ├── inscreption.html
+│ │ └── ProfilEtudiant.html
+│ └── application.properties
+└── test/
 ├── build.gradle
 ├── settings.gradle
 └── README.md
@@ -217,5 +227,49 @@ Groupe
    ```
 
 ---
+## ✨ Fonctionnalités – Sprint (2)
+Grande Feature :
+### 🥈 Feature 1 — Authentification et gestion des comptes
+     #### Objectif :
+Permettre à un étudiant de créer un compte et de se connecter à la plateforme.
+
+#### Détails :
+- **Validation e-mail** : seules les adresses `@parisnanterre.fr` sont autorisées.  
+- **Validation mot de passe** : au moins **10 caractères** dont **1 chiffre**.  
+- Affichage **des erreurs sous les champs en rouge** (frontend).  
+- Si le compte existe → message “Un compte avec cet email existe déjà”.  
+- Si succès → message “Compte créé avec succès”.
+
+- Intégration complète **frontend / backend** :  
+  - Backend en **Spring Boot** (contrôleur, service, repository)  
+  - Frontend en **HTML / CSS / JavaScript (Fetch API)**  
+
+- Les données sont envoyées en **JSON** vers les endpoints :
+  - `POST /api/comptes` → inscription  
+  - `POST /api/comptes/login` → connexion
+
+#### 🧱 Description des fichiers liés :
+| Fichier | Rôle |
+|----------|------|
+| `login.html` | Page de connexion |
+| `inscreption.html` | Page d’inscription |
+| `app.js` | Logique de validation et communication API |
+| `CompteController.java` | Gestion des requêtes REST |
+| `CompteService.java` | Règles de validation et logique métier |
+| `CompteRepository.java` | Requêtes vers la base de données |
+| `Compte.java` | Modèle de données utilisateur |
+
+---
+
+#### 💡 Scénarios d’usage :
+1. L’étudiant saisit son prénom, nom, adresse e-mail et mot de passe sur la page **inscreption.html**.  
+2. Le backend vérifie :
+   - que l’adresse se termine par `@parisnanterre.fr`
+   - que le mot de passe est conforme.  
+3. En cas d’erreur, un message clair s’affiche sous le champ concerné.  
+4. Si tout est correct, le compte est créé et l’étudiant peut se connecter via **login.html**.  
+5. Après connexion, l’utilisateur est redirigé vers la page d’accueil **index.html** et son profil est chargé automatiquement.
+
+
 
 © 2025 – Projet universitaire M1 MIAGE – Université Paris Nanterre
