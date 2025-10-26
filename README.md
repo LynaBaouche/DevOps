@@ -230,8 +230,7 @@ Groupe
 ## ✨ Fonctionnalités – Sprint (2)
 Grande Feature :
 ### 🥈 Feature 1 — Authentification et gestion des comptes
-     #### Objectif :
-Permettre à un étudiant de créer un compte et de se connecter à la plateforme.
+  Permettre à un étudiant de créer un compte et de se connecter à la plateforme.
 
 #### Détails :
 - **Validation e-mail** : seules les adresses `@parisnanterre.fr` sont autorisées.  
@@ -268,7 +267,22 @@ Permettre à un étudiant de créer un compte et de se connecter à la plateform
    - que le mot de passe est conforme.  
 3. En cas d’erreur, un message clair s’affiche sous le champ concerné.  
 4. Si tout est correct, le compte est créé et l’étudiant peut se connecter via **login.html**.  
-5. Après connexion, l’utilisateur est redirigé vers la page d’accueil **index.html** et son profil est chargé automatiquement.
+---
+
+### 🧪 Tests effectués
+
+Tests réalisés avec **Postman** et via l’interface **frontend (login / inscription)** :
+
+| Scénario | Exemple | Résultat attendu |
+|-----------|----------|------------------|
+| ✅ **Inscription valide** | `lucas@parisnanterre.fr` / `lucas12345` | ✅ Compte créé avec succès |
+| ❌ **Email invalide** | `alice@gmail.com` | 🔴 Erreur : « L’adresse email doit se terminer par @parisnanterre.fr » |
+| ❌ **Mot de passe trop court ou sans chiffre** | `azertyuiop` | 🔴 Erreur : « Le mot de passe doit contenir au moins 10 caractères et un chiffre » |
+| ✅ **Connexion valide** | Compte existant + bon mot de passe | ✅ Connexion réussie → redirection vers l’accueil |
+| ❌ **Mauvais mot de passe** | Mot de passe erroné pour un email existant | 🔴 Erreur : « Mot de passe incorrect » |
+| ❌ **Compte inexistant** | `emailinconnu@parisnanterre.fr` | 🔴 Erreur : « Aucun compte trouvé, veuillez vous inscrire » |
+
+
 
 
 
