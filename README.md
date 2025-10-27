@@ -68,7 +68,9 @@ EtudLife/
 src/
 ├── main/
 │ ├── java/com/etudlife/
+│ │ ├── config/ → Jeu de données test
 │ │ ├── controller/ → API REST
+│ │ ├── dto/ → Data Transfert Objects
 │ │ ├── model/ → Entités JPA
 │ │ ├── repository/ → DAO (Spring Data JPA)
 │ │ ├── service/ → Logique métier et validations
