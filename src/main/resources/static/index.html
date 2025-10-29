@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EtudLife - Votre plateforme étudiante</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,7 +26,11 @@
         <div class="hero-content">
             <h1>EtudLife</h1>
             <h2>Votre plateforme étudiante</h2>
-            <p>Une application web universitaire développée par des étudiants de M1 MIAGE Nanterre pour faciliter la vie quotidienne des étudiants en regroupant tous les outils et services utiles à la communauté universitaire.</p>
+            <p>
+                Une application web universitaire développée par des étudiants de M1 MIAGE Nanterre
+                pour faciliter la vie quotidienne des étudiants en regroupant tous les outils et
+                services utiles à la communauté universitaire.
+            </p>
             <a href="#features" class="btn-cta">Découvrir EtudLife</a>
         </div>
     </section>
@@ -36,39 +39,47 @@
         <div class="container">
             <h2>Tout ce dont vous avez besoin pour votre vie étudiante</h2>
             <div class="features-grid">
+
                 <div class="feature-card">
                     <span class="icon">👥</span>
                     <h3>Groupes d'étude</h3>
                     <p>Créez ou rejoignez des groupes selon vos matières et centres d'intérêt.</p>
                 </div>
+
                 <div class="feature-card">
                     <span class="icon">📰</span>
                     <h3>Publications sociales</h3>
                     <p>Partagez vos expériences, posez des questions et restez connecté.</p>
                 </div>
+
                 <div class="feature-card">
                     <span class="icon">📅</span>
                     <h3>Événements universitaires</h3>
                     <p>Découvrez et organisez des événements, conférences, soirées étudiantes...</p>
                 </div>
+
                 <div class="feature-card">
                     <span class="icon">💬</span>
                     <h3>Messagerie privée</h3>
                     <p>Communiquez directement avec vos contacts et membres de groupes.</p>
                 </div>
+
                 <div class="feature-card">
                     <a href="upload.html" style="text-decoration: none; color: inherit;">
-                    <span class="icon">📚</span>
-                    <h3>Ressources partagées</h3>
-                    <p>Accédez à une bibliothèque collaborative de documents de cours.</p>
+                        <span class="icon">📚</span>
+                        <h3>Ressources partagées</h3>
+                        <p>Accédez à une bibliothèque collaborative de documents de cours.</p>
+                    </a>
                 </div>
+
                 <div class="feature-card">
                     <span class="icon">📍</span>
                     <h3>Géolocalisation campus</h3>
                     <p>Trouvez facilement les lieux d'étude, salles de cours et points d'intérêt.</p>
                 </div>
-            </div>
-        </div>
+
+            </div> <!-- fin features-grid -->
+        </div> <!-- fin container -->
     </section>
 </div>
 
@@ -77,6 +88,7 @@
     <aside class="col-left">
         <h3>Mon Profil</h3>
         <div id="user-profile" class="card"></div>
+
         <h3>Mes Proches</h3>
         <div id="user-proches" class="card"></div>
     </aside>
@@ -89,8 +101,10 @@
             <button type="submit">Rechercher</button>
             <div id="search-results"></div>
         </form>
+
         <h3>Mes Groupes</h3>
         <div id="user-groupes" class="card"></div>
+
         <h3>Fil d'actualité</h3>
         <div id="feed-posts" class="card"></div>
     </section>
@@ -101,6 +115,7 @@
             <select id="select-all-groupes"></select>
             <button type="submit">Rejoindre</button>
         </form>
+
         <h3>Publier un Post</h3>
         <form id="form-create-post" class="card">
             <textarea id="post-contenu" placeholder="Écrivez quelque chose..." required></textarea>
@@ -109,6 +124,7 @@
             <button type="submit">Publier</button>
         </form>
     </aside>
+
 </main>
 
 <script src="app.js"></script>
