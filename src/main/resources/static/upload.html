@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EtudLife - Ressources partagées</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f7f8fc;
+            margin: 0;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+        header h1 {
+            color: #4338ca;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: #4338ca;
+        }
+        .btn-primary {
+            background: #4338ca;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            color: #111827;
+            margin: 0;
+        }
+
+        /* Section formats */
+        .formats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .format-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1 1 150px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            transition: 0.2s;
+        }
+
+        .format-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .format-card span {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Liste */
+        .document-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px 0;
+        }
+
+        .doc-item:last-child {
+            border-bottom: none;
+        }
+
+        .doc-meta {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .doc-meta strong {
+            color: #111827;
+        }
+
+        .doc-actions button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #4338ca;
+            font-size: 1.1rem;
+            margin-left: 8px;
+        }
+
+        /* Upload modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+        }
+
+        .modal-content input, .modal-content button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-content button {
+            background: #4338ca;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 EtudLife</h1>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="upload.html" style="color:#4338ca;font-weight:bold;">Documents</a>
+        <a href="#">Groupes</a>
+        <a href="#">Profil</a>
+    </nav>
+    <button class="btn-primary">Mon compte</button>
+</header>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2>Gestion des documents</h2>
+            <p>Ajoutez et organisez vos documents partagés.</p>
+        </div>
+        <button id="btn-open-upload" class="btn-primary">+ Ajouter un document</button>
+    </div>
+
+    <div class="formats">
+        <div class="format-card"><span>📄</span>PDF<br><small>Documents PDF</small></div>
+        <div class="format-card"><span>📝</span>DOCX<br><small>Documents Word</small></div>
+        <div class="format-card"><span>📊</span>PPTX<br><small>Présentations</small></div>
+        <div class="format-card"><span>🧩</span>JSON<br><small>Données JSON</small></div>
+        <div class="format-card"><span>🗜️</span>ZIP<br><small>Archives</small></div>
+        <div class="format-card"><span>📃</span>TXT<br><small>Textes simples</small></div>
+    </div>
+
+    <div class="document-list" id="documentList">
+        <h3>Documents partagés</h3>
+        <p id="empty-msg">Aucun document pour l’instant.</p>
+    </div>
+</div>
+
+<!-- Fenêtre modale d’upload -->
+<div id="modalUpload" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h3>📎 Ajouter un document</h3>
+        <form id="uploadForm">
+            <input type="file" id="file" name="file" required>
+            <input type="number" id="uploaderId" name="uploaderId" placeholder="ID étudiant (optionnel)">
+            <input type="number" id="groupId" name="groupId" placeholder="ID groupe (optionnel)">
+            <button type="submit">Téléverser</button>
+        </form>
+        <div id="uploadResult"></div>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = "http://localhost:8080/api";
+
+    // ouvrir / fermer modale
+    const modal = document.getElementById("modalUpload");
+    document.getElementById("btn-open-upload").onclick = () => modal.style.display = "flex";
+    document.getElementById("closeModal").onclick = () => modal.style.display = "none";
+
+    // --- Charger les documents existants ---
+    async function loadDocuments() {
+        const list = document.getElementById("documentList");
+        const msg = document.getElementById("empty-msg");
+        list.querySelectorAll(".doc-item").forEach(el => el.remove());
+
+        const res = await fetch(API_BASE_URL + "/documents/by-uploader/1");
+        if (!res.ok) return;
+        const docs = await res.json();
+        if (docs.length === 0) {
+            msg.style.display = "block";
+            return;
+        }
+        msg.style.display = "none";
+
+        docs.forEach(doc => {
+            const div = document.createElement("div");
+            div.className = "doc-item";
+            div.innerHTML = `
+          <div class="doc-meta">
+            <strong>${doc.originalFilename || doc.nom}</strong><br>
+            <small>${doc.contentType || doc.type} - ${(doc.sizeBytes/1024).toFixed(1)} Ko</small>
+          </div>
+          <div class="doc-actions">
+            <a href="${API_BASE_URL}/documents/${doc.id}" download>
+              <button title="Télécharger">⬇️</button>
+            </a>
+            <button title="Supprimer" onclick="deleteDocument(${doc.id})">🗑️</button>
+          </div>
+        `;
+            list.appendChild(div);
+        });
+    }
+
+    // --- Upload d’un document ---
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const file = document.getElementById("file").files[0];
+        const uploaderId = document.getElementById("uploaderId").value || 1;
+        const groupId = document.getElementById("groupId").value;
+        const result = document.getElementById("uploadResult");
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("uploaderId", uploaderId);
+        if (groupId) formData.append("groupId", groupId);
+
+        try {
+            const response = await fetch(API_BASE_URL + "/documents/upload", { method: "POST", body: formData });
+            if (!response.ok) throw new Error("Échec de l’envoi");
+            result.innerHTML = "✅ Document ajouté avec succès.";
+            await loadDocuments();
+        } catch (err) {
+            result.innerHTML = "❌ " + err.message;
+        }
+    });
+
+    async function deleteDocument(id) {
+        if (!confirm("Supprimer ce document ?")) return;
+        await fetch(API_BASE_URL + "/documents/" + id, { method: "DELETE" });
+        await loadDocuments();
+    }
+
+    loadDocuments();
+</script>
+</body>
+</html>

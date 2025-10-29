@@ -237,4 +237,14 @@ async function fetchApi(endpoint, options = {}) {
         console.error('Erreur Fetch:', error);
         throw error;
     }
+    // Quand on clique sur "Ressources partagées"
+    document.querySelector('h3').addEventListener('click', () => {
+        document.getElementById('uploadModal').style.display = 'flex';
+    });
+
+// Fermer la modale si on clique à l’extérieur
+    document.getElementById('uploadModal').addEventListener('click', (e) => {
+        if (e.target.id === 'uploadModal') e.target.style.display = 'none';
+    });
 }
+
