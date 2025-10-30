@@ -143,6 +143,7 @@ Etudiant
  └─ email
 
 Lien
+
  ├─ id
  ├─ etudiantSource (Etudiant)
  ├─ etudiantCible (Etudiant)
@@ -204,6 +205,7 @@ Groupe
 - Implémentation réelle de la BDD MySQL (tables Étudiant, Relation, Groupe, Post)
 - Sécurité et authentification
 - Interface utilisateur interactive
+- Espace de partage de documents
 
 ---
 
