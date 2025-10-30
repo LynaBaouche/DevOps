@@ -142,7 +142,7 @@ Etudiant
  ├─ prenom
  └─ email
 
-Relation
+Lien
  ├─ id
  ├─ etudiantSource (Etudiant)
  ├─ etudiantCible (Etudiant)
