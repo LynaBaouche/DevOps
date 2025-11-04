@@ -16,19 +16,22 @@ public class Groupe {
     private String nom;
     private String description;
 
-    @ManyToMany
+    // ✅ Relation ManyToMany corrigée
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "groupe_membres",
             joinColumns = @JoinColumn(name = "groupe_id"),
             inverseJoinColumns = @JoinColumn(name = "compte_id")
     )
-    @JsonIgnoreProperties({"groupes", "liens"}) // ✅ on coupe la récursion
+    @JsonIgnoreProperties({"groupes", "liens", "posts"}) // 🔁 évite récursions
     private List<Compte> membres = new ArrayList<>();
 
-    @OneToMany(mappedBy = "groupe")
-    @JsonIgnoreProperties({"groupe"})
+    // ✅ Relation avec les posts
+    @OneToMany(mappedBy = "groupe", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"groupe", "auteur"})
     private List<Post> posts = new ArrayList<>();
 
+    // === Constructeurs ===
     public Groupe() {}
 
     public Groupe(String nom, String description) {
@@ -36,13 +39,14 @@ public class Groupe {
         this.description = description;
     }
 
+    // === Méthode utilitaire ===
     public void ajouterMembre(Compte compte) {
         if (!membres.contains(compte)) {
             membres.add(compte);
         }
     }
 
-    // --- Getters & Setters ---
+    // === Getters & Setters ===
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
