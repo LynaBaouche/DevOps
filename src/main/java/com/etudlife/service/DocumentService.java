@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocumentService {
@@ -22,19 +24,17 @@ public class DocumentService {
         this.repo = repo;
     }
 
+    // Enregistrer un fichier dans le dossier + base
     public Document enregistrer(MultipartFile fichier, Long uploaderId, Long groupId) throws IOException {
         if (fichier.isEmpty()) throw new IOException("Fichier vide !");
 
-        // Créer le dossier si inexistant
         Path dossier = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(dossier);
 
-        // Nom unique du fichier
         String nomFichier = Instant.now().toEpochMilli() + "_" + fichier.getOriginalFilename();
         Path chemin = dossier.resolve(nomFichier);
         Files.copy(fichier.getInputStream(), chemin, StandardCopyOption.REPLACE_EXISTING);
 
-        // Créer et sauvegarder le document
         Document doc = new Document();
         doc.setNom(fichier.getOriginalFilename());
         doc.setType(fichier.getContentType());
@@ -45,9 +45,14 @@ public class DocumentService {
         doc.setDateUpload(Instant.now());
         return repo.save(doc);
     }
-    public java.util.List<Document> getAll() {
+
+    // Récupérer tous les documents
+    public List<Document> getAllDocuments() {
         return repo.findAll();
     }
 
-
+    // Récupérer un document par ID
+    public Optional<Document> getDocumentById(Long id) {
+        return repo.findById(id);
+    }
 }

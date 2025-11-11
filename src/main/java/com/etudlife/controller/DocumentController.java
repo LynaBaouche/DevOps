@@ -15,13 +15,9 @@ public class DocumentController {
 
     public DocumentController(DocumentService service) {
         this.service = service;
-        
-    }
-    @GetMapping
-    public ResponseEntity<?> getAllDocuments() {
-        return ResponseEntity.ok(service.getAll());
     }
 
+    // ✅ Upload d’un document
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -35,5 +31,18 @@ public class DocumentController {
             return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
         }
     }
-}
 
+    // ✅ Récupérer tous les documents
+    @GetMapping
+    public ResponseEntity<?> getAllDocuments() {
+        return ResponseEntity.ok(service.getAllDocuments());
+    }
+
+    // ✅ Récupérer un document par ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDocumentById(@PathVariable Long id) {
+        return service.getDocumentById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
