@@ -23,60 +23,168 @@ body {
 }
 
 /* =========================
-   🔹 HEADER & NAVIGATION
+   🔷 HEADER MODERNE ETUDLIFE (avec images)
    ========================= */
-header {
-    background: #fff;
-    padding: 1rem 0;
-    border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+.main-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-family: "Poppins", sans-serif;
 }
-header nav {
+
+/* Structure principale */
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.6rem 1.5rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 }
+
+/* =========================
+   🎓 LOGO GAUCHE
+   ========================= */
 .logo {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #0056b3;
     display: flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
 }
-.nav-links { list-style: none; display: flex; align-items: center; gap: 24px; }
-.nav-links a {
+.logo-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.logo-text strong {
+    color: #0066ff;
+}
+
+/* =========================
+   🧭 NAVIGATION CENTRALE
+   ========================= */
+.header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-nav a {
     text-decoration: none;
     color: #0f172a;
     font-weight: 500;
-    padding: 6px 12px;
+    font-size: 0.95rem;
+    padding: 8px 12px;
     border-radius: 8px;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: all 0.25s ease;
 }
-.nav-links a:hover {
-    background: #e8edff;
-    color: #1e66ff;
+
+.header-nav a:hover {
+    background: #e8f0ff;
+    color: #0066ff;
 }
-.nav-auth {
+
+.header-nav a.active {
+    background: #e8f0ff;
+    color: #0066ff;
+    font-weight: 600;
+}
+
+/* =========================
+   👤 SECTION DROITE (profil + logout)
+   ========================= */
+.header-right {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
-.nav-auth button, .nav-auth a.btn-login {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    border: 1px solid #1e66ff;
-    background: #fff;
-    color: #1e66ff;
-    margin-left: 10px;
-    text-decoration: none;
+    transition: all 0.25s ease;
 }
-.nav-auth .btn-signup { background: #1e66ff; color: #fff; }
-#btn-logout { background: #fff; color: #d93025; border-color: #d93025; }
+
+.icon-btn:hover {
+    background: #e8f0ff;
+}
+
+/* Image profil */
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0; /* ✅ empêche le débordement */
+}
+
+/* Survol : effet halo bleu autour de l’image */
+.icon-btn:hover {
+    background: rgba(0, 102, 255, 0.1);
+}
+
+/* Image profil */
+.icon-img {
+    width: 40px;   /* taille plus proche du bouton */
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+/* Légère animation au survol */
+.icon-btn:hover .icon-img {
+    transform: scale(1.03);
+}
+
+/* Bouton déconnexion (rouge) */
+.icon-btn.logout {
+    background: #fff;
+    border: 1px solid #d93025;
+    color: #d93025;
+    font-size: 1.1rem;
+}
+.icon-btn.logout:hover {
+    background: #fee2e2;
+}
+
+
+/* =========================
+   📱 Responsive
+   ========================= */
+@media (max-width: 900px) {
+    .header-nav {
+        display: none; /* cache le menu sur petits écrans */
+    }
+    .header-container {
+        justify-content: space-between;
+    }
+}
+
 
 /* =========================
    🏠 PAGE D’ACCUEIL (Hero + Features)
@@ -201,25 +309,38 @@ button:hover { background: #1557e6; }
 }
 .login-logo { height: 50px; margin-bottom: 10px; }
 .login-subtitle { color: #475569; font-size: 15px; margin-bottom: 20px; }
+/* =========================
+   🔹 Correctif affichage boutons Connexion / Inscription
+   ========================= */
 .login-tabs {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    gap: 8px;                /* petit espace entre les deux boutons */
     margin-bottom: 20px;
 }
+
 .login-tabs .tab {
-    flex: 1;
+    flex: 1;                 /* ✅ chaque bouton prend 50% */
     padding: 10px;
     border: none;
     background: #f1f5ff;
     color: #0f172a;
     font-weight: 600;
     cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    text-align: center;
 }
+
 .login-tabs .tab.active {
     background: #1e66ff;
     color: white;
-    border-radius: 8px;
 }
+
+.login-tabs .tab:hover {
+    background: #e0e7ff;
+}
+
 form label {
     display: block;
     text-align: left;
@@ -351,4 +472,159 @@ form input {
     .features-grid { grid-template-columns: 1fr; }
     .hero-content h1 { font-size: 2.5rem; }
     .hero-content h2 { font-size: 1.6rem; }
+}
+/* =========================
+   🌍 FOOTER ETUDLIFE
+   ========================= */
+/* =========================
+   🌍 FOOTER ETUDLIFE — VERSION CORRIGÉE
+   ========================= */
+.etudlife-footer {
+    margin-top: 60px;
+    font-family: "Poppins", sans-serif;
+    color: #f1f5f9;
+}
+
+/* Section bleue avec chiffres */
+.footer-stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    background: #0066ff;
+    color: #fff;
+    padding: 40px 20px;
+    flex-wrap: wrap;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.footer-stats .stat h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.footer-stats .stat p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* Partie principale du footer */
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 40px;
+    background: #0f172a;
+    padding: 50px 40px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Neutralise la limite du .container dans le footer */
+.etudlife-footer .footer-content.container {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Colonnes */
+.footer-col h4 {
+    margin-bottom: 15px;
+    color: #fff;
+}
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+.footer-col ul li {
+    margin-bottom: 8px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.footer-col ul li:hover {
+    color: #fff;
+}
+.logo-footer {
+    color: #fff;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+.footer-col p {
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+/* Ligne du bas */
+.footer-bottom {
+    background: #0a1123;
+    text-align: center;
+    padding: 15px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    border-top: 1px solid #1e293b;
+    width: 100%;
+    margin: 0;
+}
+
+/* Évite le scroll horizontal parasite */
+body {
+    overflow-x: hidden;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-stats {
+        gap: 20px;
+    }
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        padding: 30px 20px;
+    }
+}
+/* =========================
+   🧩 LOGO DU FOOTER (corrigé)
+   ========================= */
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.footer-logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.footer-logo-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.footer-logo-text strong {
+    color: #0066ff;
+}
+
+/* Texte sous le logo */
+.footer-desc {
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-left: 2px;
+    max-width: 220px;
+}
+
+/* ✅ Si tu veux centrer verticalement le contenu du footer */
+.footer-content {
+    align-items: start;
 }

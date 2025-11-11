@@ -8,18 +8,46 @@
 </head>
 <body>
 
-<header>
-    <nav class="container">
-        <div class="logo">EtudLife</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Accueil</a></li>
-        </ul>
-        <div class="nav-auth">
-            <a href="login.html" class="btn-login">Connexion</a>
-            <button id="btn-logout" class="btn-login" style="display: none;">Déconnexion</button>
+<!-- =========================
+     🔷 HEADER MODERNE ETUDLIFE
+     ========================= -->
+<header class="main-header">
+    <div class="header-container">
+        <!-- Logo -->
+        <div class="header-left">
+            <div class="logo">
+                <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
+
+                <span class="logo-text"><strong>Etud</strong>Life</span>
+            </div>
         </div>
-    </nav>
+
+        <!-- Navigation -->
+        <nav class="header-nav">
+            <a href="index.html" class="active">Accueil</a>
+            <a href="Agenda.html" id="link-agenda">Agenda</a>
+
+            <a href="#">Cours</a>
+            <a href="#">Transports</a>
+            <a href="#">Bibliothèque</a>
+            <a href="#">Campus</a>
+            <a href="#">Restaurant</a>
+            <a href="#">Annonces</a>
+            <a href="#">Messages</a>
+            <a href="#">Rechercher</a>
+        </nav>
+
+        <!-- Profil / Connexion -->
+        <div class="header-right">
+            <a href="login.html" id="btn-login" class="icon-btn">
+                <img src="images/compte.png" alt="Profil" class="icon-img">
+            </a>
+
+            <button id="btn-logout" class="icon-btn logout">🚪</button>
+        </div>
+    </div>
 </header>
+
 
 <div id="homepage-content">
     <section class="hero">
@@ -130,4 +158,75 @@
 <script src="app.js"></script>
 
 </body>
+<!-- =========================
+     🌍 FOOTER ETUDLIFE
+     ========================= -->
+<footer class="etudlife-footer">
+    <section class="footer-stats">
+        <div class="stat">
+            <h3>2,847</h3>
+            <p>Étudiants actifs</p>
+        </div>
+        <div class="stat">
+            <h3>1,234</h3>
+            <p>Cours partagés</p>
+        </div>
+        <div class="stat">
+            <h3>89%</h3>
+            <p>Satisfaction</p>
+        </div>
+        <div class="stat">
+            <h3>24/7</h3>
+            <p>Disponibilité</p>
+        </div>
+    </section>
+
+    <section class="footer-content container">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="images/etudlife.png" alt="Logo EtudLife" class="footer-logo-img">
+                <span class="footer-logo-text"><strong>Etud</strong>Life</span>
+            </div>
+            <p class="footer-desc">
+                La plateforme complète pour simplifier votre vie étudiante.
+            </p>
+        </div>
+
+
+        <div class="footer-col">
+            <h4>Fonctionnalités</h4>
+            <ul>
+                <li>Agenda partagé</li>
+                <li>Partage de cours</li>
+                <li>Transports</li>
+                <li>Bibliothèque</li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Campus</h4>
+            <ul>
+                <li>Plan interactif</li>
+                <li>Restaurant U</li>
+                <li>Petites annonces</li>
+                <li>Messagerie</li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Support</h4>
+            <ul>
+                <li>Centre d’aide</li>
+                <li>Contact</li>
+                <li>Signaler un bug</li>
+                <li>Powered by Readdy</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="footer-bottom">
+        <p>© 2025 EtudLife.</p>
+    </div>
+</footer>
+
 </html>

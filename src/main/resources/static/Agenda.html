@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Agenda | EtudLife</title>
+    <link rel="stylesheet" href="Agenda.css">
+    <link rel="icon" href="logo.png">
+</head>
+<body>
+<!-- 🔷 Navbar -->
+<header class="navbar">
+    <div class="logo">
+        <img src="logo.png" alt="EtudLife" height="30">
+        <span>EtudLife</span>
+    </div>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="Agenda.html" class="active">Agenda</a>
+        <a href="Cours.html">Cours</a>
+        <a href="Bibliotheque.html">Bibliothèque</a>
+        <a href="Campus.html">Campus</a>
+    </nav>
+    <button id="btnLogout">Déconnexion</button>
+</header>
+
+<!-- 🔷 Contenu principal -->
+<main class="container">
+    <h1>Mon Agenda</h1>
+    <p>Gérez votre emploi du temps et partagez-le avec vos proches</p>
+
+    <section id="agenda-container">
+        <div class="agenda-header">
+            <div class="month-nav">
+                <button id="prevMonth" class="month-btn">←</button>
+                <h2 id="month-title">Janvier 2025</h2>
+                <button id="nextMonth" class="month-btn">→</button>
+            </div>
+            <button id="btnNewEvent">Nouvel événement</button>
+        </div>
+
+
+        <!-- En-tête des jours -->
+        <div id="agenda-weekdays" class="weekdays">
+            <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+        </div>
+
+        <!-- Grille du calendrier -->
+        <div id="agenda-grid"></div>
+
+
+    </section>
+
+    <!-- 🔷 Événements du jour -->
+    <aside id="today-events">
+        <h3>Aujourd'hui</h3>
+        <ul id="today-list"></ul>
+    </aside>
+</main>
+
+<!-- 🔷 Popup d’ajout d’événement -->
+<div id="popup" class="popup hidden">
+    <div class="popup-content">
+        <h3>Ajouter un événement</h3>
+        <form id="formEvent">
+            <input type="text" id="titre" placeholder="Titre" required>
+            <textarea id="description" placeholder="Description"></textarea>
+            <label>Début :</label>
+            <input type="datetime-local" id="dateDebut" required>
+            <label>Fin :</label>
+            <input type="datetime-local" id="dateFin" required>
+            <button type="submit">Enregistrer</button>
+            <button type="button" id="btnCancel">Annuler</button>
+        </form>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

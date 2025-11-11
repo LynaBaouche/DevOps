@@ -1,13 +1,7 @@
-/* ======================================================
-   🌐 JS ÉTUDLIFE — VERSION COMPLÈTE ET FONCTIONNELLE
-   ====================================================== */
-
 const API_BASE_URL = "http://localhost:8080/api";
 let currentUser = null;
 
-/* ============================
-   🚀 INITIALISATION
-   ============================ */
+/* INITIALISATION */
 document.addEventListener("DOMContentLoaded", async () => {
     const homepage = document.getElementById("homepage-content");
     const appContainer = document.getElementById("app-container");
@@ -34,18 +28,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnLogout) btnLogout.addEventListener("click", logout);
 });
 
-/* ============================
-   🔐 DÉCONNEXION
-   ============================ */
+/*
+   DÉCONNEXION
+  */
 function logout() {
     localStorage.removeItem("utilisateur");
     currentUser = null;
     window.location.href = "index.html";
 }
 
-/* ============================
+/*
    🔑 CONNEXION (login.html)
-   ============================ */
+    */
 document.addEventListener("DOMContentLoaded", () => {
     const formLogin = document.getElementById("loginForm");
     if (!formLogin) return;
@@ -123,7 +117,7 @@ async function loadApplicationData() {
         currentUser = allUsers.find(u => u.id === currentUser.id);
 
         await renderUserProfile();
-        await afficherProches();   // 👈 AJOUT ICI
+        await afficherProches();   //
         await renderUserGroupes();
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
@@ -408,4 +402,199 @@ async function fetchApi(endpoint, options = {}) {
     if (!response.ok) throw new Error(`Erreur API (${response.status})`);
     return await response.json();
 }
+/* ============================
+   🔒 CONTRÔLE D'ACCÈS À L'AGENDA
+   ============================ */
+document.addEventListener("DOMContentLoaded", () => {
+    const agendaLink = document.getElementById("link-agenda");
+    if (!agendaLink) return;
 
+    agendaLink.addEventListener("click", (e) => {
+        e.preventDefault(); // évite que le lien charge une page vide
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+
+        if (!user) {
+            alert("⚠️ Veuillez vous connecter à votre compte pour accéder à l’agenda.");
+            return;
+        }
+
+        // ✅ Si l’utilisateur est connecté, on autorise l’accès
+        window.location.href = "Agenda.html";
+    });
+});
+
+/* ======================================================
+   📅 AGENDA — Intégré au backend EtudLife
+   ====================================================== */
+document.addEventListener("DOMContentLoaded", async () => {
+    // Si on est sur la page Agenda.html
+    if (window.location.pathname.endsWith("Agenda.html")) {
+        const utilisateur = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!utilisateur) {
+            window.location.href = "login.html";
+            return;
+        }
+        currentUser = utilisateur;
+        initAgendaPage();
+    }
+});
+
+async function initAgendaPage() {
+    const btnLogout = document.getElementById("btnLogout");
+    if (btnLogout) btnLogout.addEventListener("click", logout);
+
+    const btnNewEvent = document.getElementById("btnNewEvent");
+    const btnCancel = document.getElementById("btnCancel");
+    const formEvent = document.getElementById("formEvent");
+
+    if (btnNewEvent) btnNewEvent.addEventListener("click", () => togglePopup(true));
+    if (btnCancel) btnCancel.addEventListener("click", () => togglePopup(false));
+    if (formEvent) formEvent.addEventListener("submit", saveEvent);
+
+    await afficherAgenda();
+}
+
+/* 🔹 Ouvre / ferme la popup */
+function togglePopup(show) {
+    const popup = document.getElementById("popup");
+    if (popup) popup.classList.toggle("hidden", !show);
+}
+
+/* 🔹 Charge le calendrier du mois courant */
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+async function afficherAgenda() {
+    const grid = document.getElementById("agenda-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    // 📅 Noms des mois
+    const monthNames = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+
+    // 🏷️ Met à jour le titre du mois
+    document.getElementById("month-title").textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    // Récupère le premier jour du mois
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    // Correction pour commencer le lundi (par défaut JS commence dimanche)
+    const startIndex = firstDay === 0 ? 6 : firstDay - 1;
+
+    // 🔹 Récupère les événements depuis le backend
+    const events = await fetchEvents();
+
+    // 🔲 Cases vides avant le 1er jour du mois
+    for (let i = 0; i < startIndex; i++) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "day empty";
+        grid.appendChild(emptyDiv);
+    }
+
+    // 📆 Ajoute les jours du mois
+    for (let d = 1; d <= daysInMonth; d++) {
+        const div = document.createElement("div");
+        div.className = "day";
+        div.innerHTML = `<strong>${d}</strong>`;
+
+        const todayEvents = events.filter(ev => {
+            const date = new Date(ev.dateDebut);
+            return date.getDate() === d && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+        });
+
+        todayEvents.forEach(ev => {
+            const eDiv = document.createElement("div");
+            eDiv.className = "event";
+            eDiv.textContent = ev.titre;
+            div.appendChild(eDiv);
+        });
+
+        grid.appendChild(div);
+    }
+
+    renderToday(events);
+
+    // 🎯 Ajoute les actions sur les flèches de navigation
+    document.getElementById("prevMonth").onclick = () => changeMonth(-1);
+    document.getElementById("nextMonth").onclick = () => changeMonth(1);
+}
+
+/* Changement de mois */
+function changeMonth(offset) {
+    currentMonth += offset;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    afficherAgenda();
+}
+
+/* 🔹 Récupère les événements depuis le backend */
+async function fetchEvents() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`);
+        if (!res.ok) throw new Error("Erreur API événements");
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+}
+
+/* 🔹 Ajout d’un nouvel événement */
+async function saveEvent(e) {
+    e.preventDefault();
+
+    const event = {
+        titre: document.getElementById("titre").value,
+        description: document.getElementById("description").value,
+        dateDebut: document.getElementById("dateDebut").value,
+        dateFin: document.getElementById("dateFin").value
+    };
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(event)
+        });
+
+        if (!res.ok) throw new Error("Erreur création événement");
+        togglePopup(false);
+        await afficherAgenda();
+    } catch (err) {
+        alert("❌ " + err.message);
+    }
+}
+
+/* 🔹 Affiche les événements du jour */
+function renderToday(events) {
+    const today = new Date().getDate();
+    const list = document.getElementById("today-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    const todayEvents = events.filter(e => new Date(e.dateDebut).getDate() === today);
+    if (!todayEvents.length) {
+        list.innerHTML = "<li>Aucun événement prévu aujourd'hui.</li>";
+        return;
+    }
+
+    todayEvents.forEach(e => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <strong>${e.titre}</strong><br>
+            ${new Date(e.dateDebut).toLocaleTimeString()} - 
+            ${new Date(e.dateFin).toLocaleTimeString()}
+        `;
+        list.appendChild(li);
+    });
+}
