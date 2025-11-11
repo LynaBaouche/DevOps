@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EtudLife - Ressources partagées</title>
     <style>
+        .documents-liste {
+    margin-top: 15px;
+}
+
+.doc-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f7f8fc;
@@ -224,6 +236,7 @@
 </div>
 
 <script>
+
     const API_BASE_URL = "http://localhost:8080/api";
 
     // ouvrir / fermer modale
@@ -295,6 +308,56 @@
     }
 
     loadDocuments();
+
+    async function chargerDocuments() {
+    const listeDiv = document.querySelector("#liste-documents");
+    listeDiv.innerHTML = "<p>Chargement...</p>";
+
+    try {
+        const response = await fetch("http://localhost:8080/api/documents");
+        const docs = await response.json();
+
+        if (docs.length === 0) {
+            listeDiv.innerHTML = "<p>Aucun document pour l'instant.</p>";
+            return;
+        }
+
+        listeDiv.innerHTML = docs.map(d => `
+            <div class="doc-item">
+                <strong>${d.nom}</strong><br>
+                <span>${(d.taille / 1024).toFixed(1)} Ko</span><br>
+                <small>${new Date(d.dateUpload).toLocaleString()}</small>
+            </div>
+        `).join("");
+    } catch (err) {
+        listeDiv.innerHTML = "<p>Erreur de chargement des documents.</p>";
+        console.error(err);
+    }
+}
+
+// Recharger automatiquement après un upload réussi
+document.querySelector("form#uploadForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const response = await fetch("http://localhost:8080/api/documents/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    if (response.ok) {
+        alert("Document ajouté avec succès !");
+        chargerDocuments();
+    } else {
+        alert("Erreur lors de l'envoi du fichier !");
+    }
+});
+
+// Charger dès l'ouverture de la page
+chargerDocuments();
+
+
 </script>
 </body>
 </html>
