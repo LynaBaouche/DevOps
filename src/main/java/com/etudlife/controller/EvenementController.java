@@ -30,6 +30,10 @@ public class EvenementController {
         evenement.setUtilisateur(utilisateur);
         return evenementService.add(evenement);
     }
+    @GetMapping("/shared/{userId}")
+    public List<Evenement> getSharedEvents(@PathVariable Long userId) {
+        return evenementService.getSharedAvailability(userId);
+    }
 
     @DeleteMapping("/{id}")
     public void supprimer(@PathVariable Long id) {

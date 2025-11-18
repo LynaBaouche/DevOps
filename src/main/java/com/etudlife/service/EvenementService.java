@@ -9,8 +9,11 @@ import java.util.List;
 @Service
 public class EvenementService {
 
+
     @Autowired
     private EvenementRepository evenementRepository;
+    @Autowired
+    private LienService lienService;
 
     public List<Evenement> getByUserId(Long id) {
         return evenementRepository.findByUtilisateurId(id);
@@ -22,5 +25,15 @@ public class EvenementService {
 
     public void delete(Long id) {
         evenementRepository.deleteById(id);
+    }
+
+    public List<Evenement> getSharedAvailability(Long myUserId) {
+        // 1. Récupère les IDs des proches
+        List<Long> procheIds = lienService.getProcheIds(myUserId);
+
+        // 2. Ajoute l'ID de l'utilisateur courant à la liste des IDs à chercher
+        procheIds.add(myUserId);
+        // 3. Récupère TOUS les événements pour cette liste d'IDs
+        return evenementRepository.findByUtilisateurIdIn(procheIds);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LienService {
@@ -41,5 +42,17 @@ public class LienService {
 
     public void supprimerLien(Long id) {
         lienRepository.deleteById(id);
+    }
+    /*
+    * Récupère la liste des IDs de tous les comptes que l'utilisateur a ajoutés en proche.
+    */
+    public List<Long> getProcheIds(Long idSource) {
+        // La liste des liens (où l'utilisateur est la source)
+        List<Lien> liens = getLiensPourCompte(idSource);
+
+        // On retourne la liste des IDs cibles
+        return liens.stream()
+                .map(lien -> lien.getCompteCible().getId())
+                .collect(Collectors.toList());
     }
 }
