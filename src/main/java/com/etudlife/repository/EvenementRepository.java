@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface EvenementRepository extends JpaRepository<Evenement, Long> {
     List<Evenement> findByUtilisateurId(Long utilisateurId);
-    // AJOUTE CETTE LIGNE
+    // ✅ Pour récupérer les événements de plusieurs personnes (les proches)
     List<Evenement> findByUtilisateurIdIn(List<Long> utilisateurIds);
 }

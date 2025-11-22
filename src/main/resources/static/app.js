@@ -1,6 +1,13 @@
 const API_BASE_URL = "http://localhost:8080/api";
 let currentUser = null;
 
+let referenceDate = new Date(); // La date qui sert de pivot (aujourd'hui par défaut)
+let currentView = "month";      // 'month' ou 'week'
+let allEventsCache = []; // Stocke tous les événements reçus du serveur
+let selectedProchesIds = new Set(); // Stocke les IDs des proches cochés
+
+
+
 /* INITIALISATION */
 document.addEventListener("DOMContentLoaded", async () => {
     const homepage = document.getElementById("homepage-content");
@@ -451,9 +458,10 @@ async function initAgendaPage() {
     if (btnCancel) btnCancel.addEventListener("click", () => togglePopup(false));
     if (formEvent) formEvent.addEventListener("submit", saveEvent);
 
+    await chargerProchesSidebar();
     await afficherAgenda();
-}
 
+}
 /* 🔹 Ouvre / ferme la popup */
 function togglePopup(show) {
     const popup = document.getElementById("popup");
@@ -483,47 +491,66 @@ async function afficherAgenda() {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    // Correction pour commencer le lundi (par défaut JS commence dimanche)
+    // Correction pour commencer le lundi (par défaut JS commence dimanche=0)
     const startIndex = firstDay === 0 ? 6 : firstDay - 1;
 
-    // 🔹 Récupère les événements depuis le backend
+    // 🔹 Récupère les événements depuis le backend (ou le cache)
     const events = await fetchEvents();
 
-    // 🔲 Cases vides avant le 1er jour du mois
+    // 🔲 1. Cases vides avant le 1er jour du mois (padding)
     for (let i = 0; i < startIndex; i++) {
         const emptyDiv = document.createElement("div");
         emptyDiv.className = "day empty";
         grid.appendChild(emptyDiv);
     }
 
-    // 📆 Ajoute les jours du mois
+    // 📆 2. Ajoute les jours du mois
     for (let d = 1; d <= daysInMonth; d++) {
+        // ✅ C'est ici que c'était manquant : Création de la case jour
         const div = document.createElement("div");
         div.className = "day";
-        div.innerHTML = `<strong>${d}</strong>`;
+        div.innerHTML = `<strong>${d}</strong>`; // Affiche le numéro du jour
 
-        const todayEvents = events.filter(ev => {
+        // Filtre les événements pour ce jour 'd'
+        const todayEvents = allEventsCache.filter(ev => {
             const date = new Date(ev.dateDebut);
-            return date.getDate() === d && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            const isSameDay = date.getDate() === d && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+
+            if (!isSameDay) return false;
+
+            const isMine = ev.utilisateur.id === currentUser.id;
+            const isSelectedFriend = selectedProchesIds.has(ev.utilisateur.id);
+
+            return isMine || isSelectedFriend;
         });
 
+        // Ajoute les événements dans la case du jour
         todayEvents.forEach(ev => {
             const eDiv = document.createElement("div");
-            eDiv.className = "event";
-            eDiv.textContent = ev.titre;
+            const isMine = ev.utilisateur.id === currentUser.id;
+
+            eDiv.className = isMine ? "event event-mine" : "event event-other";
+
+            if (!isMine) {
+                eDiv.title = `Agenda de ${ev.utilisateur.prenom} ${ev.utilisateur.nom}`;
+                eDiv.textContent = "Occupé";
+            } else {
+                eDiv.textContent = ev.titre;
+            }
+
             div.appendChild(eDiv);
         });
 
+        // Ajoute la case complète à la grille
         grid.appendChild(div);
     }
 
     renderToday(events);
 
-    // 🎯 Ajoute les actions sur les flèches de navigation
+    // 🎯 Réattache les événements aux boutons (important si le DOM a changé)
     document.getElementById("prevMonth").onclick = () => changeMonth(-1);
     document.getElementById("nextMonth").onclick = () => changeMonth(1);
 }
-
 /* Changement de mois */
 function changeMonth(offset) {
     currentMonth += offset;
@@ -540,9 +567,10 @@ function changeMonth(offset) {
 /* 🔹 Récupère les événements depuis le backend */
 async function fetchEvents() {
     try {
-        const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`);
+        const res = await fetch(`${API_BASE_URL}/evenements/shared/${currentUser.id}`);
         if (!res.ok) throw new Error("Erreur API événements");
-        return await res.json();
+        allEventsCache = await res.json();
+        return allEventsCache;
     } catch (err) {
         console.error(err);
         return [];
@@ -597,4 +625,55 @@ function renderToday(events) {
         `;
         list.appendChild(li);
     });
+}
+/* 🆕 Génère la liste des proches avec Checkbox */
+async function chargerProchesSidebar() {
+    const container = document.getElementById("proches-list-agenda");
+    if (!container) return;
+
+    try {
+        // Récupère les proches via l'API existante
+        const liens = await fetchApi(`/liens/${currentUser.id}/proches`);
+
+        if (liens.length === 0) {
+            container.innerHTML = "<li>Aucun proche ajouté.</li>";
+            return;
+        }
+
+        container.innerHTML = "";
+        liens.forEach(lien => {
+            const ami = lien.compteCible;
+            const li = document.createElement("li");
+            li.className = "proche-item";
+
+            // HTML: Checkbox + Avatar + Nom
+            li.innerHTML = `
+                <label class="friend-label">
+                    <input type="checkbox" class="friend-checkbox" value="${ami.id}">
+                    <div class="friend-info">
+                        <div class="friend-avatar">${ami.prenom.charAt(0)}${ami.nom.charAt(0)}</div>
+                        <span>${ami.prenom} ${ami.nom}</span>
+                    </div>
+                    <span class="status-dot"></span>
+                </label>
+            `;
+
+            // Événement : Quand on coche/décoche
+            const checkbox = li.querySelector("input");
+            checkbox.addEventListener("change", (e) => {
+                if (e.target.checked) {
+                    selectedProchesIds.add(ami.id);
+                } else {
+                    selectedProchesIds.delete(ami.id);
+                }
+                // 🔄 On rafraîchit l'agenda sans recharger la page
+                afficherAgenda();
+            });
+
+            container.appendChild(li);
+        });
+
+    } catch (err) {
+        console.error("Erreur chargement proches agenda", err);
+    }
 }

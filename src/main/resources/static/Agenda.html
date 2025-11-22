@@ -22,42 +22,47 @@
     </nav>
     <button id="btnLogout">Déconnexion</button>
 </header>
-
 <!-- 🔷 Contenu principal -->
 <main class="container">
-    <h1>Mon Agenda</h1>
-    <p>Gérez votre emploi du temps et partagez-le avec vos proches</p>
-
-    <section id="agenda-container">
-        <div class="agenda-header">
-            <div class="month-nav">
-                <button id="prevMonth" class="month-btn">←</button>
-                <h2 id="month-title">Janvier 2025</h2>
-                <button id="nextMonth" class="month-btn">→</button>
+    <div class="page-header">
+        <h1>Mon Agenda</h1>
+        <p>Gérez votre emploi du temps et partagez-le avec vos proches</p>
+    </div>
+    <div class="content-wrapper">
+        <section id="agenda-container">
+            <div class="agenda-header">
+                <div class="month-nav">
+                    <button id="prevMonth" class="month-btn">←</button>
+                    <h2 id="month-title">Chargement...</h2>
+                    <button id="nextMonth" class="month-btn">→</button>
+                </div>
+                <button id="btnNewEvent">Nouvel événement</button>
             </div>
-            <button id="btnNewEvent">Nouvel événement</button>
-        </div>
+            <div id="agenda-weekdays" class="weekdays">
+                <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+            </div>
+            <div id="agenda-grid"></div>
+        </section>
 
+        <aside class="sidebar-right">
+            <div id="today-events">
+                <h3>Aujourd'hui</h3>
+                <ul id="today-list"></ul>
+            </div>
+            <div id="shared-calendars">
 
-        <!-- En-tête des jours -->
-        <div id="agenda-weekdays" class="weekdays">
-            <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
-        </div>
+                <h3>Partage d'agenda</h3>
 
-        <!-- Grille du calendrier -->
-        <div id="agenda-grid"></div>
+                <p class="subtitle">Cochez pour voir les disponibilités</p>
 
-
-    </section>
-
-    <!-- 🔷 Événements du jour -->
-    <aside id="today-events">
-        <h3>Aujourd'hui</h3>
-        <ul id="today-list"></ul>
-    </aside>
-</main>
+                <ul id="proches-list-agenda">
+                </ul>
+            </div>
+        </aside>
+    </div> </main>
 
 <!-- 🔷 Popup d’ajout d’événement -->
+
 <div id="popup" class="popup hidden">
     <div class="popup-content">
         <h3>Ajouter un événement</h3>

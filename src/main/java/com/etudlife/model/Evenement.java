@@ -1,5 +1,6 @@
 package com.etudlife.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,9 +15,11 @@ public class Evenement {
     private String description;
     private LocalDateTime dateDebut;
     private LocalDateTime dateFin;
-
+    // ✅ NOUVEAU CHAMP
+    private String couleur;
     @ManyToOne
     @JoinColumn(name = "compte_id")
+    @JsonIgnoreProperties({"groupes", "liens", "posts", "evenements"})
     private Compte utilisateur;
 
     // Getters & setters
@@ -35,6 +38,10 @@ public class Evenement {
     public LocalDateTime getDateFin() { return dateFin; }
     public void setDateFin(LocalDateTime dateFin) { this.dateFin = dateFin; }
 
+    public String getCouleur() { return couleur; }
+    public void setCouleur(String couleur) {
+        this.couleur = couleur;
+    }
     public Compte getUtilisateur() { return utilisateur; }
     public void setUtilisateur(Compte utilisateur) { this.utilisateur = utilisateur; }
 }
