@@ -82,8 +82,8 @@ Configurez les variables suivantes dans votre IDE (IntelliJ : Run/Debug Configur
 | Variable | Description | Valeur       |
 |----------|------------------|--------------|
 | **DB_PASSWORD** | Mot de passe de la BDD| EtudLife2025 |
+Note : Le fichier application.properties est configuré pour lire ces variables (${DB_PASSWORD}) ou utiliser une configuration par défaut pour le développement local.
 
-à Noter : Le fichier application.properties est configuré pour lire ces variables (${DB_PASSWORD}) ou utiliser une configuration par défaut pour le développement local.
 ---
 ## 🚀 Lancer l'application
 Le frontend étant servi statiquement par Spring Boot, vous n'avez qu'une seule application à lancer.
@@ -101,9 +101,10 @@ gradlew.bat bootRun
 - Exécutez la classe principale `com.etudlife.EtudLifeApplication`.
 - Assurez-vous que les variables d'environnement sont bien configurées.
 
-** Accès **
+
 Une fois le serveur démarré (log : Tomcat started on port 8080), ouvrez votre navigateur : **👉 http://localhost:8080**
 ---
+
 ## 🧠 API (extrait)
 Voici quelques endpoints clés de l'API REST :
 | Domaine| Méthode | Endpoint | Description |
