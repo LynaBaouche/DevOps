@@ -37,14 +37,22 @@
             <a href="#">Rechercher</a>
         </nav>
 
-        <!-- Profil / Connexion -->
-        <div class="header-right">
-            <a href="login.html" id="btn-login" class="icon-btn">
-                <img src="images/compte.png" alt="Profil" class="icon-img">
-            </a>
 
-            <button id="btn-logout" class="icon-btn logout">🚪</button>
+        <!-- Icône compte -->
+        <div class="account-menu">
+            <img src="images/compte.png" class="icon-img" id="account-icon">
+
+            <!-- MENU DÉROULANT -->
+            <div class="dropdown-menu" id="dropdown-menu">
+                <p class="menu-title">Invité</p>
+                <p class="menu-subtitle">Non connecté</p>
+
+                <a href="login.html" class="menu-item">Se connecter</a>
+                <a href="inscreption.html" class="menu-item">Créer un compte</a>
+                <a href="#" class="menu-item">Aide</a>
+            </div>
         </div>
+
     </div>
 </header>
 
@@ -159,8 +167,53 @@
 </main>
 
 <script src="app.js"></script>
+<script>
+    const icon = document.getElementById("account-icon");
+    const menu = document.getElementById("dropdown-menu");
+
+    icon.addEventListener("click", () => {
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+
+    // Fermer quand on clique ailleurs
+    document.addEventListener("click", (e) => {
+        if (!icon.contains(e.target) && !menu.contains(e.target)) {
+            menu.style.display = "none";
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const menuTitle = document.querySelector(".menu-title");
+        const menuSubtitle = document.querySelector(".menu-subtitle");
+
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+
+        if (user) {
+            // Mettre le prénom + nom OU l'email
+            menuTitle.textContent = user.prenom + " " + user.nom;
+            menuSubtitle.textContent = user.email;
+
+            // Ajoute l'entrée "Déconnexion"
+            const dropdown = document.getElementById("dropdown-menu");
+            const logoutBtn = document.createElement("a");
+            logoutBtn.className = "menu-item";
+            logoutBtn.textContent = "Se déconnecter";
+
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("utilisateur");
+                window.location.href = "index.html";
+            });
+
+            dropdown.appendChild(logoutBtn);
+        }
+    });
+</script>
 
 </body>
+
+
 <!-- =========================
      🌍 FOOTER ETUDLIFE
      ========================= -->

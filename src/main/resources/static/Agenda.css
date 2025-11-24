@@ -1,232 +1,223 @@
-
+/* =========================
+   🌟 STYLE GLOBAL AGENDA
+   ========================= */
 body {
-    font-family: 'Poppins', sans-serif;
     background: #f8f9fc;
-    margin: 0;
-    color: #222;
 }
-.logo-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #0f172a;
+
+/* =========================
+   📄 PAGE
+   ========================= */
+.agenda-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
 }
-.logo-text strong {
-    color: #0066ff;
+
+.page-header {
+    margin-bottom: 20px;
 }
-.navbar {
+
+/* Deux colonnes : agenda + sidebar */
+.content-wrapper {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 30px;
-    background: #fff;
-    border-bottom: 1px solid #ddd;
+    gap: 20px;
+    align-items: flex-start;
 }
 
-.navbar nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #444;
+/* =========================
+   📅 AGENDA (colonne gauche)
+   ========================= */
+#agenda {
+    flex: 3;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.navbar nav a.active {
-    font-weight: 600;
-    color: #007bff;
-}
 .agenda-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#agenda-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.day {
-    background: #f5f7ff;
-    border-radius: 8px;
-    padding: 10px;
-    min-height: 100px;
-    position: relative;
-    cursor: pointer;
-}
-
-.day:hover {
-    background: #eaf0ff;
-}
-
-.event {
-    background: #007bff;
-    color: white;
-    border-radius: 5px;
-    padding: 3px 6px;
-    margin-top: 5px;
-    font-size: 0.85em;
-}
-.event-mine {
-    background-color: #0066ff;
-    color: white;
-    border-left: 4px solid #0044aa;
-}
-.event-other {
-    background-color: #ac8989;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-    border-bottom: 4px solid #10b981;
-    font-style: italic;
-}
-
-#today-events {
-    background: #fff;
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.popup.hidden {
-    display: none;
-}
-
-.popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-}
-/* =========================
-   🗓️ Jours de la semaine (Agenda)
-   ========================= */
-.weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-weight: 600;
-    color: #475569;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    padding: 0;
-    gap: 8px; /* espace entre les colonnes */
-}
-
-.weekdays div {
-    background: #f1f5ff;
-    border-radius: 8px;
-    padding: 8px 0;
-    color: #1e40af;
-    font-size: 0.9rem;
-}
-/* =========================
-   📅 Navigation du mois
-   ========================= */
+/* Navigation mois */
 .month-nav {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 15px;
 }
 
 #month-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: #1e40af;
 }
 
 .month-btn {
-    background: transparent;
+    background: none;
     border: none;
+    font-size: 1.4rem;
     color: #1e66ff;
-    font-size: 1.2rem;
-    font-weight: bold;
     cursor: pointer;
-    transition: color 0.2s;
 }
 
 .month-btn:hover {
-    color: #0f172a;
-}
-/* =========================
-   🗓️ Popup — Ajouter un événement
-   ========================= */
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.45); /* voile sombre */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    color: #003eaa;
 }
 
-.popup.hidden {
-    display: none;
-}
-
-.popup-content {
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 16px;
-    width: 420px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
-    animation: popupIn 0.3s ease-out;
-}
-
-@keyframes popupIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.popup-content h3 {
-    margin-bottom: 15px;
-    color: #1e40af;
-    font-size: 1.3rem;
+/* Bouton nouvel événement */
+#btnNewEvent {
+    background: #1e66ff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
     font-weight: 600;
 }
 
-/* 🧾 Formulaire interne */
+#btnNewEvent:hover {
+    background: #1557e6;
+}
+
+/* Jours semaine */
+.weekdays {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.weekdays div {
+    background: #e8f0ff;
+    padding: 8px 0;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Grille du mois */
+#agenda-grid {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day {
+    background: #f5f7ff;
+    padding: 10px;
+    min-height: 100px;
+    border-radius: 10px;
+}
+.day:hover { background: #eaf0ff; }
+
+/* Événements */
+.event-mine {
+    background: #1e66ff;
+    color: white;
+    font-size: 0.85em;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.event-other {
+    background: #d7e3ff;
+    color: #475569;
+    padding: 4px;
+    border-radius: 6px;
+    border-left: 4px solid #10b981;
+}
+
+/* =========================
+   📌 SIDEBAR (droite)
+   ========================= */
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#today-events,
+#shared-calendars {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Proches */
+#proches-list-agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friend-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.friend-label:hover {
+    background: #f1f5ff;
+}
+
+.friend-avatar {
+    width: 32px;
+    height: 32px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =========================
+   🎛 POPUP
+   ========================= */
+.popup {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup.hidden { display: none; }
+
+.popup-content {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    width: 420px;
+}
+
 #formEvent {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#formEvent input,
-#formEvent textarea {
-    width: 100%;
+#formEvent button {
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    font-family: "Poppins", sans-serif;
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease;
-}
-
-#formEvent input:focus,
-#formEvent textarea:focus {
-    border-color: #1e66ff;
-    outline: none;
-}
-
-#formEvent label {
-    font-weight: 600;
-    margin-top: 4px;
-    color: #334155;
-}
-
-/* 🧩 Boutons */
-#formEvent button {
-    padding: 10px 15px;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
     cursor: pointer;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
 }
 
 #formEvent button[type="submit"] {
@@ -234,174 +225,91 @@ body {
     color: white;
 }
 
-#formEvent button[type="submit"]:hover {
-    background: #1557e6;
-}
-
 #btnCancel {
     background: #e2e8f0;
-    color: #0f172a;
 }
-
-#btnCancel:hover {
-    background: #cbd5e1;
-}
-/* =========================
-   ➕ Bouton "Nouvel événement"
-   ========================= */
-#btnNewEvent {
-    background: #1e66ff;
-    color: white;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(30, 102, 255, 0.3);
-}
-
-#btnNewEvent::before {
-    content: "＋";
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-#btnNewEvent:hover {
-    background: #1557e6;
-    box-shadow: 0 4px 10px rgba(30, 102, 255, 0.35);
-    transform: translateY(-1px);
-}
-
-#btnNewEvent:active {
-    transform: scale(0.97);
-}
-/* Ajustement Layout global pour avoir la sidebar à droite */
-
-
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-    display: block; /* On enlève le flex ici ! */
-}
-
-.page-header {
-    margin-bottom: 20px;
-}
-
-/* C'est ce wrapper qui gère les 2 colonnes */
-.content-wrapper {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-}
-
-/* Colonne de gauche (Agenda) */
-#agenda-container {
-    flex: 3; /* Prend 75% de la place */
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    /* Assure que la grille ne s'écrase pas */
-    min-width: 0;
-}
-
-/* Colonne de droite (Sidebar) */
-.sidebar-right {
-    flex: 1; /* Prend 25% de la place */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 280px; /* Largeur minimale pour ne pas être écrasé */
-}
-
-/* Style des boîtes dans la sidebar */
-#shared-calendars, #today-events {
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-/* Correction Grille Agenda pour qu'elle prenne toute la largeur */
-#agenda-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-top: 20px;
-    width: 100%; /* Important */
-}
-
-
-.subtitle {
-    font-size: 0.85rem;
-    color: #64748b;
-    margin-bottom: 15px;
-}
-
-#proches-list-agenda {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.proche-item {
-    margin-bottom: 12px;
-}
-
-.friend-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    transition: background 0.2s;
-}
-
-.friend-label:hover {
-    background: #f8fafc;
-}
-
-.friend-info {
+.header-right {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-grow: 1;
-    margin-left: 10px;
 }
 
-/* Avatar rond avec initiales */
-.friend-avatar {
-    width: 32px;
-    height: 32px;
-    background: #e2e8f0;
-    color: #475569;
+.icon-btn {
+    background: transparent;
+    border: none;
     border-radius: 50%;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
 }
 
-/* Checkbox personnalisée (optionnel, style simple ici) */
-.friend-checkbox {
-    accent-color: #1e66ff; /* Couleur bleue quand coché */
-    transform: scale(1.2);
+.icon-btn:hover {
+    background: rgba(0, 102, 255, 0.1);
 }
 
-/* Point de statut (vert pour indiquer dispo/agenda actif) */
-.friend-checkbox:checked ~ .status-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #10b981; /* Vert */
+.icon-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
     border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.icon-btn:hover .icon-img {
+    transform: scale(1.03);
+}
+.account-menu {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+#account-icon {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 3px;
+    background: #eee;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    padding: 10px 0;
+    z-index: 999;
+}
+
+.menu-title {
+    font-weight: bold;
+    padding: 8px 15px 2px;
+}
+
+.menu-subtitle {
+    font-size: 12px;
+    color: gray;
+    padding: 0 15px 10px;
+}
+
+.menu-item {
     display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.menu-item:hover {
+    background: #f3f3f3;
 }

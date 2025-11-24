@@ -628,3 +628,58 @@ body {
 .footer-content {
     align-items: start;
 }
+/* Conteneur du menu */
+.account-menu {
+    position: relative;
+    display: inline-block;
+}
+
+/* Icône */
+#account-icon {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 3px;
+    background: #eee;
+}
+
+/* Le menu déroulant (caché par défaut) */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    padding: 10px 0;
+    z-index: 999;
+}
+
+/* Titre */
+.menu-title {
+    font-weight: bold;
+    padding: 8px 15px 2px;
+}
+
+/* Sous-titre */
+.menu-subtitle {
+    font-size: 12px;
+    color: gray;
+    padding: 0 15px 10px;
+}
+
+/* Liens */
+.menu-item {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.menu-item:hover {
+    background: #f3f3f3;
+}

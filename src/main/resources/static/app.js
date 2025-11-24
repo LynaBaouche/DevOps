@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 document.getElementById("passwordError").textContent = text.includes("Mot de passe")
                     ? "Mot de passe incorrect."
-                    : "Aucun compte trouvé avec cet email.";
+                    : "Aucun compte trouvé avec cet email.Veuillez créer un compte.";
                 return;
             }
 
@@ -409,26 +409,7 @@ async function fetchApi(endpoint, options = {}) {
     if (!response.ok) throw new Error(`Erreur API (${response.status})`);
     return await response.json();
 }
-/* ============================
-   🔒 CONTRÔLE D'ACCÈS À L'AGENDA
-   ============================ */
-document.addEventListener("DOMContentLoaded", () => {
-    const agendaLink = document.getElementById("link-agenda");
-    if (!agendaLink) return;
 
-    agendaLink.addEventListener("click", (e) => {
-        e.preventDefault(); // évite que le lien charge une page vide
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
-
-        if (!user) {
-            alert("⚠️ Veuillez vous connecter à votre compte pour accéder à l’agenda.");
-            return;
-        }
-
-        // ✅ Si l’utilisateur est connecté, on autorise l’accès
-        window.location.href = "Agenda.html";
-    });
-});
 
 /* ======================================================
    📅 AGENDA — Intégré au backend EtudLife
@@ -626,6 +607,93 @@ function renderToday(events) {
         list.appendChild(li);
     });
 }
+/* 📝 INSCRIPTION (inscreption.html) */
+document.addEventListener("DOMContentLoaded", () => {
+    const formRegister = document.getElementById("inscreptionForm");
+    if (!formRegister) return;  // si on n’est pas sur la page inscreption, on ne fait rien
+
+    formRegister.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // On nettoie les erreurs
+        document.querySelectorAll(".error").forEach(el => el.textContent = "");
+
+        const prenom = document.getElementById("prenom").value.trim();
+        const nom = document.getElementById("nom").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const confirmPassword = document.getElementById("confirmPassword").value.trim();
+        const conditions = document.getElementById("conditions").checked;
+
+        let valid = true;
+
+        // ✅ Prénom / Nom
+        if (prenom.length < 2) {
+            document.getElementById("prenomError").textContent = "Prénom invalide.";
+            valid = false;
+        }
+        if (nom.length < 2) {
+            document.getElementById("nomError").textContent = "Nom invalide.";
+            valid = false;
+        }
+
+        // ✅ Email parisnanterre
+        if (!email.endsWith("@parisnanterre.fr")) {
+            document.getElementById("emailError").textContent =
+                "Utilisez une adresse @parisnanterre.fr";
+            valid = false;
+        }
+
+        // ✅ Mot de passe : 10 caractères mini + 1 chiffre
+        if (password.length < 10 || !/\d/.test(password)) {
+            document.getElementById("passwordError").textContent =
+                "Au moins 10 caractères dont 1 chiffre.";
+            valid = false;
+        }
+
+        // ✅ Confirmation mot de passe
+        if (password !== confirmPassword) {
+            document.getElementById("confirmError").textContent =
+                "Les mots de passe ne correspondent pas.";
+            valid = false;
+        }
+
+        // ✅ Conditions
+        if (!conditions) {
+            alert("Vous devez accepter les conditions d’utilisation.");
+            valid = false;
+        }
+
+        if (!valid) return;
+
+        // 🔗 Envoi au backend
+        try {
+            const res = await fetch(`${API_BASE_URL}/comptes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    prenom,
+                    nom,
+                    email,
+                    motDePasse: password   // ⚠ champ identique au modèle Compte.java
+                })
+            });
+
+            if (!res.ok) {
+                const msg = await res.text();
+                // Par ex. "Un compte avec cet email existe déjà."
+                document.getElementById("emailError").textContent = msg;
+                return;
+            }
+
+            alert("🎉 Inscription réussie ! Vous pouvez maintenant vous connecter.");
+            window.location.href = "login.html"; // ✅ redirection vers connexion
+
+        } catch (err) {
+            alert("Erreur lors de l'inscription : " + err.message);
+        }
+    });
+});
 /* 🆕 Génère la liste des proches avec Checkbox */
 async function chargerProchesSidebar() {
     const container = document.getElementById("proches-list-agenda");

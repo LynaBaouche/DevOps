@@ -22,8 +22,41 @@ public class CompteController {
 
     // === INSCRIPTION ===
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public Compte creerCompte(@RequestBody Compte compte) {
-        return compteService.creerCompte(compte);
+    public ResponseEntity<?> creerCompte(@RequestBody Compte compte) {
+        try {
+            Compte created = compteService.creerCompte(compte);
+            return ResponseEntity.ok(created);
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT) // 409
+                    .body("Un compte existe déjà avec cette adresse email.");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur serveur : " + e.getMessage());
+        }
+    }
+
+    // === LOGIN PAR EMAIL & MOT DE PASSE ===
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        try {
+            Compte compte = compteService.login(email, password);
+            return ResponseEntity.ok(compte);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Mot de passe incorrect.");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Aucun compte trouvé avec cet email.");
+        }
     }
 
     // === LISTER LES COMPTES ===
@@ -32,7 +65,7 @@ public class CompteController {
         return compteService.listerComptes();
     }
 
-    // === CHERCHER PAR NOM ET PRÉNOM (ancien login)
+    // === CHERCHER PAR NOM / PRÉNOM ===
     @GetMapping("/search")
     public Compte getCompteParNomEtPrenom(
             @RequestParam String nom,
@@ -41,26 +74,9 @@ public class CompteController {
         return compteService.trouverCompteParNomEtPrenom(nom, prenom);
     }
 
-    // === LOGIN PAR EMAIL ET MOT DE PASSE ===
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        String email = credentials.get("email");
-        String motDePasse = credentials.get("password");
-
-        try {
-            Compte compte = compteService.login(email, motDePasse);
-            return ResponseEntity.ok(compte);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur serveur : " + e.getMessage());
-        }
-    }
-    // 🔹 Récupérer un compte par son ID (avec ses groupes)
+    // === GET PAR ID ===
     @GetMapping("/{id}")
     public Compte getCompteById(@PathVariable Long id) {
         return compteService.lireCompteParId(id);
     }
-
 }
