@@ -82,6 +82,8 @@ Configurez les variables suivantes dans votre IDE (IntelliJ : Run/Debug Configur
 | Variable | Description | Valeur       |
 |----------|------------------|--------------|
 | **DB_PASSWORD** | Mot de passe de la BDD| EtudLife2025 |
+
+
 Note : Le fichier application.properties est configuré pour lire ces variables (${DB_PASSWORD}) ou utiliser une configuration par défaut pour le développement local.
 
 ---
