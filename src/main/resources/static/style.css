@@ -628,6 +628,36 @@ body {
 .footer-content {
     align-items: start;
 }
+/* === 🆕 Style pour la liste des groupes cliquables === */
+/* =========================
+   🆕 LISTE DES GROUPES CLIQUABLES
+   ========================= */
+.group-item {
+    cursor: pointer;           /* Affiche la petite main au survol */
+    padding: 10px 12px;        /* Espacement pour faire un joli bouton */
+    border-radius: 8px;        /* Coins arrondis */
+    transition: all 0.2s ease; /* Animation douce */
+    list-style: none;          /* Enlève les puces (points noirs) */
+    margin-bottom: 6px;        /* Espace entre les groupes */
+    font-weight: 500;
+    color: #475569;            /* Couleur texte par défaut */
+    border: 1px solid transparent; /* Bordure invisible pour éviter le décalage au survol */
+}
+
+/* Au survol de la souris */
+.group-item:hover {
+    background-color: #eef2ff; /* Fond bleu très clair */
+    color: #1e66ff;            /* Texte bleu */
+    transform: translateX(5px); /* Petit décalage vers la droite */
+}
+
+/* Quand le groupe est sélectionné (Actif) */
+.group-item.active {
+    background-color: #1e66ff; /* Fond bleu foncé */
+    color: white;              /* Texte blanc */
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(30, 102, 255, 0.25); /* Ombre portée */
+}
 /* Conteneur du menu */
 .account-menu {
     position: relative;

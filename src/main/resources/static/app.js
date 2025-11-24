@@ -33,8 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (btnLogin) btnLogin.addEventListener("click", () => window.location.href = "login.html");
     if (btnLogout) btnLogout.addEventListener("click", logout);
-});
 
+});
 /*
    DÉCONNEXION
   */
@@ -159,14 +159,40 @@ async function renderUserGroupes() {
         return;
     }
 
-    list.innerHTML = "<ul>" +
-        currentUser.groupes.map(g => `<li>${g.nom}</li>`).join("") +
+    list.innerHTML = "<ul style='padding:0;'>" +
+        currentUser.groupes.map((g, index) => `
+            <li class="group-item ${index === 0 ? 'active' : ''}" 
+                onclick="changerGroupeActif(${g.id}, this)">
+                ${g.nom}
+            </li>
+        `).join("") +
         "</ul>";
 
     if (selectPost) {
         selectPost.innerHTML = currentUser.groupes
             .map(g => `<option value="${g.id}">${g.nom}</option>`)
             .join("");
+    }
+}
+/**
+ * 🆕 Fonction déclenchée au clic sur un groupe
+ * @param {number} groupeId - L'ID du groupe cliqué
+ * @param {HTMLElement} element - L'élément HTML cliqué (pour gérer le style active)
+ */
+async function changerGroupeActif(groupeId, element) {
+    // 1. Gestion visuelle : Retirer la classe 'active' des autres et l'ajouter ici
+    document.querySelectorAll('.group-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    element.classList.add('active');
+
+    // 2. Charger le fil d'actualité de ce groupe
+    await renderFeedPosts(groupeId);
+
+    // 3. (Optionnel) Mettre à jour le selecteur "Publier dans" pour correspondre au groupe vu
+    const selectPost = document.getElementById("select-my-groupes-post");
+    if(selectPost) {
+        selectPost.value = groupeId;
     }
 }
 
