@@ -5,7 +5,14 @@ body {
     margin: 0;
     color: #222;
 }
-
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.logo-text strong {
+    color: #0066ff;
+}
 .navbar {
     display: flex;
     justify-content: space-between;
