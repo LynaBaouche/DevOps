@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Messagerie Privée – EtudLife</title>
+    <link rel="stylesheet" href="messages.css">
+</head>
+<body>
+<header>
+    <div class="logo">💻 <strong>EtudLife</strong></div>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="upload.html">Documents</a>
+        <a class="active" href="messages.html">Messages</a>
+        <a href="groupes.html">Groupes</a>
+        <a href="profil.html">Profil</a>
+    </nav>
+    <button class="compte">Mon compte</button>
+</header>
+
+<main class="messagerie">
+    <section class="conversations">
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Rechercher une conversation...">
+        </div>
+
+        <ul id="conversationList">
+            <!-- Liste des conversations -->
+        </ul>
+    </section>
+
+    <section class="chat">
+        <div class="chat-header" id="chatHeader">
+            <span class="contact-nom">Sélectionnez une conversation</span>
+            <small id="contactStatut"></small>
+        </div>
+
+        <div class="messages" id="messagesContainer">
+            <p class="placeholder">Aucune conversation ouverte.</p>
+        </div>
+
+        <form id="messageForm" class="chat-input">
+            <textarea id="messageInput" placeholder="Tapez votre message..." maxlength="500"></textarea>
+            <button type="submit">➤</button>
+        </form>
+    </section>
+</main>
+
+<script src="messages.js"></script>
+</body>
+</html>

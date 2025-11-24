@@ -180,6 +180,30 @@
             font-weight: bold;
             color: #666;
         }
+
+        .documents-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.doc-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn-download {
+    display: inline-block;
+    margin-top: 10px;
+    background: #4f46e5;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
     </style>
 </head>
 
@@ -214,10 +238,11 @@
         <div class="format-card"><span>📃</span>TXT<br><small>Textes simples</small></div>
     </div>
 
-    <div class="document-list" id="documentList">
+    <div class="document-list">
         <h3>Documents partagés</h3>
-        <p id="empty-msg">Aucun document pour l’instant.</p>
+        <div id="documentsList"></div>
     </div>
+
 </div>
 
 <!-- Fenêtre modale d’upload -->
@@ -236,128 +261,72 @@
 </div>
 
 <script>
-
     const API_BASE_URL = "http://localhost:8080/api";
 
-    // ouvrir / fermer modale
+    // Ouvrir / fermer modale
     const modal = document.getElementById("modalUpload");
     document.getElementById("btn-open-upload").onclick = () => modal.style.display = "flex";
     document.getElementById("closeModal").onclick = () => modal.style.display = "none";
 
-    // --- Charger les documents existants ---
-    async function loadDocuments() {
-        const list = document.getElementById("documentList");
-        const msg = document.getElementById("empty-msg");
-        list.querySelectorAll(".doc-item").forEach(el => el.remove());
-
-        const res = await fetch(API_BASE_URL + "/documents/by-uploader/1");
-        if (!res.ok) return;
-        const docs = await res.json();
-        if (docs.length === 0) {
-            msg.style.display = "block";
-            return;
-        }
-        msg.style.display = "none";
-
-        docs.forEach(doc => {
-            const div = document.createElement("div");
-            div.className = "doc-item";
-            div.innerHTML = `
-          <div class="doc-meta">
-            <strong>${doc.originalFilename || doc.nom}</strong><br>
-            <small>${doc.contentType || doc.type} - ${(doc.sizeBytes/1024).toFixed(1)} Ko</small>
-          </div>
-          <div class="doc-actions">
-            <a href="${API_BASE_URL}/documents/${doc.id}" download>
-              <button title="Télécharger">⬇️</button>
-            </a>
-            <button title="Supprimer" onclick="deleteDocument(${doc.id})">🗑️</button>
-          </div>
-        `;
-            list.appendChild(div);
-        });
-    }
-
-    // --- Upload d’un document ---
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const file = document.getElementById("file").files[0];
-        const uploaderId = document.getElementById("uploaderId").value || 1;
-        const groupId = document.getElementById("groupId").value;
-        const result = document.getElementById("uploadResult");
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("uploaderId", uploaderId);
-        if (groupId) formData.append("groupId", groupId);
+    // Charger les documents
+    async function chargerDocuments() {
+        const container = document.getElementById("documentsList");
+        container.innerHTML = "<p>Chargement...</p>";
 
         try {
-            const response = await fetch(API_BASE_URL + "/documents/upload", { method: "POST", body: formData });
-            if (!response.ok) throw new Error("Échec de l’envoi");
-            result.innerHTML = "✅ Document ajouté avec succès.";
-            await loadDocuments();
+            const res = await fetch(API_BASE_URL + "/documents");
+            const docs = await res.json();
+
+            if (!docs || docs.length === 0) {
+                container.innerHTML = "<p>Aucun document pour l'instant.</p>";
+                return;
+            }
+
+            container.innerHTML = docs.map(doc => `
+                <div class="doc-card">
+                    <p><strong>${doc.nom}</strong></p>
+                    <p>Type : ${doc.type}</p>
+                    <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
+
+                    <a href="${API_BASE_URL}/documents/file/${doc.id}"
+                       class="btn-download" target="_blank">
+                        Télécharger
+                    </a>
+                </div>
+            `).join("");
+
         } catch (err) {
-            result.innerHTML = "❌ " + err.message;
+            console.error("Erreur chargement docs :", err);
+            container.innerHTML = "<p>Erreur de chargement.</p>";
+        }
+    }
+
+    // Upload d’un document
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch(API_BASE_URL + "/documents/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("Upload échoué");
+
+            alert("Document ajouté avec succès !");
+            modal.style.display = "none";
+            chargerDocuments();
+
+        } catch (err) {
+            alert("Erreur : " + err.message);
         }
     });
 
-    async function deleteDocument(id) {
-        if (!confirm("Supprimer ce document ?")) return;
-        await fetch(API_BASE_URL + "/documents/" + id, { method: "DELETE" });
-        await loadDocuments();
-    }
-
-    loadDocuments();
-
-    async function chargerDocuments() {
-    const listeDiv = document.querySelector("#liste-documents");
-    listeDiv.innerHTML = "<p>Chargement...</p>";
-
-    try {
-        const response = await fetch("http://localhost:8080/api/documents");
-        const docs = await response.json();
-
-        if (docs.length === 0) {
-            listeDiv.innerHTML = "<p>Aucun document pour l'instant.</p>";
-            return;
-        }
-
-        listeDiv.innerHTML = docs.map(d => `
-            <div class="doc-item">
-                <strong>${d.nom}</strong><br>
-                <span>${(d.taille / 1024).toFixed(1)} Ko</span><br>
-                <small>${new Date(d.dateUpload).toLocaleString()}</small>
-            </div>
-        `).join("");
-    } catch (err) {
-        listeDiv.innerHTML = "<p>Erreur de chargement des documents.</p>";
-        console.error(err);
-    }
-}
-
-// Recharger automatiquement après un upload réussi
-document.querySelector("form#uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-
-    const response = await fetch("http://localhost:8080/api/documents/upload", {
-        method: "POST",
-        body: formData
-    });
-
-    if (response.ok) {
-        alert("Document ajouté avec succès !");
-        chargerDocuments();
-    } else {
-        alert("Erreur lors de l'envoi du fichier !");
-    }
-});
-
-// Charger dès l'ouverture de la page
-chargerDocuments();
-
-
+    // Charger la liste au démarrage
+    document.addEventListener("DOMContentLoaded", chargerDocuments);
 </script>
+/*/
 </body>
 </html>
