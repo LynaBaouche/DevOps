@@ -1,13 +1,9 @@
-/* =========================
-   🌟 STYLE GLOBAL AGENDA
-   ========================= */
+
 body {
     background: #f8f9fc;
 }
 
-/* =========================
-   📄 PAGE
-   ========================= */
+
 .agenda-container {
     width: 90%;
     max-width: 1200px;
@@ -18,16 +14,13 @@ body {
     margin-bottom: 20px;
 }
 
-/* Deux colonnes : agenda + sidebar */
+
 .content-wrapper {
     display: flex;
     gap: 20px;
     align-items: flex-start;
 }
 
-/* =========================
-   📅 AGENDA (colonne gauche)
-   ========================= */
 #agenda {
     flex: 3;
     background: white;
@@ -132,9 +125,7 @@ body {
     border-left: 4px solid #10b981;
 }
 
-/* =========================
-   📌 SIDEBAR (droite)
-   ========================= */
+
 .sidebar {
     flex: 1;
     display: flex;

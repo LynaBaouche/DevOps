@@ -45,7 +45,7 @@ function logout() {
 }
 
 /*
-   🔑 CONNEXION (login.html)
+   CONNEXION (login.html)
     */
 document.addEventListener("DOMContentLoaded", () => {
     const formLogin = document.getElementById("loginForm");
@@ -96,9 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-/* ============================
-   👤 AFFICHAGE DU PROFIL
-   ============================ */
+/*  AFFICHAGE DU PROFIL*/
 async function afficherProfil() {
     const homepage = document.getElementById("homepage-content");
     const appContainer = document.getElementById("app-container");
@@ -113,9 +111,9 @@ async function afficherProfil() {
     await loadApplicationData();
 }
 
-/* ============================
-   🧩 CHARGEMENT DES DONNÉES
-   ============================ */
+/*
+    CHARGEMENT DES DONNÉES
+ */
 async function loadApplicationData() {
     if (!currentUser) return;
 
@@ -129,14 +127,14 @@ async function loadApplicationData() {
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
     } catch (e) {
-        console.error("❌ Erreur chargement données :", e);
+        console.error(" Erreur chargement données :", e);
     }
 }
 
 
-/* ============================
-   🧍 PROFIL UTILISATEUR
-   ============================ */
+/*
+    PROFIL UTILISATEUR
+   */
 async function renderUserProfile() {
     const profile = document.getElementById("user-profile");
     if (!profile) return;
@@ -146,9 +144,9 @@ async function renderUserProfile() {
     `;
 }
 
-/* ============================
-   👥 MES GROUPES
-   ============================ */
+/*
+    MES GROUPES
+   */
 async function renderUserGroupes() {
     const list = document.getElementById("user-groupes");
     const selectPost = document.getElementById("select-my-groupes-post");
@@ -175,7 +173,7 @@ async function renderUserGroupes() {
     }
 }
 /**
- * 🆕 Fonction déclenchée au clic sur un groupe
+ *  Fonction déclenchée au clic sur un groupe
  * @param {number} groupeId - L'ID du groupe cliqué
  * @param {HTMLElement} element - L'élément HTML cliqué (pour gérer le style active)
  */
@@ -196,9 +194,9 @@ async function changerGroupeActif(groupeId, element) {
     }
 }
 
-/* ============================
-   🌍 TOUS LES GROUPES
-   ============================ */
+/*
+    TOUS LES GROUPES
+ */
 async function renderAllGroupesList() {
     const select = document.getElementById("select-all-groupes");
     if (!select) return;
@@ -219,9 +217,8 @@ async function renderAllGroupesList() {
     }
 }
 
-/* ============================
-   📰 FIL D'ACTUALITÉ
-   ============================ */
+/*  FIL D'ACTUALITÉ
+*/
 async function renderFeedPosts(groupeId) {
     const feed = document.getElementById("feed-posts");
     if (!feed) return;
@@ -248,13 +245,12 @@ async function renderFeedPosts(groupeId) {
         `).join("");
     } catch (err) {
         feed.innerHTML = "<p>Erreur chargement des posts.</p>";
-        console.error("❌ Erreur posts :", err);
+        console.error(" Erreur posts :", err);
     }
 }
 
-/* ============================
-   🔍 RECHERCHER UN COMPTE + AJOUTER AUX PROCHES
-   ============================ */
+/*  RECHERCHER UN COMPTE + AJOUTER AUX PROCHES
+ */
 document.addEventListener("DOMContentLoaded", () => {
     const formSearch = document.getElementById("form-search-compte");
     if (!formSearch) return;
@@ -273,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error("Aucun compte trouvé");
             const data = await res.json();
 
-            // ✅ Affichage du profil trouvé avec bouton "Ajouter"
+            //  Affichage du profil trouvé avec bouton "Ajouter"
             resultDiv.innerHTML = `
                 <div class="result">
                     <div>
@@ -285,27 +281,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
-            // ✅ Gestion du clic sur "Ajouter"
+            //  Gestion du clic sur "Ajouter"
             document.getElementById("btn-add-friend").addEventListener("click", async () => {
                 try {
                     const resAdd = await fetch(`${API_BASE_URL}/liens?idSource=${currentUser.id}&idCible=${data.id}`, {
                         method: "POST"
                     });
                     if (!resAdd.ok) throw new Error("Erreur lors de l'ajout");
-                    alert(`${data.prenom} ${data.nom} a été ajouté à vos proches ✅`);
+                    alert(`${data.prenom} ${data.nom} a été ajouté à vos proches `);
                     await afficherProches();
                 } catch (err) {
-                    alert("❌ Impossible d'ajouter cette personne : " + err.message);
+                    alert(" Impossible d'ajouter cette personne : " + err.message);
                 }
             });
         } catch (err) {
-            resultDiv.innerHTML = "<p style='color:red;'>❌ Aucun compte trouvé.</p>";
+            resultDiv.innerHTML = "<p style='color:red;'> Aucun compte trouvé.</p>";
         }
     });
 });
-/* ============================
-   🤝 AFFICHER MES PROCHES
-   ============================ */
+/* AFFICHER MES PROCHES
+ */
 async function afficherProches() {
     const prochesDiv = document.getElementById("user-proches");
     if (!prochesDiv || !currentUser) return;
@@ -330,9 +325,8 @@ async function afficherProches() {
         console.error(err);
     }
 }
-/* ============================
-   ➕ REJOINDRE UN GROUPE
-   ============================ */
+/*  REJOINDRE UN GROUPE
+ */
 document.addEventListener("DOMContentLoaded", () => {
     const formJoin = document.getElementById("form-join-groupe");
     if (!formJoin) return;
@@ -354,17 +348,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             if (!res.ok) throw new Error("Erreur lors de l’ajout au groupe");
 
-            alert("✅ Groupe rejoint avec succès !");
+            alert(" Groupe rejoint avec succès !");
             await rafraichirGroupes(); // 🔄 Met à jour les listes de groupes
         } catch (err) {
-            alert("❌ Impossible de rejoindre le groupe : " + err.message);
+            alert(" Impossible de rejoindre le groupe : " + err.message);
         }
     });
 });
 
-/* ============================
-   🔄 RAFRAÎCHIR LISTE DES GROUPES
-   ============================ */
+/*  RAFRAÎCHIR LISTE DES GROUPES
+    */
 async function rafraichirGroupes() {
     try {
         // Récupère le compte mis à jour depuis le backend
@@ -375,12 +368,11 @@ async function rafraichirGroupes() {
         await renderUserGroupes();
         await renderAllGroupesList();
     } catch (err) {
-        console.error("❌ Erreur de mise à jour des groupes :", err);
+        console.error(" Erreur de mise à jour des groupes :", err);
     }
 }
-/* ============================
-   📝 PUBLIER UN POST
-   ============================ */
+/* PUBLIER UN POST
+ */
 document.addEventListener("DOMContentLoaded", () => {
     const formPost = document.getElementById("form-create-post");
     if (!formPost) return;
@@ -392,11 +384,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const groupeId = document.getElementById("select-my-groupes-post").value;
 
         if (!contenu) {
-            alert("⚠️ Veuillez écrire quelque chose avant de publier.");
+            alert(" Veuillez écrire quelque chose avant de publier.");
             return;
         }
         if (!groupeId) {
-            alert("⚠️ Sélectionne un groupe dans lequel publier.");
+            alert(" Sélectionne un groupe dans lequel publier.");
             return;
         }
 
@@ -416,20 +408,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error("Erreur lors de la publication");
 
             document.getElementById("post-contenu").value = "";
-            alert("✅ Publication réussie !");
+            alert(" Publication réussie !");
 
-            // 🔄 Rafraîchit le fil d’actualité du groupe choisi
+            //  Rafraîchit le fil d’actualité du groupe choisi
             await renderFeedPosts(groupeId);
 
         } catch (err) {
-            alert("❌ Impossible de publier : " + err.message);
+            alert(" Impossible de publier : " + err.message);
         }
     });
 });
 
-/* ============================
-   🔧 UTILITAIRE FETCH
-   ============================ */
+/* UTILITAIRE FETCH
+  */
 async function fetchApi(endpoint, options = {}) {
     const response = await fetch(API_BASE_URL + endpoint, options);
     if (!response.ok) throw new Error(`Erreur API (${response.status})`);
@@ -437,9 +428,9 @@ async function fetchApi(endpoint, options = {}) {
 }
 
 
-/* ======================================================
-   📅 AGENDA — Intégré au backend EtudLife
-   ====================================================== */
+/*
+   AGENDA — Intégré au backend EtudLife
+    */
 document.addEventListener("DOMContentLoaded", async () => {
     // Si on est sur la page Agenda.html
     if (window.location.pathname.endsWith("Agenda.html")) {
@@ -469,13 +460,13 @@ async function initAgendaPage() {
     await afficherAgenda();
 
 }
-/* 🔹 Ouvre / ferme la popup */
+/* Ouvre / ferme la popup */
 function togglePopup(show) {
     const popup = document.getElementById("popup");
     if (popup) popup.classList.toggle("hidden", !show);
 }
 
-/* 🔹 Charge le calendrier du mois courant */
+/* Charge le calendrier du mois courant */
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 
@@ -485,13 +476,13 @@ async function afficherAgenda() {
 
     grid.innerHTML = "";
 
-    // 📅 Noms des mois
+    //  Noms des mois
     const monthNames = [
         "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
         "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
     ];
 
-    // 🏷️ Met à jour le titre du mois
+    // 🏷Met à jour le titre du mois
     document.getElementById("month-title").textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
     // Récupère le premier jour du mois
@@ -501,24 +492,24 @@ async function afficherAgenda() {
     // Correction pour commencer le lundi (par défaut JS commence dimanche=0)
     const startIndex = firstDay === 0 ? 6 : firstDay - 1;
 
-    // 🔹 Récupère les événements depuis le backend (ou le cache)
+    // Récupère les événements depuis le backend (ou le cache)
     const events = await fetchEvents();
 
-    // 🔲 1. Cases vides avant le 1er jour du mois (padding)
+
     for (let i = 0; i < startIndex; i++) {
         const emptyDiv = document.createElement("div");
         emptyDiv.className = "day empty";
         grid.appendChild(emptyDiv);
     }
 
-    // 📆 2. Ajoute les jours du mois
+
     for (let d = 1; d <= daysInMonth; d++) {
-        // ✅ C'est ici que c'était manquant : Création de la case jour
+
         const div = document.createElement("div");
         div.className = "day";
         div.innerHTML = `<strong>${d}</strong>`; // Affiche le numéro du jour
 
-        // Filtre les événements pour ce jour 'd'
+
         const todayEvents = allEventsCache.filter(ev => {
             const date = new Date(ev.dateDebut);
             const isSameDay = date.getDate() === d && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
@@ -554,7 +545,7 @@ async function afficherAgenda() {
 
     renderToday(events);
 
-    // 🎯 Réattache les événements aux boutons (important si le DOM a changé)
+    // Réattache les événements aux boutons (important si le DOM a changé)
     document.getElementById("prevMonth").onclick = () => changeMonth(-1);
     document.getElementById("nextMonth").onclick = () => changeMonth(1);
 }
@@ -571,7 +562,7 @@ function changeMonth(offset) {
     afficherAgenda();
 }
 
-/* 🔹 Récupère les événements depuis le backend */
+/*  Récupère les événements depuis le backend */
 async function fetchEvents() {
     try {
         const res = await fetch(`${API_BASE_URL}/evenements/shared/${currentUser.id}`);
@@ -584,7 +575,7 @@ async function fetchEvents() {
     }
 }
 
-/* 🔹 Ajout d’un nouvel événement */
+/*  Ajout d’un nouvel événement */
 async function saveEvent(e) {
     e.preventDefault();
 
@@ -633,7 +624,7 @@ function renderToday(events) {
         list.appendChild(li);
     });
 }
-/* 📝 INSCRIPTION (inscreption.html) */
+/* INSCRIPTION (inscreption.html) */
 document.addEventListener("DOMContentLoaded", () => {
     const formRegister = document.getElementById("inscreptionForm");
     if (!formRegister) return;  // si on n’est pas sur la page inscreption, on ne fait rien
@@ -653,7 +644,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let valid = true;
 
-        // ✅ Prénom / Nom
+        //  Prénom / Nom
         if (prenom.length < 2) {
             document.getElementById("prenomError").textContent = "Prénom invalide.";
             valid = false;
@@ -663,28 +654,28 @@ document.addEventListener("DOMContentLoaded", () => {
             valid = false;
         }
 
-        // ✅ Email parisnanterre
+        //  Email parisnanterre
         if (!email.endsWith("@parisnanterre.fr")) {
             document.getElementById("emailError").textContent =
                 "Utilisez une adresse @parisnanterre.fr";
             valid = false;
         }
 
-        // ✅ Mot de passe : 10 caractères mini + 1 chiffre
+        //  Mot de passe : 10 caractères mini + 1 chiffre
         if (password.length < 10 || !/\d/.test(password)) {
             document.getElementById("passwordError").textContent =
                 "Au moins 10 caractères dont 1 chiffre.";
             valid = false;
         }
 
-        // ✅ Confirmation mot de passe
+        // Confirmation mot de passe
         if (password !== confirmPassword) {
             document.getElementById("confirmError").textContent =
                 "Les mots de passe ne correspondent pas.";
             valid = false;
         }
 
-        // ✅ Conditions
+        // Conditions
         if (!conditions) {
             alert("Vous devez accepter les conditions d’utilisation.");
             valid = false;
@@ -692,7 +683,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!valid) return;
 
-        // 🔗 Envoi au backend
+        //  Envoi au backend
         try {
             const res = await fetch(`${API_BASE_URL}/comptes`, {
                 method: "POST",
@@ -701,7 +692,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     prenom,
                     nom,
                     email,
-                    motDePasse: password   // ⚠ champ identique au modèle Compte.java
+                    motDePasse: password
                 })
             });
 
@@ -713,14 +704,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             alert("🎉 Inscription réussie ! Vous pouvez maintenant vous connecter.");
-            window.location.href = "login.html"; // ✅ redirection vers connexion
+            window.location.href = "login.html";
 
         } catch (err) {
             alert("Erreur lors de l'inscription : " + err.message);
         }
     });
 });
-/* 🆕 Génère la liste des proches avec Checkbox */
+/* Génère la liste des proches avec Checkbox */
 async function chargerProchesSidebar() {
     const container = document.getElementById("proches-list-agenda");
     if (!container) return;
@@ -760,7 +751,7 @@ async function chargerProchesSidebar() {
                 } else {
                     selectedProchesIds.delete(ami.id);
                 }
-                // 🔄 On rafraîchit l'agenda sans recharger la page
+                // On rafraîchit l'agenda sans recharger la page
                 afficherAgenda();
             });
 
