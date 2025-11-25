@@ -252,8 +252,6 @@
         <h3>📎 Ajouter un document</h3>
         <form id="uploadForm">
             <input type="file" id="file" name="file" required>
-            <input type="number" id="uploaderId" name="uploaderId" placeholder="ID étudiant (optionnel)">
-            <input type="number" id="groupId" name="groupId" placeholder="ID groupe (optionnel)">
             <button type="submit">Téléverser</button>
         </form>
         <div id="uploadResult"></div>
@@ -282,18 +280,14 @@
                 return;
             }
 
-            container.innerHTML = docs.map(doc => `
-                <div class="doc-card">
-                    <p><strong>${doc.nom}</strong></p>
-                    <p>Type : ${doc.type}</p>
-                    <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
+container.innerHTML = docs.map(doc => `
+    <div class="doc-card">
+        <p><strong>${doc.nom}</strong></p>
+        <p>Type : ${doc.type}</p>
+        <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
+    </div>
+`).join("");
 
-                    <a href="${API_BASE_URL}/documents/file/${doc.id}"
-                       class="btn-download" target="_blank">
-                        Télécharger
-                    </a>
-                </div>
-            `).join("");
 
         } catch (err) {
             console.error("Erreur chargement docs :", err);
@@ -303,30 +297,47 @@
 
     // Upload d’un document
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const formData = new FormData(e.target);
+    const formData = new FormData(e.target);
+    const result = document.getElementById("uploadResult");
 
-        try {
-            const response = await fetch(API_BASE_URL + "/documents/upload", {
-                method: "POST",
-                body: formData
-            });
+    try {
+        const response = await fetch(API_BASE_URL + "/documents/upload", {
+            method: "POST",
+            body: formData
+        });
 
-            if (!response.ok) throw new Error("Upload échoué");
+        const text = await response.text();
 
-            alert("Document ajouté avec succès !");
-            modal.style.display = "none";
-            chargerDocuments();
-
-        } catch (err) {
-            alert("Erreur : " + err.message);
+        if (!response.ok) {
+            result.innerHTML = "❌ " + text;
+            return;
         }
-    });
+
+        result.innerHTML = "✅ Document ajouté avec succès !";
+        modal.style.display = "none";
+        chargerDocuments();
+
+    } catch (err) {
+        result.innerHTML = "❌ Erreur serveur";
+    }
+});
+
 
     // Charger la liste au démarrage
     document.addEventListener("DOMContentLoaded", chargerDocuments);
+
+    // Vérifier la connexion
+//const connectedUser = localStorage.getItem("userId");
+const connectedUser = JSON.parse(localStorage.getItem("utilisateur"));
+
+if (!connectedUser) {
+    alert("Vous devez être connecté pour accéder aux documents.");
+    window.location.href = "login.html";
+}
+
 </script>
-/*/
+
 </body>
 </html>

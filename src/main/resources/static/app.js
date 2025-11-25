@@ -86,6 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const user = JSON.parse(text);
             localStorage.setItem("utilisateur", JSON.stringify(user));
+            localStorage.setItem("userId", user.id);
+
+
 
             alert("✅ Connexion réussie !");
             window.location.href = "index.html";
