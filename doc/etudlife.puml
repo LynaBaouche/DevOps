@@ -1,0 +1,108 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+
+' ===========================
+'         CLASSES
+' ===========================
+
+class Annonce {
+    +id : bigint <<PK>>
+    auteur : varchar(255)
+    categorie : varchar(255)
+    date_publication : varchar(255)
+    description : varchar(255)
+    image : varchar(255)
+    prix : varchar(255)
+    titre : varchar(255)
+    ville : varchar(255)
+}
+
+class Compte {
+    +id : bigint <<PK>>
+    nom : varchar(255)
+    prenom : varchar(255)
+    email : varchar(255) <<UNIQUE>>
+    mot_de_passe : varchar(255)
+}
+
+class Document {
+    +id : bigint <<PK>>
+    nom : varchar(255)
+    type : varchar(255)
+    taille : bigint
+    date_upload : datetime
+    chemin : varchar(255)
+    uploader_id : bigint <<FK>>
+    group_id : bigint <<FK>>
+}
+
+class Evenement {
+    +id : bigint <<PK>>
+    titre : varchar(255)
+    description : varchar(255)
+    date_debut : datetime
+    date_fin : datetime
+    couleur : varchar(255)
+    compte_id : bigint <<FK>>
+}
+
+class Groupe {
+    +id : bigint <<PK>>
+    nom : varchar(255)
+    description : varchar(255)
+}
+
+class GroupeMembres {
+    +groupe_id : bigint <<PK>> <<FK>>
+    +compte_id : bigint <<PK>> <<FK>>
+}
+
+class Lien {
+    +id : bigint <<PK>>
+    date_creation : datetime
+    compte_source_id : bigint <<FK>>
+    compte_cible_id : bigint <<FK>>
+}
+
+class Messages {
+    +id : bigint <<PK>>
+    conversation_id : bigint
+    sender_id : bigint
+    content : text
+    timestamp : datetime
+}
+
+class Post {
+    +id : bigint <<PK>>
+    contenu : text
+    date_creation : datetime
+    auteur_id : bigint <<FK>>
+    groupe_id : bigint <<FK>>
+}
+
+' ===========================
+'         RELATIONS
+' ===========================
+
+' ---- Document relations
+Compte "1" --> "0..*" Document : uploader_id
+Groupe "1" --> "0..*" Document : group_id
+
+' ---- Evenement belongs to Compte
+Compte "1" --> "0..*" Evenement
+
+' ---- Groupe membres (N-N)
+Compte "0..*" -- "0..*" Groupe : membres
+GroupeMembres .. Compte
+GroupeMembres .. Groupe
+
+' ---- Post relations
+Compte "1" --> "0..*" Post : auteur
+Groupe "1" --> "0..*" Post : posts
+
+' ---- Lien (self-referential Compte)
+Compte "1" --> "0..*" Lien : source (compte_source_id)
+Compte "1" --> "0..*" Lien : cible (compte_cible_id)
+
+@enduml

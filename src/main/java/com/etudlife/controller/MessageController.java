@@ -24,11 +24,11 @@ public class MessageController {
             @RequestBody MessageRequestDTO request) {
 
         // ** TODO: Remplacer 123L par l'ID de l'utilisateur authentifié réel **
-        Long authenticatedUserId = 123L;
-
-        if (!authenticatedUserId.equals(request.getSenderId())) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403
-        }
+//        Long authenticatedUserId = 123L;
+//
+//        if (!authenticatedUserId.equals(request.getSenderId())) {
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403
+//        }
 
         Message newMessage = messageService.saveNewMessage(
                 conversationId,
