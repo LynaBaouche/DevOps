@@ -57,10 +57,17 @@
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
 
-                <a href="login.html" class="menu-item">Se connecter</a>
-                <a href="inscription.html" class="menu-item">Créer un compte</a>
+                <a href="index.html?profil=true" class="menu-item connected-only" id="btn-profil">Profil</a>
+
+
+                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="inscreption.html" class="menu-item disconnected-only">Créer un compte</a>
+
                 <a href="#" class="menu-item">Aide</a>
+
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
             </div>
+
         </div>
 
     </div>
@@ -164,16 +171,7 @@
             title.textContent = user.prenom + " " + user.nom;
             subtitle.textContent = user.email;
 
-            // Ajouter bouton déconnexion
-            const logout = document.createElement("a");
-            logout.className = "menu-item";
-            logout.textContent = "Se déconnecter";
-            logout.addEventListener("click", () => {
-                localStorage.removeItem("utilisateur");
-                window.location.href = "index.html";
-            });
 
-            menu.appendChild(logout);
         }
     });
 </script>

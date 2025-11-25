@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petites Annonces | EtudLife</title>
+    <link rel="stylesheet" href="/Annonce/annonces.css">
+    <script defer src="/Annonce/annonces.js"></script>
+</head>
+
+<body class="page-annonces">
+
+<h1 class="title">Petites Annonces</h1>
+<p class="subtitle">Logements, cours particuliers, emplois et services pour étudiants</p>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Rechercher une annonce...">
+</div>
+
+<div class="filters">
+    <button data-cat="toutes" class="filter active">Toutes</button>
+    <button data-cat="logement" class="filter">Logement</button>
+    <button data-cat="cours" class="filter">Cours particuliers</button>
+    <button data-cat="emploi" class="filter">Emplois</button>
+    <button data-cat="service" class="filter">Services</button>
+    <button data-cat="objet" class="filter">Objets</button>
+</div>
+
+<div id="stats" class="stats-boxes"></div>
+
+<div id="annonces-list" class="annonces-grid"></div>
+
+</body>
+</html>

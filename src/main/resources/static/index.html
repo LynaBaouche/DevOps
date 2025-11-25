@@ -32,7 +32,8 @@
             <a href="#">Bibliothèque</a>
             <a href="#">Campus</a>
             <a href="#">Restaurant</a>
-            <a href="#">Annonces</a>
+            <a href="/Annonce/annonces.html">Annonces</a>
+
             <a href="#">Messages</a>
             <a href="#">Rechercher</a>
         </nav>
@@ -47,10 +48,15 @@
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
 
-                <a href="login.html" class="menu-item">Se connecter</a>
-                <a href="inscription.html" class="menu-item">Créer un compte</a>
+                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+
+                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="inscreption.html" class="menu-item disconnected-only">Créer un compte</a>
                 <a href="#" class="menu-item">Aide</a>
+
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
             </div>
+
         </div>
 
     </div>
@@ -77,11 +83,9 @@
             <div class="features-grid">
 
                 <div class="feature-card">
-                    <a href="groupes.html" style="text-decoration: none; color: inherit; display: block; height: 100%;">
-                        <span class="icon">👥</span>
-                        <h3>Groupes d'étude</h3>
-                        <p>Créez ou rejoignez des groupes selon vos matières et centres d'intérêt.</p>
-                    </a>
+                    <span class="icon">👥</span>
+                    <h3>Groupes d'étude</h3>
+                    <p>Créez ou rejoignez des groupes selon vos matières et centres d'intérêt.</p>
                 </div>
 
                 <div class="feature-card">
@@ -128,7 +132,7 @@
 
     <aside class="col-left">
         <h3>Mon Profil</h3>
-        <div id="modern-user-profile" class="card"></div>
+        <div id="user-profile" class="card"></div>
 
         <h3>Mes Proches</h3>
         <div id="user-proches" class="card"></div>
@@ -193,25 +197,13 @@
         const user = JSON.parse(localStorage.getItem("utilisateur"));
 
         if (user) {
-            // Mettre le prénom + nom OU l'email
+            // Mise à jour nom + email dans le menu
             menuTitle.textContent = user.prenom + " " + user.nom;
             menuSubtitle.textContent = user.email;
-
-            // Ajoute l'entrée "Déconnexion"
-            const dropdown = document.getElementById("dropdown-menu");
-            const logoutBtn = document.createElement("a");
-            logoutBtn.className = "menu-item";
-            logoutBtn.textContent = "Se déconnecter";
-
-            logoutBtn.addEventListener("click", () => {
-                localStorage.removeItem("utilisateur");
-                window.location.href = "index.html";
-            });
-
-            dropdown.appendChild(logoutBtn);
         }
     });
 </script>
+
 
 </body>
 

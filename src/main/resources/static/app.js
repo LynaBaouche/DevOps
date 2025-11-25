@@ -23,13 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Vérifie si connecté
     const user = JSON.parse(localStorage.getItem("utilisateur"));
-    const params = new URLSearchParams(window.location.search);
-    const justConnected = params.get("connected") === "true";
-
-    if (user && justConnected) {
+    if (user) {
         currentUser = user;
-        await afficherProfil();
+        // NE PAS appeler afficherProfil() ici !
     }
+
+
 
     if (btnLogin) btnLogin.addEventListener("click", () => window.location.href = "login.html");
     if (btnLogout) btnLogout.addEventListener("click", logout);
@@ -89,7 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("utilisateur", JSON.stringify(user));
 
             alert("✅ Connexion réussie !");
-            window.location.href = "index.html?connected=true";
+            window.location.href = "index.html";
+
         } catch (err) {
             document.getElementById("passwordError").textContent = "Erreur réseau : " + err.message;
         }
@@ -820,3 +820,45 @@ async function chargerProchesSidebar() {
         console.error("Erreur chargement proches agenda", err);
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    const connectedItems = document.querySelectorAll(".connected-only");
+    const disconnectedItems = document.querySelectorAll(".disconnected-only");
+
+    const homepage = document.getElementById("homepage-content");
+    const appContainer = document.getElementById("app-container");
+
+    if (user) {
+        // Afficher le menu connecté
+        connectedItems.forEach(el => el.style.display = "block");
+        disconnectedItems.forEach(el => el.style.display = "none");
+
+        // Afficher nom + email
+        document.querySelector(".menu-title").textContent = user.prenom + " " + user.nom;
+        document.querySelector(".menu-subtitle").textContent = user.email;
+
+        // ----- ⚡ BOUTON PROFIL -----
+        const btnProfil = document.getElementById("btn-profil");
+        btnProfil.addEventListener("click", async () => {
+
+            homepage.style.display = "none";     // cacher accueil
+            appContainer.style.display = "grid"; // montrer profil
+
+            currentUser = user;
+            await afficherProfil(); // 🔥 charge groupes, proches, posts, etc.
+        });
+
+        // ----- ❌ Déconnexion -----
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem("utilisateur");
+            window.location.href = "index.html";
+        });
+
+    } else {
+        // Afficher mode non connecté
+        connectedItems.forEach(el => el.style.display = "none");
+        disconnectedItems.forEach(el => el.style.display = "block");
+    }
+});
