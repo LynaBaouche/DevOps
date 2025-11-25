@@ -2,7 +2,8 @@
 
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/LynaBaouche/DevOps/releases)
-
+[![Java CI with Gradle](https://github.com/LynaBaouche/DevOps/actions/workflows/gradle.yml/badge.svg)](https://github.com/LynaBaouche/DevOps/actions/workflows/gradle.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=LynaBaouche_DevOps&metric=alert_status)](https://sonarcloud.io/dashboard?id=LynaBaouche_DevOps)
 > **Votre plateforme étudiante** — Centralisation des outils de vie universitaire : agenda partagé, groupes de travail, réseau social et partage de documents.
 
 ---
