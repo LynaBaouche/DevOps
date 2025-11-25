@@ -122,6 +122,7 @@ async function loadApplicationData() {
         currentUser = allUsers.find(u => u.id === currentUser.id);
 
         await renderUserProfile();
+        await renderModernUserProfile();// 🆕 Nouveau profil (groupes.html)
         await afficherProches();   //
         await renderUserGroupes();
         await renderAllGroupesList();
@@ -130,7 +131,38 @@ async function loadApplicationData() {
         console.error(" Erreur chargement données :", e);
     }
 }
+/* ============================
+   👤 RENDU PROFIL MODERNE (Pour la page Groupes)
+   ============================ */
+async function renderModernUserProfile() {
+    const container = document.getElementById("modern-user-profile");
+    if (!container) return; // On n'est pas sur la page groupes.html
 
+    container.innerHTML = `
+        <div class="profile-card-modern">
+            <div class="profile-header-bg"></div>
+            
+            <div class="profile-avatar-container">
+                <img src="images/compte.png" alt="Avatar" class="profile-avatar-modern">
+            </div>
+
+            <div class="profile-info-modern">
+                <div class="profile-name">${currentUser.prenom} ${currentUser.nom}</div>
+                <div class="profile-role">Étudiant(e)</div>
+
+                <div class="profile-detail">
+                    <span>📧</span> ${currentUser.email}
+                </div>
+
+                <div class="profile-detail">
+                    <span>🆔</span> N° Étudiant : ${currentUser.id}
+                </div>
+
+                <button class="btn-edit-profile">Modifier le profil</button>
+            </div>
+        </div>
+    `;
+}
 
 /*
     PROFIL UTILISATEUR
@@ -426,7 +458,33 @@ async function fetchApi(endpoint, options = {}) {
     if (!response.ok) throw new Error(`Erreur API (${response.status})`);
     return await response.json();
 }
+/* ======================================================
+   👥 PAGE GROUPES - Initialisation spécifique
+   ====================================================== */
+document.addEventListener("DOMContentLoaded", async () => {
+    // On vérifie si on est sur la page groupes.html
+    if (window.location.pathname.endsWith("groupes.html")) {
 
+        // 1. Vérification de sécurité
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            window.location.href = "login.html"; // Pas connecté ? Dehors !
+            return;
+        }
+        currentUser = user;
+
+        // 2. Afficher la page (enlever le display: none)
+        const appContainer = document.getElementById("app-container");
+        if (appContainer) appContainer.style.display = "grid"; // On affiche la grille
+
+        // 3. Activer le bouton déconnexion du header
+        const btnLogout = document.getElementById("btn-logout");
+        if (btnLogout) btnLogout.addEventListener("click", logout);
+
+        // 4. Charger les données (C'est ça qui va afficher le profil et les groupes)
+        await loadApplicationData();
+    }
+});
 
 /*
    AGENDA — Intégré au backend EtudLife
@@ -624,7 +682,7 @@ function renderToday(events) {
         list.appendChild(li);
     });
 }
-/* INSCRIPTION (inscreption.html) */
+/* INSCRIPTION (inscription.html) */
 document.addEventListener("DOMContentLoaded", () => {
     const formRegister = document.getElementById("inscreptionForm");
     if (!formRegister) return;  // si on n’est pas sur la page inscreption, on ne fait rien
