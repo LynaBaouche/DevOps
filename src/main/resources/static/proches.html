@@ -61,32 +61,23 @@
         <h3>Mon Profil</h3>
         <div id="modern-user-profile" class="card"></div>
 
-        <h3>Mes Proches</h3>
-        <div id="user-proches" class="card"></div>
+
     </aside>
 
     <section class="col-main">
-        <h3>Mes Groupes</h3>
-        <div id="user-groupes" class="card"></div>
+        <h3>Rechercher un Compte</h3>
+        <form id="form-search-compte" class="card">
+            <input type="text" id="search-nom" placeholder="Nom" required>
+            <input type="text" id="search-prenom" placeholder="Prénom" required>
+            <button type="submit">Rechercher</button>
+            <div id="search-results"></div>
+        </form>
 
-        <h3>Fil d'actualité</h3>
-        <div id="feed-posts" class="card"></div>
     </section>
 
     <aside class="col-right">
-        <h3>Rejoindre un Groupe</h3>
-        <form id="form-join-groupe" class="card">
-            <select id="select-all-groupes"></select>
-            <button type="submit">Rejoindre</button>
-        </form>
-
-        <h3>Publier un Post</h3>
-        <form id="form-create-post" class="card">
-            <textarea id="post-contenu" placeholder="Écrivez quelque chose..." required></textarea>
-            <label>Publier dans :</label>
-            <select id="select-my-groupes-post" required></select>
-            <button type="submit">Publier</button>
-        </form>
+        <h3>Mes Proches</h3>
+        <div id="user-proches" class="card"></div>
     </aside>
 
 </main>

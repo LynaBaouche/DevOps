@@ -820,6 +820,33 @@ async function chargerProchesSidebar() {
         console.error("Erreur chargement proches agenda", err);
     }
 }
+/* ======================================================
+   👥 PAGE Proches - Initialisation spécifique
+   ====================================================== */
+document.addEventListener("DOMContentLoaded", async () => {
+    // On vérifie si on est sur la page groupes.html
+    if (window.location.pathname.endsWith("proches.html")) {
+
+        // 1. Vérification de sécurité
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            window.location.href = "login.html"; // Pas connecté ? Dehors !
+            return;
+        }
+        currentUser = user;
+
+        // 2. Afficher la page (enlever le display: none)
+        const appContainer = document.getElementById("app-container");
+        if (appContainer) appContainer.style.display = "grid"; // On affiche la grille
+
+        // 3. Activer le bouton déconnexion du header
+        const btnLogout = document.getElementById("btn-logout");
+        if (btnLogout) btnLogout.addEventListener("click", logout);
+
+        // 4. Charger les données (C'est ça qui va afficher le profil et les groupes)
+        await loadApplicationData();
+    }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 
