@@ -47,12 +47,15 @@
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
 
-                <a href="login.html" class="menu-item">Se connecter</a>
-                <a href="inscription.html" class="menu-item">Créer un compte</a>
+                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+
+                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="inscription.html" class="menu-item disconnected-only">Créer un compte</a>
                 <a href="#" class="menu-item">Aide</a>
+
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
             </div>
         </div>
-
     </div>
 </header>
 <main id="app-container" class="container app-layout" style="display: none;">
@@ -92,50 +95,6 @@
 </main>
 
 <script src="app.js"></script>
-<script>
-    const icon = document.getElementById("account-icon");
-    const menu = document.getElementById("dropdown-menu");
-
-    icon.addEventListener("click", () => {
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-    });
-
-    // Fermer quand on clique ailleurs
-    document.addEventListener("click", (e) => {
-        if (!icon.contains(e.target) && !menu.contains(e.target)) {
-            menu.style.display = "none";
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const menuTitle = document.querySelector(".menu-title");
-        const menuSubtitle = document.querySelector(".menu-subtitle");
-
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
-
-        if (user) {
-            // Mettre le prénom + nom OU l'email
-            menuTitle.textContent = user.prenom + " " + user.nom;
-            menuSubtitle.textContent = user.email;
-
-            // Ajoute l'entrée "Déconnexion"
-            const dropdown = document.getElementById("dropdown-menu");
-            const logoutBtn = document.createElement("a");
-            logoutBtn.className = "menu-item";
-            logoutBtn.textContent = "Se déconnecter";
-
-            logoutBtn.addEventListener("click", () => {
-                localStorage.removeItem("utilisateur");
-                window.location.href = "index.html";
-            });
-
-            dropdown.appendChild(logoutBtn);
-        }
-    });
-</script>
-
 </body>
 
 
