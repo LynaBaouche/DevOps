@@ -270,18 +270,19 @@
     </div>
 
     <div class="formats">
-        <div class="format-card"><span>📄</span>PDF<br><small>Documents PDF</small></div>
-        <div class="format-card"><span>📝</span>DOCX<br><small>Documents Word</small></div>
-        <div class="format-card"><span>📊</span>PPTX<br><small>Présentations</small></div>
-        <div class="format-card"><span>🧩</span>JSON<br><small>Données JSON</small></div>
-        <div class="format-card"><span>🗜️</span>ZIP<br><small>Archives</small></div>
-        <div class="format-card"><span>📃</span>TXT<br><small>Textes simples</small></div>
+        <div class="format-card" data-type="pdf"><span>📄</span>PDF<br><small>Documents PDF</small></div>
+        <div class="format-card" data-type="docx"><span>📝</span>DOCX<br><small>Documents Word</small></div>
+        <div class="format-card" data-type="pptx"><span>📊</span>PPTX<br><small>Présentations</small></div>
+        <div class="format-card" data-type="json"><span>🧩</span>JSON<br><small>Données JSON</small></div>
+        <div class="format-card" data-type="zip"><span>🗜️</span>ZIP<br><small>Archives</small></div>
+        <div class="format-card" data-type="txt"><span>📃</span>TXT<br><small>Textes simples</small></div>
     </div>
 
     <div class="document-list">
         <h3>Documents partagés</h3>
         <div id="documentsList"></div>
     </div>
+    <button onclick="chargerDocuments()">Tous les documents</button>
 
 </div>
 
@@ -307,40 +308,71 @@
     document.getElementById("closeModal").onclick = () => modal.style.display = "none";
 
     // Charger les documents
-    async function chargerDocuments() {
-        const container = document.getElementById("documentsList");
-        container.innerHTML = "<p>Chargement...</p>";
+async function chargerDocuments(filterExt = null) {
+    const container = document.getElementById("documentsList");
+    container.innerHTML = "<p>Chargement...</p>";
 
-        try {
-            const res = await fetch(API_BASE_URL + "/documents");
-            const docs = await res.json();
+    try {
+        const res = await fetch(API_BASE_URL + "/documents");
+        let docs = await res.json();
 
-            if (!docs || docs.length === 0) {
-                container.innerHTML = "<p>Aucun document pour l'instant.</p>";
-                return;
-            }
-
-container.innerHTML = docs.map(doc => `
-    <div class="doc-card">
-        <p><strong>${doc.nom}</strong></p>
-        <p>Type : ${doc.type}</p>
-        <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
-    </div>
-`).join("");
-
-
-        } catch (err) {
-            console.error("Erreur chargement docs :", err);
-            container.innerHTML = "<p>Erreur de chargement.</p>";
+        // 🎯 Appliquer le filtre par extension
+        if (filterExt) {
+            docs = docs.filter(doc => doc.nom.toLowerCase().endsWith("." + filterExt));
         }
+
+        if (!docs || docs.length === 0) {
+            container.innerHTML = "<p>Aucun document trouvé.</p>";
+            return;
+        }
+
+        container.innerHTML = docs.map(doc => `
+            <div class="doc-card">
+                <p><strong>${doc.nom}</strong></p>
+                <p>Type : ${doc.type}</p>
+                <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
+            </div>
+        `).join("");
+
+    } catch (err) {
+        console.error("Erreur chargement docs :", err);
+        container.innerHTML = "<p>Erreur de chargement.</p>";
     }
+}
+
 
     // Upload d’un document
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
+    const fileInput = document.getElementById("file");
+    const file = fileInput.files[0];
     const result = document.getElementById("uploadResult");
+
+    if (!file) {
+        result.innerHTML = "❌ Aucun fichier sélectionné.";
+        return;
+    }
+
+    // 🚫 Vérifier la taille (max 20 Mo)
+    const MAX_SIZE = 20 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+        result.innerHTML = "❌ Fichier trop volumineux (max 20 Mo).";
+        return;
+    }
+
+    // 🚫 Vérifier l’extension interdite (.exe)
+    const forbiddenExtensions = [".exe"];
+    const fileName = file.name.toLowerCase();
+
+    if (forbiddenExtensions.some(ext => fileName.endsWith(ext))) {
+        result.innerHTML = "❌ Type de fichier non autorisé (.exe).";
+        return;
+    }
+
+    // 🟦 Tout est OK → on envoie
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
         const response = await fetch(API_BASE_URL + "/documents/upload", {
@@ -365,6 +397,7 @@ container.innerHTML = docs.map(doc => `
 });
 
 
+
     // Charger la liste au démarrage
     document.addEventListener("DOMContentLoaded", chargerDocuments);
 
@@ -376,6 +409,14 @@ if (!connectedUser) {
     alert("Vous devez être connecté pour accéder aux documents.");
     window.location.href = "login.html";
 }
+
+    document.querySelectorAll(".format-card").forEach(card => {
+    card.addEventListener("click", () => {
+        const type = card.getAttribute("data-type");
+        chargerDocuments(type);
+    });
+});
+
 
 </script>
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ConversationService {
@@ -26,6 +27,14 @@ public class ConversationService {
         // Option la plus simple et la plus rapide :
         // Si la liste ne contient que des projections, on renvoie la projection.
         // Vous devez changer la signature du contrôleur pour qu'il retourne List<ConversationPreviewProjection>
-        return (List<ConversationPreviewDTO>)(List<?>) projections;
+        return projections.stream()
+                .map(p -> new ConversationPreviewDTO(
+                        p.getConversationId(),
+                        p.getContactId(), // 🔑 Maintenant disponible
+                        p.getContactName(),
+                        p.getLastMessageContent(),
+                        p.getLastMessageTimestamp()
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -31,27 +31,32 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query(value =
             "SELECT " +
                     "   m.conversation_id AS conversationId, " +
+                    // 🔑 1. NOUVEAU: Le Contact ID doit être en 2ème position (pour correspondre au DTO)
+                    "   (CASE " +
+                    "        WHEN m.sender_id = :userId THEN m.receiver_id " +
+                    "        ELSE m.sender_id " +
+                    "    END) AS contactId, " +
+                    // 2. Le Nom du Contact doit être en 3ème position
                     "   CONCAT(c_contact.prenom, ' ', c_contact.nom) AS contactName, " +
                     "   m.content AS lastMessageContent, " +
                     "   m.timestamp AS lastMessageTimestamp " +
                     "FROM messages m " +
 
-                    // 1. Jointure avec le CONTACT (c_contact) : Utilisation de CASE WHEN pour trouver l'autre ID
-                    //    LEFT JOIN est utilisé pour la tolérance en cas d'ID NULL.
+                    // Jointure avec le CONTACT (c_contact) : Utilisation de CASE WHEN pour trouver l'autre ID
                     "LEFT JOIN compte c_contact ON c_contact.id = (" +
                     "    CASE " +
-                    "        WHEN m.sender_id = :userId THEN m.receiver_id " + // Si j'ai envoyé, le contact est le destinataire
-                    "        ELSE m.sender_id " + // Si l'autre a envoyé, le contact est l'expéditeur
+                    "        WHEN m.sender_id = :userId THEN m.receiver_id " +
+                    "        ELSE m.sender_id " +
                     "    END" +
                     ") " +
 
-                    // 2. Filtre: S'assurer que le message est le dernier de sa conversation (MAX TIMESTAMP)
+                    // Filtre: MAX TIMESTAMP
                     "WHERE m.timestamp = (" +
                     "   SELECT MAX(m2.timestamp) FROM messages m2 " +
                     "   WHERE m2.conversation_id = m.conversation_id" +
                     ") " +
 
-                    // 3. Filtre: S'assurer que l'utilisateur participe à la conversation (et la conversation est binaire)
+                    // Filtre: Participation de l'utilisateur
                     "AND m.conversation_id IN (" +
                     "   SELECT DISTINCT m1.conversation_id FROM messages m1 WHERE m1.sender_id = :userId OR m1.receiver_id = :userId" +
                     ") " +
