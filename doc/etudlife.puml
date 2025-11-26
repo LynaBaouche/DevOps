@@ -71,6 +71,7 @@ class Messages {
     sender_id : bigint
     content : text
     timestamp : datetime
+    receiver_id : bigint
 }
 
 class Post {
