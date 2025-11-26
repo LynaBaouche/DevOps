@@ -1,4 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    const connectedItems = document.querySelectorAll(".connected-only");
+    const disconnectedItems = document.querySelectorAll(".disconnected-only");
+
+    const homepage = document.getElementById("homepage-content");
+    const appContainer = document.getElementById("app-container");
+
+    if (user) {
+        // Afficher le menu connecté
+        connectedItems.forEach(el => el.style.display = "block");
+        disconnectedItems.forEach(el => el.style.display = "none");
+
+        // Afficher nom + email
+        document.querySelector(".menu-title").textContent = user.prenom + " " + user.nom;
+        document.querySelector(".menu-subtitle").textContent = user.email;
+
+        // ----- ⚡ BOUTON PROFIL -----
+        const btnProfil = document.getElementById("btn-profil");
+        btnProfil.addEventListener("click", async () => {
+
+            homepage.style.display = "none";     // cacher accueil
+            appContainer.style.display = "grid"; // montrer profil
+
+            currentUser = user;
+            await afficherProfil(); // 🔥 charge groupes, proches, posts, etc.
+        });
+
+        // ----- ❌ Déconnexion -----
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem("utilisateur");
+            window.location.href = "index.html";
+        });
+
+    } else {
+        // Afficher mode non connecté
+        connectedItems.forEach(el => el.style.display = "none");
+        disconnectedItems.forEach(el => el.style.display = "block");
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
     const conversationList = document.getElementById("conversationList");
     const messagesContainer = document.getElementById("messagesContainer");
     const chatHeaderNom = document.querySelector(".contact-nom");
@@ -9,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================================
     // 🔑 GESTION DE L'UTILISATEUR ACTUEL (DYNAMIQUE)
     // =========================================================
-
+    // ... (Logique utilisateur inchangée) ...
     const user = JSON.parse(localStorage.getItem("utilisateur"));
     let CURRENT_USER_ID = null;
 
@@ -28,9 +70,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let activeConversationId = null;
     let activeConversationNom = null;
+    let activeContactId = null;
     let conversationsData = [];
 
-    // Fonction de formatage de la date pour le séparateur (Aujourd'hui, Hier, Date Complète)
+    // --- Fonctions d'aide (Utilitaire) ---
+
     function formatDateSeparator(isoTimestamp) {
         if (!isoTimestamp) return "Date Inconnue";
 
@@ -58,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Formatage de l'heure (HH:MM)
     function formatIsoTime(isoTimestamp) {
         if (typeof isoTimestamp !== 'string' || !isoTimestamp) {
             return "Maintenant";
@@ -82,141 +125,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // =========================================================
-    // 1. CHARGEMENT ET AFFICHAGE DES CONVERSATIONS (API)
-    // =========================================================
-
-    function loadConversations() {
-        if (!CURRENT_USER_ID) return;
-
-        fetch(`/api/conversations`, {
-            method: 'GET',
-            headers: {
-                // 🔑 Envoi de l'ID de l'utilisateur dans le header pour l'API
-                'X-User-ID': CURRENT_USER_ID,
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    // Gérer le cas où l'utilisateur n'est pas autorisé (401)
-                    if (response.status === 401) throw new Error("Accès non autorisé. Vérifiez l'ID utilisateur.");
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                conversationsData = data;
-                displayConversations(conversationsData);
-            })
-            .catch(error => {
-                console.error("Erreur API Conversations:", error);
-                conversationList.innerHTML = `<li>Erreur de chargement des conversations: ${error.message}</li>`;
-            });
-    }
-
-    // Affichage des aperçus
-    function displayConversations(convs) {
-        if (convs.length === 0) {
-            conversationList.innerHTML = `<li>Vous n'avez aucune conversation.</li>`;
-            return;
-        }
-
-        // 🔑 ÉTAPE CRITIQUE : Filtrer les doublons par conversationId
-        const uniqueConversations = [];
-        const seenIds = new Set();
-
-        convs.forEach(conv => {
-            // Seuls les ID non encore vus sont ajoutés
-            if (!seenIds.has(conv.conversationId)) {
-                seenIds.add(conv.conversationId);
-                uniqueConversations.push(conv);
-            }
-        });
-        // Note: Comme l'API trie déjà par DESC, on garde le premier message trouvé (le plus récent)
-
-        const convsToDisplay = uniqueConversations;
-
-        // Trié par l'API DESC, donc l'ordre est correct
-        conversationList.innerHTML = convsToDisplay.map(conv => { // ⬅️ Utilise la liste filtrée
-            const lastTimeFormatted = formatIsoTime(conv.lastMessageTimestamp);
-
-            // Tronquer le contenu pour l'aperçu
-            const previewContent = conv.lastMessageContent ?
-                (conv.lastMessageContent.length > 30 ? conv.lastMessageContent.substring(0, 30) + '...' : conv.lastMessageContent) :
-                "Nouvelle conversation";
-
-            return `
-                <li class="conversation-item" data-id="${conv.conversationId}" onclick="window.openConversation(${conv.conversationId}, '${conv.contactName}')">
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.contactName ? conv.contactName.split(' ')[0] : 'default'}" />
-                  <div>
-                    <strong>${conv.contactName || 'Utilisateur inconnu'}</strong><br>
-                    <small>${previewContent}</small>
-                  </div>
-                  <span class="heure">${lastTimeFormatted}</span>
-                </li>
-            `;
-        }).join("");
-    }
+    // --- Fonction d'affichage UI (Doit être définie tôt) ---
 
     // =========================================================
-    // 2. OUVERTURE CONVERSATION & CHARGEMENT MESSAGES (GET)
+    // 3. AFFICHAGE DES MESSAGES DANS LE CHAT
     // =========================================================
-
-    window.openConversation = function (conversationId, conversationNom) {
-        if (!CURRENT_USER_ID) {
-            alert("Veuillez vous connecter pour voir les messages.");
-            return;
-        }
-
-        activeConversationId = conversationId;
-        activeConversationNom = conversationNom;
-
-        chatHeaderNom.textContent = conversationNom;
-        chatHeaderStatut.textContent = "Chargement...";
-        messagesContainer.innerHTML = '<p class="placeholder">Chargement des messages...</p>';
-
-        document.querySelectorAll('.conversation-item').forEach(li => {
-            li.classList.remove('active');
-        });
-        document.querySelector(`.conversation-item[data-id="${conversationId}"]`).classList.add('active');
-
-
-        fetch(`/api/conversations/${conversationId}/messages`, {
-            method: 'GET',
-            headers: {
-                // 🔑 Envoi de l'ID de l'utilisateur dans le header
-                'X-User-ID': CURRENT_USER_ID,
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(messages => {
-                displayMessages(messages);
-                chatHeaderStatut.textContent = "En ligne";
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            })
-            .catch(error => {
-                console.error("Erreur lors du chargement des messages:", error);
-                chatHeaderStatut.textContent = "Erreur de chargement";
-                messagesContainer.innerHTML = `<p class="placeholder error">Impossible de charger les messages: ${error.message}.</p>`;
-            });
-    };
-
-    // =========================================================
-    // 3. AFFICHAGE D'UNE LISTE DE MESSAGES (AVEC SÉPARATEUR DE DATE)
-    // =========================================================
-
     function displayMessages(messages) {
         if (messages.length === 0) {
             messagesContainer.innerHTML = '<p class="placeholder">Commencez la conversation !</p>';
             return;
         }
 
-        // Tri (Sécurité) : le plus ancien en premier (ASC) - doit être fait par l'API
         messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
         let messagesHTML = '';
@@ -225,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         messages.forEach(msg => {
             const currentMessageDate = new Date(msg.timestamp).toLocaleDateString('fr-FR');
 
-            // LOGIQUE DE SÉPARATEUR DE DATE
             if (currentMessageDate !== lastDate) {
                 const dateLabel = formatDateSeparator(msg.timestamp);
 
@@ -249,60 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messagesContainer.innerHTML = messagesHTML;
     }
 
-    // =========================================================
-    // 4. GESTION DE L'ENVOI DE MESSAGE (POST)
-    // =========================================================
-
-    messageForm.addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        if (!CURRENT_USER_ID || activeConversationId === null) {
-            alert("Opération impossible, veuillez vous connecter et sélectionner une conversation.");
-            return;
-        }
-
-        const content = messageInput.value.trim();
-        if (content === "") {
-            return;
-        }
-
-        const messageData = {
-            // Note: senderId est transmis dans le body mais ignoré par l'API
-            // (L'API utilise le X-User-ID du Header pour la sécurité)
-            senderId: CURRENT_USER_ID,
-            content: content
-        };
-
-        fetch(`/api/conversations/${activeConversationId}/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // 🔑 Envoi de l'ID de l'utilisateur dans le header
-                'X-User-ID': CURRENT_USER_ID,
-            },
-            body: JSON.stringify(messageData),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(`Erreur ${response.status}: ${err.message || 'Échec de l\'envoi'}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(newMessage => {
-                appendNewMessage(newMessage);
-                messageInput.value = "";
-                messageInput.focus();
-
-                // 🔑 Rafraîchir la liste pour mettre l'aperçu à jour
-                loadConversations();
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'envoi du message:", error);
-                alert("Erreur lors de l'envoi : " + error.message);
-            });
-    });
+    // --- Fonctions d'état (Logique) ---
 
     // =========================================================
     // 5. AJOUTER UN MESSAGE (APRÈS ENVOI) À L'UI
@@ -316,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const isSent = msg.senderId === CURRENT_USER_ID;
         const typeClass = isSent ? "sent" : "received";
-        const timeString = formatIsoTime(msg.timestamp);
+        const timeString = msg.timestamp ? formatIsoTime(msg.timestamp) : formatIsoTime(new Date().toISOString());
 
         const messageHTML = `
             <div class="message ${typeClass}">
@@ -328,6 +193,213 @@ document.addEventListener("DOMContentLoaded", () => {
         messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+
+    // =========================================================
+    // 1.1 AFFICHAGE DES APERÇUS
+    // =========================================================
+
+    function displayConversations(convs) {
+        if (convs.length === 0) {
+            conversationList.innerHTML = `<li>Vous n'avez aucune conversation.</li>`;
+            return;
+        }
+
+        const uniqueConversations = [];
+        const seenIds = new Set();
+
+        convs.forEach(conv => {
+            if (!seenIds.has(conv.conversationId)) {
+                seenIds.add(conv.conversationId);
+                uniqueConversations.push(conv);
+            }
+        });
+
+        const convsToDisplay = uniqueConversations;
+
+        conversationList.innerHTML = convsToDisplay.map(conv => {
+            const lastTimeFormatted = formatIsoTime(conv.lastMessageTimestamp);
+
+            const previewContent = conv.lastMessageContent ?
+                (conv.lastMessageContent.length > 30 ? conv.lastMessageContent.substring(0, 30) + '...' : conv.lastMessageContent) :
+                "Nouvelle conversation";
+
+            const contactIdForClick = conv.contactId || 'null';
+
+            return `
+                <li class="conversation-item" 
+                    data-id="${conv.conversationId}" 
+                    onclick="window.openConversation(${conv.conversationId}, '${conv.contactName}', ${contactIdForClick})"> 
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.contactName ? conv.contactName.split(' ')[0] : 'default'}" />
+                  <div>
+                    <strong>${conv.contactName || 'Utilisateur inconnu'}</strong><br>
+                    <small>${previewContent}</small>
+                  </div>
+                  <span class="heure">${lastTimeFormatted}</span>
+                </li>
+            `;
+        }).join("");
+    }
+
+    // =========================================================
+    // 1. CHARGEMENT DES CONVERSATIONS (API)
+    // =========================================================
+
+    function loadConversations() {
+        if (!CURRENT_USER_ID) return;
+
+        fetch(`/api/conversations`, {
+            method: 'GET',
+            headers: {
+                'X-User-ID': CURRENT_USER_ID,
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) throw new Error("Accès non autorisé.");
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                conversationsData = data;
+                displayConversations(conversationsData);
+            })
+            .catch(error => {
+                console.error("Erreur API Conversations:", error);
+                conversationList.innerHTML = `<li>Erreur de chargement des conversations: ${error.message}</li>`;
+            });
+    }
+
+    // =========================================================
+    // 2. OUVERTURE CONVERSATION (FONCTION GLOBALE ACCESSIBLE PAR ONCLICK)
+    // =========================================================
+
+    window.openConversation = function (conversationId, conversationNom, contactId) {
+        if (!CURRENT_USER_ID) {
+            alert("Veuillez vous connecter pour voir les messages.");
+            return;
+        }
+
+        activeConversationId = conversationId;
+        activeConversationNom = conversationNom;
+        activeContactId = contactId;
+
+        chatHeaderNom.textContent = conversationNom;
+        chatHeaderStatut.textContent = "Chargement...";
+        messagesContainer.innerHTML = '<p class="placeholder">Chargement des messages...</p>';
+
+        document.querySelectorAll('.conversation-item').forEach(li => {
+            li.classList.remove('active');
+        });
+        const selectedItem = document.querySelector(`.conversation-item[data-id="${conversationId}"]`);
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+
+
+        fetch(`/api/conversations/${conversationId}/messages`, {
+            method: 'GET',
+            headers: {
+                'X-User-ID': CURRENT_USER_ID,
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(messages => {
+                displayMessages(messages);
+                chatHeaderStatut.textContent = "En ligne";
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des messages:", error);
+                chatHeaderStatut.textContent = "Erreur de chargement";
+                messagesContainer.innerHTML = `<p class="placeholder error">Impossible de charger les messages: ${error.message}.</p>`;
+            });
+    };
+
+    // =========================================================
+    // 4. GESTION DE L'ENVOI DE MESSAGE (POST)
+    // =========================================================
+
+    // 🔑 NOUVEL ÉCOUTEUR D'ÉVÉNEMENT POUR LA TOUCHE ENTRÉE
+    messageInput.addEventListener("keyup", function(event) {
+        // Soumet le formulaire si la touche est 'Enter' (code 13 ou 'key')
+        // mais pas si la touche Shift est également enfoncée (pour les sauts de ligne)
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Empêche l'ajout d'une nouvelle ligne dans le textarea
+            messageForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+    });
+
+
+    messageForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        if (!CURRENT_USER_ID || activeConversationId === null) {
+            alert("Opération impossible, veuillez vous connecter et sélectionner une conversation.");
+            return;
+        }
+
+        if (activeContactId === null || activeContactId === undefined) {
+            alert("Erreur: ID du destinataire inconnu. Cliquez sur une conversation.");
+            return;
+        }
+
+        // ⚠️ Nettoyage : On remplace les sauts de ligne créés par le textarea par des espaces (ou les laisser, selon le besoin de l'API)
+        // Mais il est important de nettoyer les espaces avant/après.
+        const content = messageInput.value.trim();
+        if (content === "") {
+            return;
+        }
+
+        const messageData = {
+            senderId: CURRENT_USER_ID,
+            receiverId: activeContactId,
+            content: content
+        };
+
+        fetch(`/api/conversations/${activeConversationId}/messages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': CURRENT_USER_ID,
+            },
+            body: JSON.stringify(messageData),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(`Erreur ${response.status}: ${err.message || JSON.stringify(err)}`);
+                    }).catch(() => {
+                        throw new Error(`Erreur HTTP ${response.status}. Vérifiez les logs API.`);
+                    });
+                }
+
+                const contentType = response.headers.get("content-type");
+                if (response.status === 201 && contentType && contentType.includes("application/json")) {
+                    return response.json();
+                } else {
+                    return {};
+                }
+            })
+            .then(newMessage => {
+                const messageToDisplay = Object.keys(newMessage).length > 0 ? newMessage : messageData;
+
+                appendNewMessage(messageToDisplay);
+                messageInput.value = "";
+                messageInput.focus();
+
+                loadConversations();
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'envoi du message:", error);
+                alert("Erreur lors de l'envoi : " + error.message);
+            });
+    });
 
     // 🔑 Démarrer l'application en chargeant les aperçus de conversation
     loadConversations();

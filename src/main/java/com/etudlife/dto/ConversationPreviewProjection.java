@@ -17,5 +17,7 @@ public interface ConversationPreviewProjection {
     // Doit correspondre à l'alias SQL 'lastMessageTimestamp' (votre champ 'timestamp')
     Instant getLastMessageTimestamp();
 
+    Long getContactId();
+
     // Note: Pas de setters, c'est une projection en lecture seule.
 }

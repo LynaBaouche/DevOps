@@ -5,12 +5,14 @@ import java.time.Instant;
 public class ConversationPreviewDTO {
     private Long conversationId;
     private String contactName;
+    private Long contactId;
     private String lastMessageContent;
     private Instant lastMessageTimestamp;
 
     // Constructeur pour le mapping du Repository
-    public ConversationPreviewDTO(Long conversationId, String contactName, String lastMessageContent, Instant lastMessageTimestamp) {
+    public ConversationPreviewDTO(Long conversationId, Long contactId, String contactName, String lastMessageContent, Instant lastMessageTimestamp) {
         this.conversationId = conversationId;
+        this.contactId = contactId; // 👈 AJOUTÉ
         this.contactName = contactName;
         this.lastMessageContent = lastMessageContent;
         this.lastMessageTimestamp = lastMessageTimestamp;
@@ -28,6 +30,12 @@ public class ConversationPreviewDTO {
     }
     public void setContactName(String contactName) {
         this.contactName = contactName;
+    }
+    public Long getContactId() {
+        return contactId;
+    }
+    public void setContactId(Long contactId) {
+        this.contactId = contactId;
     }
     public String getLastMessageContent() {
         return lastMessageContent;
