@@ -21,18 +21,20 @@ public class MessageController {
     @PostMapping
     public ResponseEntity<Message> sendMessage(
             @PathVariable Long conversationId,
-            @RequestBody MessageRequestDTO request) {
+            @RequestBody MessageRequestDTO request,
+            @RequestHeader(value = "X-User-ID", required = true) Long authenticatedUserId
+    ) {
+        Long receiverId = request.getReceiverId(); // ID du destinataire lu du body
 
-        // ** TODO: Remplacer 123L par l'ID de l'utilisateur authentifié réel **
-//        Long authenticatedUserId = 123L;
-//
-//        if (!authenticatedUserId.equals(request.getSenderId())) {
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403
-//        }
+        if (receiverId == null) {
+            // Si le receiverId est manquant, c'est une mauvaise requête
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
         Message newMessage = messageService.saveNewMessage(
                 conversationId,
-                request.getSenderId(),
+                authenticatedUserId,
+                receiverId,          // 🔑 Passé au service
                 request.getContent()
         );
 
@@ -53,4 +55,5 @@ public class MessageController {
             return messageService.getLatestMessages(conversationId);
         }
     }
+
 }

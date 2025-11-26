@@ -15,20 +15,27 @@ public class Message {
 
     private Long senderId;
 
+    // 🔑 NOUVEAU CHAMP : Destinataire du message
+    @Column(name = "receiver_id")
+    private Long receiverId;
+
     @Column(columnDefinition = "TEXT")
-    private String content; // Champ dont le getter manque
+    private String content;
 
     private Instant timestamp;
-
-    // --- CONSTRUCTEURS ---
 
     public Message() {
         this.timestamp = Instant.now();
     }
 
-    // --- GETTERS & SETTERS (nécessaires pour JPA et la sérialisation JSON) ---
+    // --- GETTERS & SETTERS (Seuls les nouveaux et modifiés sont montrés) ---
 
-    // ... (autres getters et setters) ...
+    public Long getSenderId() { return senderId; }
+    public void setSenderId(Long senderId) { this.senderId = senderId; }
+
+    // 🔑 GETTER/SETTER pour le ReceiverId
+    public Long getReceiverId() { return receiverId; }
+    public void setReceiverId(Long receiverId) { this.receiverId = receiverId; }
 
     public Long getConversationId() {
         return conversationId;
@@ -36,14 +43,6 @@ public class Message {
 
     public void setConversationId(Long conversationId) {
         this.conversationId = conversationId;
-    }
-
-    public Long getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(Long senderId) {
-        this.senderId = senderId;
     }
 
     // ⭐ LE GETTER MANQUANT QUI CORRIGE L'ERREUR DE SÉRIALISATION ⭐

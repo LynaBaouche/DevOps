@@ -1,8 +1,5 @@
 const API_BASE_URL = "http://localhost:8080/api";
 let currentUser = null;
-
-let referenceDate = new Date(); // La date qui sert de pivot (aujourd'hui par défaut)
-let currentView = "month";      // 'month' ou 'week'
 let allEventsCache = []; // Stocke tous les événements reçus du serveur
 let selectedProchesIds = new Set(); // Stocke les IDs des proches cochés
 

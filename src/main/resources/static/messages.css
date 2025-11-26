@@ -344,3 +344,21 @@ body {
   cursor: pointer;
   font-size: 16px;
 }
+
+/* Style pour la balise de séparation de date */
+.date-separator {
+    text-align: center;
+    margin: 15px 0;
+    line-height: 0;
+}
+
+.date-separator span {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #e0e0e0; /* Couleur d'arrière-plan claire */
+    color: #555;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
