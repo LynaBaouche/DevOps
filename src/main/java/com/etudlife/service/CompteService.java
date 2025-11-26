@@ -49,9 +49,8 @@ public class CompteService {
     }
 
     // === RECHERCHE PAR NOM ET PRÉNOM ===
-    public Compte trouverCompteParNomEtPrenom(String nom, String prenom) {
-        return compteRepository.findByNomAndPrenom(nom, prenom)
-                .orElseThrow(() -> new EntityNotFoundException("Compte non trouvé."));
+    public List<Compte> trouverCompteParNomEtPrenom(String nom, String prenom) {
+     return compteRepository.findAllByNomIgnoreCaseAndPrenomIgnoreCase(nom, prenom);
     }
 
     // === LISTE DES COMPTES ===

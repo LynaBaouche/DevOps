@@ -67,7 +67,7 @@ public class CompteController {
 
     // === CHERCHER PAR NOM / PRÉNOM ===
     @GetMapping("/search")
-    public Compte getCompteParNomEtPrenom(
+    public List<Compte> getCompteParNomEtPrenom(
             @RequestParam String nom,
             @RequestParam String prenom
     ) {

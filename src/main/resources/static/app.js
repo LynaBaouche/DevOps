@@ -298,34 +298,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const res = await fetch(`${API_BASE_URL}/comptes/search?nom=${nom}&prenom=${prenom}`);
-            if (!res.ok) throw new Error("Aucun compte trouvé");
-            const data = await res.json();
+            const results = await res.json();
 
-            //  Affichage du profil trouvé avec bouton "Ajouter"
-            resultDiv.innerHTML = `
-                <div class="result">
-                    <div>
-                        <p><strong>${data.prenom} ${data.nom}</strong></p>
-                        <p>Email : ${data.email}</p>
-                        <p>ID : ${data.id}</p>
-                    </div>
-                    <button id="btn-add-friend" data-id="${data.id}">Ajouter</button>
-                </div>
-            `;
+            if (results.length === 0) {
+                resultDiv.innerHTML = "<p>Aucun compte trouvé.</p>";
+                return;
+            }
 
-            //  Gestion du clic sur "Ajouter"
-            document.getElementById("btn-add-friend").addEventListener("click", async () => {
-                try {
-                    const resAdd = await fetch(`${API_BASE_URL}/liens?idSource=${currentUser.id}&idCible=${data.id}`, {
+            resultDiv.innerHTML = results.map(user => `
+    <div class="result">
+        <div>
+            <p><strong>${user.prenom} ${user.nom}</strong></p>
+            <p>${user.email}</p>
+            <p>ID : ${user.id}</p>
+        </div>
+        <button class="btn-add-friend" data-id="${user.id}">Ajouter</button>
+    </div>
+`).join("");
+
+            document.querySelectorAll(".btn-add-friend").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const cibleId = btn.dataset.id;
+
+                    const resAdd = await fetch(`${API_BASE_URL}/liens?idSource=${currentUser.id}&idCible=${cibleId}`, {
                         method: "POST"
                     });
-                    if (!resAdd.ok) throw new Error("Erreur lors de l'ajout");
-                    alert(`${data.prenom} ${data.nom} a été ajouté à vos proches `);
+
+                    alert("Proche ajouté !");
                     await afficherProches();
-                } catch (err) {
-                    alert(" Impossible d'ajouter cette personne : " + err.message);
-                }
+                });
             });
+
+
         } catch (err) {
             resultDiv.innerHTML = "<p style='color:red;'> Aucun compte trouvé.</p>";
         }
