@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bibliothèque – Disponibilité des Places</title>
+    <link rel="stylesheet" href="bibliotheque.css">
+
+    <link rel="stylesheet" href="bu.css">
+</head>
+
+<body>
+
+<!-- ========= NAVBAR EXISTANTE ========= -->
+<header>
+    <!-- ===== MENU BIBLIOTHÈQUE ===== -->
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <img src="etudlife.png" alt="logo">
+            <span>EtudLife</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" >Accueil</a></li>
+            <li><a href="/static/style.css">Agenda</a></li>
+            <li><a href="/static/Cours.html">Cours</a></li>
+            <li><a href="transports.html">Transports</a></li>
+            <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
+            <li><a href="/static/Campus.html">Campus</a></li>
+            <li><a href="/static/Restaurant.html">Restaurant</a></li>
+            <li><a href="/static/Annonce/annonces.html">Annonces</a></li>
+            <li><a href="/static/messages.html">Messages</a></li>
+        </ul>
+        <div class="profile"><img src="compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html" class="active">Catalogue</a>
+        <a href="emprunts.html">Mes Emprunts</a>
+        <a href="reservation.html">Réservations</a>
+        <a href="places.html">Réserver une Place</a>
+        <a href="services.html">Services</a>
+        <a href="notes.html">Notes</a>
+        <a href="transports.html">Transports</a>
+    </nav>
+</header>
+
+<!-- ========= CONTENU ========= -->
+
+<main class="page">
+
+    <h1 class="page-title">Disponibilité des places à la bibliothèque</h1>
+    <p class="page-subtitle">Affichage en temps réel du nombre de places libres par étage.</p>
+
+    <!-- BARRE DE RECHERCHE -->
+    <section class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher une salle, un étage, une zone…">
+        <select id="categorySelect">
+            <option value="all">Toutes les zones</option>
+            <option value="individuel">Travail individuel</option>
+            <option value="groupe">Travail en groupe</option>
+            <option value="silencieux">Silencieux</option>
+            <option value="info">Informatique</option>
+        </select>
+    </section>
+
+    <!-- STATISTIQUES -->
+    <section class="stats">
+        <span><strong id="totalPlaces">0</strong> places au total</span>
+        <span><strong id="totalDisponibles">0</strong> disponibles</span>
+        <span><strong id="totalOccupees">0</strong> occupées</span>
+        <span>Dernière mise à jour : <strong id="lastUpdateLabel">—</strong></span>
+    </section>
+
+    <!-- WIDGET GLOBAL -->
+    <section class="widget">
+        <h3>Taux d’occupation actuel</h3>
+        <div class="widget-content">
+            <div id="circle" class="circle">
+                <div class="circle-inner">
+                    <span id="percent">0%</span>
+                    <small>occupée</small>
+                </div>
+            </div>
+
+            <div class="widget-info">
+                <p id="libresInfo">Places libres : —</p>
+                <p id="occupeesInfo">Places occupées : —</p>
+                <p id="confortInfo">Estimation : —</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARTES -->
+    <section id="cards" class="cards"></section>
+
+</main>
+
+<script src="bibliotheque.js"></script>
+
+</body>
+</html>

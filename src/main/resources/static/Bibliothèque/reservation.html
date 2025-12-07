@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Réservations – Bibliothèque</title>
+    <link rel="stylesheet" href="bu.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <!-- header EtudLife -->
+    </nav>
+</header>
+
+<nav class="bu-submenu">
+    <a href="catalogue.html">Catalogue</a>
+    <a href="emprunts.html">Mes Emprunts</a>
+    <a href="reservation.html" class="active">Réservations</a>
+    <a href="places.html">Réserver une Place</a>
+    <a href="services.html">Services</a>
+    <a href="notes.html">Notes</a>
+    <a href="transports.html">Transports</a>
+</nav>
+
+<main class="page">
+    <h1 class="page-title">Mes Réservations</h1>
+
+    <section class="reservations-list">
+        <article class="reservation-card">
+            <img src="cover_ia.png" class="cover" alt="">
+            <div>
+                <h3>Intelligence Artificielle</h3>
+                <p class="author">Stuart Russell</p>
+                <p class="due red">Disponible le 20 Janvier 2024</p>
+            </div>
+            <button class="btn-cancel">Annuler</button>
+        </article>
+    </section>
+</main>
+
+<script>
+    document.querySelectorAll(".btn-cancel").forEach(btn => {
+    btn.addEventListener("click", () => {
+        if (confirm("Voulez-vous vraiment annuler cette réservation ?")) {
+            btn.closest(".reservation-card").remove();
+        }
+    });
+});
+
+</script>
+</body>
+</html>

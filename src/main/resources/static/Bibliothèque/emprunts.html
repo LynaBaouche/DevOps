@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Emprunts – Bibliothèque</title>
+    <link rel="stylesheet" href="bu.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <!-- header EtudLife -->
+    </nav>
+</header>
+
+<nav class="bu-submenu">
+    <a href="catalogue.html">Catalogue</a>
+    <a href="emprunts.html" class="active">Mes Emprunts</a>
+    <a href="reservation.html">Réservations</a>
+    <a href="places.html">Réserver une Place</a>
+    <a href="services.html">Services</a>
+    <a href="notes.html">Notes</a>
+    <a href="transports.html">Transports</a>
+</nav>
+
+<main class="page">
+    <h1 class="page-title">Mes Emprunts en Cours</h1>
+
+    <section class="borrow-list">
+        <article class="borrow-card">
+            <img src="cover_python.png" class="cover" alt="">
+            <div class="borrow-info">
+                <h3>Programmation Python</h3>
+                <p class="author">Mark Lutz</p>
+                <p class="due red">À rendre le 25 Janvier 2024</p>
+            </div>
+            <button class="btn-renew">Renouveler</button>
+        </article>
+
+        <article class="borrow-card">
+            <img src="cover_web.png" class="cover" alt="">
+            <div class="borrow-info">
+                <h3>Développement Web</h3>
+                <p class="author">Jon Duckett</p>
+                <p class="due red">À rendre le 2 Février 2024</p>
+            </div>
+            <button class="btn-renew">Renouveler</button>
+        </article>
+    </section>
+</main>
+
+<script>
+    document.querySelectorAll(".btn-renew").forEach(btn => {
+    btn.addEventListener("click", () => {
+        alert("Demande de renouvellement envoyée (simulation).");
+    });
+});
+
+</script>
+</body>
+</html>
