@@ -300,128 +300,122 @@
 </div>
 
 
+<script src="app.js"></script>
 
 <script>
-    const API_BASE_URL = "http://localhost:8080/api";
+    // 1. Vérifier la connexion (Sécurité)
+    const connectedUser = JSON.parse(localStorage.getItem("utilisateur"));
+    if (!connectedUser) {
+        alert("Vous devez être connecté pour accéder aux documents.");
+        window.location.href = "login.html";
+    }
 
-    // Ouvrir / fermer modale
+    // 2. Gestion de la Modale (Ouverture/Fermeture)
     const modal = document.getElementById("modalUpload");
-    document.getElementById("btn-open-upload").onclick = () => modal.style.display = "flex";
-    document.getElementById("closeModal").onclick = () => modal.style.display = "none";
+    const btnOpen = document.getElementById("btn-open-upload");
+    const spanClose = document.getElementById("closeModal");
 
-    // Charger les documents
-async function chargerDocuments(filterExt = null) {
-    const container = document.getElementById("documentsList");
-    container.innerHTML = "<p>Chargement...</p>";
-
-    try {
-        const res = await fetch(API_BASE_URL + "/documents");
-        let docs = await res.json();
-
-        // 🎯 Appliquer le filtre par extension
-        if (filterExt) {
-            docs = docs.filter(doc => doc.nom.toLowerCase().endsWith("." + filterExt));
+    if (btnOpen) {
+        btnOpen.onclick = () => modal.style.display = "flex";
+    }
+    if (spanClose) {
+        spanClose.onclick = () => modal.style.display = "none";
+    }
+    // Fermer en cliquant en dehors
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
         }
+    };
 
-        if (!docs || docs.length === 0) {
-            container.innerHTML = "<p>Aucun document trouvé.</p>";
-            return;
+    // 3. Charger la liste des documents
+    async function chargerDocuments() {
+        const container = document.getElementById("documentsList");
+        if (!container) return;
+
+        container.innerHTML = "<p>Chargement...</p>";
+
+        try {
+            // On utilise la variable API_BASE_URL venant de app.js
+            const res = await fetch(API_BASE_URL + "/documents");
+            const docs = await res.json();
+
+            if (!docs || docs.length === 0) {
+                container.innerHTML = "<p>Aucun document partagé pour l'instant.</p>";
+                return;
+            }
+
+            container.innerHTML = `<div class="documents-container">` +
+                docs.map(doc => `
+                <div class="doc-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">
+                        ${getIconForType(doc.type)}
+                    </div>
+                    <strong>${doc.nom}</strong>
+                    <p style="color:gray; font-size:0.9em;">
+                        ${(doc.taille / 1024).toFixed(1)} Ko • ${new Date(doc.dateUpload).toLocaleDateString()}
+                    </p>
+                    <a href="${API_BASE_URL}/documents/${doc.id}" class="btn-download" target="_blank">Télécharger</a>
+                </div>
+            `).join("") + `</div>`;
+
+        } catch (err) {
+            console.error("Erreur chargement docs :", err);
+            container.innerHTML = "<p style='color:red'>Erreur de chargement des documents.</p>";
         }
-
-        container.innerHTML = docs.map(doc => `
-            <div class="doc-card">
-                <p><strong>${doc.nom}</strong></p>
-                <p>Type : ${doc.type}</p>
-                <p>Taille : ${(doc.taille / 1024).toFixed(1)} Ko</p>
-            </div>
-        `).join("");
-
-    } catch (err) {
-        console.error("Erreur chargement docs :", err);
-        container.innerHTML = "<p>Erreur de chargement.</p>";
-    }
-}
-
-
-    // Upload d’un document
-document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const fileInput = document.getElementById("file");
-    const file = fileInput.files[0];
-    const result = document.getElementById("uploadResult");
-
-    if (!file) {
-        result.innerHTML = "❌ Aucun fichier sélectionné.";
-        return;
     }
 
-    // 🚫 Vérifier la taille (max 20 Mo)
-    const MAX_SIZE = 20 * 1024 * 1024;
-    if (file.size > MAX_SIZE) {
-        result.innerHTML = "❌ Fichier trop volumineux (max 20 Mo).";
-        return;
+    // Petit utilitaire pour les icônes
+    function getIconForType(mimeType) {
+        if (mimeType.includes("pdf")) return "📄";
+        if (mimeType.includes("image")) return "🖼️";
+        if (mimeType.includes("text")) return "📝";
+        if (mimeType.includes("sheet") || mimeType.includes("excel")) return "📊";
+        return "📁";
     }
 
-    // 🚫 Vérifier l’extension interdite (.exe)
-    const forbiddenExtensions = [".exe"];
-    const fileName = file.name.toLowerCase();
+    // 4. Gestion du Formulaire d'Upload
+    const form = document.getElementById("uploadForm");
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const resultDiv = document.getElementById("uploadResult");
+            resultDiv.innerHTML = "Envoi en cours...";
 
-    if (forbiddenExtensions.some(ext => fileName.endsWith(ext))) {
-        result.innerHTML = "❌ Type de fichier non autorisé (.exe).";
-        return;
-    }
+            const formData = new FormData(e.target);
+            // On ajoute l'ID de l'utilisateur qui upload
+            if (connectedUser) {
+                formData.append("uploaderId", connectedUser.id);
+            }
 
-    // 🟦 Tout est OK → on envoie
-    const formData = new FormData();
-    formData.append("file", file);
+            try {
+                const response = await fetch(API_BASE_URL + "/documents/upload", {
+                    method: "POST",
+                    body: formData
+                });
 
-    try {
-        const response = await fetch(API_BASE_URL + "/documents/upload", {
-            method: "POST",
-            body: formData
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text);
+                }
+
+                resultDiv.innerHTML = "<span style='color:green'>✅ Document ajouté !</span>";
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    resultDiv.innerHTML = "";
+                    e.target.reset();
+                    chargerDocuments(); // Rafraîchir la liste
+                }, 1500);
+
+            } catch (err) {
+                resultDiv.innerHTML = "<span style='color:red'>❌ " + err.message + "</span>";
+            }
         });
-
-        const text = await response.text();
-
-        if (!response.ok) {
-            result.innerHTML = "❌ " + text;
-            return;
-        }
-
-        result.innerHTML = "✅ Document ajouté avec succès !";
-        modal.style.display = "none";
-        chargerDocuments();
-
-    } catch (err) {
-        result.innerHTML = "❌ Erreur serveur";
     }
-});
 
-
-
-    // Charger la liste au démarrage
+    // Lancement au chargement de la page
     document.addEventListener("DOMContentLoaded", chargerDocuments);
 
-    // Vérifier la connexion
-//const connectedUser = localStorage.getItem("userId");
-const connectedUser = JSON.parse(localStorage.getItem("utilisateur"));
-
-if (!connectedUser) {
-    alert("Vous devez être connecté pour accéder aux documents.");
-    window.location.href = "login.html";
-}
-
-    document.querySelectorAll(".format-card").forEach(card => {
-    card.addEventListener("click", () => {
-        const type = card.getAttribute("data-type");
-        chargerDocuments(type);
-    });
-});
-
-
-
 </script>
-
 </body>
 </html>
