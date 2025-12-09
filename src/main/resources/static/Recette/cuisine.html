@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuisine & Budget - EtudLife</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="cuisine.css">
+</head>
+<body>
+
+<header class="main-header">
+    <div class="header-container">
+        <div class="header-left">
+            <a href="/index.html" class="logo">
+                <img src="/images/etudlife.png" alt="Logo" class="logo-icon">
+                <span class="logo-text"><strong>Etud</strong>Life</span>
+            </a>
+        </div>
+        <nav class="header-nav">
+            <a href="/index.html">Accueil</a>
+            <a href="/Agenda.html">Agenda</a>
+            <a href="/Recette/cuisine.html" class="active">Cuisine</a>
+            <a href="/groupes.html">Groupes</a>
+            <a href="/upload.html">Cours</a>
+            <a href="/Annonce/annonces.html">Annonces</a>
+            <a href="/messages.html">Messages</a>
+            <a href="/proches.html">Proches</a>
+        </nav>
+
+        <div class="account-menu">
+            <img src="/images/compte.png" class="icon-img" id="account-icon">
+            <div class="dropdown-menu" id="dropdown-menu">
+                <p class="menu-title">Invité</p>
+                <p class="menu-subtitle">Non connecté</p>
+                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+                <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
+                <a href="#" class="menu-item">Aide</a>
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="page-header">
+        <h1>Menu de la semaine</h1>
+        <p>Des recettes simples, pas chères et équilibrées pour ton budget étudiant.</p>
+        <button class="btn-primary" onclick="genererNouveauMenu()">🔄 Générer un menu selon mon budget</button>
+    </div>
+
+    <div id="weekly-grid" class="weekly-grid">
+    </div>
+</main>
+
+<div id="recipe-modal" class="modal hidden">
+    <div class="modal-content recipe-content">
+        <span class="close-modal" onclick="closeRecipeModal()">&times;</span>
+
+        <div class="recipe-header">
+            <div id="modal-tags" class="tags-container"></div>
+            <h2 id="modal-title">Titre de la recette</h2>
+            <div class="recipe-meta">
+                <span id="modal-price" class="meta-price"></span>
+                <span id="modal-time" class="meta-time"></span>
+            </div>
+        </div>
+
+        <div class="recipe-body">
+            <div class="ingredients-section">
+                <h3>🛒 Ingrédients & Coût</h3>
+                <ul id="modal-ingredients"></ul>
+            </div>
+
+            <div class="prep-section">
+                <h3>👨‍🍳 Préparation</h3>
+                <p id="modal-prep"></p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="toggleFavorite()">❤️ Ajouter aux favoris</button>
+            <button class="btn-primary" onclick="addToAgenda()">📅 Ajouter à mon agenda</button>
+        </div>
+    </div>
+</div>
+
+<script src="/app.js"></script>
+<script src="cuisine.js"></script>
+
+</body>
+</html>
