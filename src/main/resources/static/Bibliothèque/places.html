@@ -2,93 +2,92 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Réserver une Place – Bibliothèque</title>
+    <title>Réserver une Place – BU</title>
     <link rel="stylesheet" href="bu.css">
 </head>
+
 <body>
 
 <header>
     <nav class="navbar">
-        <!-- header EtudLife -->
+        <a href="/" class="logo">
+            <img src="../images/etudlife.png" alt="logo">
+            <span>EtudLife</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/Agenda.html">Agenda</a></li>
+            <li><a href="/Cours.html">Cours</a></li>
+            <li><a href="/Transports.html">Transports</a></li>
+            <li><a href="/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
+        </ul>
+
+        <div class="profile"><img src="../images/compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="emprunts.html">Mes Emprunts</a>
+        <a href="reservation.html">Réservations</a>
+        <a href="places.html" class="active">Réserver une Place</a>
+        <a href="services.html">Services</a>
     </nav>
 </header>
 
-<nav class="bu-submenu">
-    <a href="catalogue.html">Catalogue</a>
-    <a href="emprunts.html">Mes Emprunts</a>
-    <a href="reservation.html">Réservations</a>
-    <a href="places.html" class="active">Réserver une Place</a>
-    <a href="services.html">Services</a>
-    <a href="notes.html">Notes</a>
-    <a href="transports.html">Transports</a>
-</nav>
 
 <main class="page">
-    <h1 class="page-title">Réserver une Place à la BU</h1>
-    <p class="page-subtitle">Choisissez le type d’espace de travail qui correspond à vos besoins.</p>
+
+    <h1 class="page-title">Réserver une place à la BU</h1>
+    <p class="page-subtitle">Choisissez un type d’espace pour étudier confortablement.</p>
 
     <section class="place-grid">
 
         <article class="place-card">
             <div class="place-icon blue">👤</div>
             <div class="place-title">Place Individuelle</div>
-            <div class="place-desc">Espace de travail calme pour étudier seul</div>
-            <div class="place-availability">✔ 24 places disponibles</div>
-            <button class="btn-primary" data-place="individuelle">Réserver</button>
+            <div class="place-desc">Espace calme pour étudier seul</div>
+            <div class="place-availability">24 places libres</div>
+            <button class="btn-primary">Réserver</button>
         </article>
 
         <article class="place-card">
             <div class="place-icon green">👥</div>
             <div class="place-title">Salle de Groupe</div>
-            <div class="place-desc">Espace collaboratif pour 4–8 personnes</div>
-            <div class="place-availability">✔ 5 salles disponibles</div>
-            <button class="btn-primary" data-place="groupe">Réserver</button>
+            <div class="place-desc">Pour les projets à plusieurs</div>
+            <div class="place-availability">5 salles libres</div>
+            <button class="btn-primary">Réserver</button>
         </article>
 
         <article class="place-card">
             <div class="place-icon purple">🔇</div>
             <div class="place-title">Box Silencieux</div>
-            <div class="place-desc">Isolation phonique pour concentration maximale</div>
-            <div class="place-availability">✔ 8 box disponibles</div>
-            <button class="btn-primary" data-place="box">Réserver</button>
+            <div class="place-desc">Isolation totale pour se concentrer</div>
+            <div class="place-availability">8 box libres</div>
+            <button class="btn-primary">Réserver</button>
         </article>
 
         <article class="place-card">
             <div class="place-icon orange">💻</div>
-            <div class="place-title">Espace Informatique</div>
-            <div class="place-desc">Poste avec ordinateur et logiciels</div>
-            <div class="place-availability">✔ 12 postes disponibles</div>
-            <button class="btn-primary" data-place="info">Réserver</button>
-        </article>
-
-        <article class="place-card">
-            <div class="place-icon red">🎬</div>
-            <div class="place-title">Salle Multimédia</div>
-            <div class="place-desc">Équipement audiovisuel et présentation</div>
-            <div class="place-availability">✔ 3 salles disponibles</div>
-            <button class="btn-primary" data-place="multi">Réserver</button>
-        </article>
-
-        <article class="place-card">
-            <div class="place-icon purple">☕</div>
-            <div class="place-title">Espace Détente</div>
-            <div class="place-desc">Zone conviviale pour pauses et discussions</div>
-            <div class="place-availability">✔ Accès libre</div>
-            <button class="btn-primary" data-place="detente">Réserver</button>
+            <div class="place-title">Salle Informatique</div>
+            <div class="place-desc">Postes avec logiciels dédiés</div>
+            <div class="place-availability">12 postes libres</div>
+            <button class="btn-primary">Réserver</button>
         </article>
 
     </section>
 
+
     <section class="section-card">
-        <div class="section-title">Mes Réservations de Places</div>
+        <div class="section-title">Mes réservations</div>
+
         <div class="place-res-list">
+
             <div class="place-res-card">
                 <div class="place-res-icon">👤</div>
                 <div>
-                    <div class="place-res-info-title">Place Individuelle – A204</div>
-                    <div class="place-res-info-sub">
-                        Étage 2, Section A — Aujourd’hui 14h00–18h00
-                    </div>
+                    <div class="place-res-info-title">Place A204</div>
+                    <div class="place-res-info-sub">Aujourd’hui – 14h à 18h</div>
                 </div>
                 <button class="btn-cancel">Annuler</button>
             </div>
@@ -96,79 +95,18 @@
             <div class="place-res-card">
                 <div class="place-res-icon">👥</div>
                 <div>
-                    <div class="place-res-info-title">Salle de Groupe – G12</div>
-                    <div class="place-res-info-sub">
-                        Demain, 10h00–12h00 — Étape 1, Section G
-                    </div>
+                    <div class="place-res-info-title">Salle G12</div>
+                    <div class="place-res-info-sub">Demain – 10h à 12h</div>
                 </div>
                 <button class="btn-cancel">Annuler</button>
             </div>
+
         </div>
+
     </section>
+
 </main>
 
-<!-- Modal Réservation de place -->
-<div class="modal-overlay" id="placeModalOverlay">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title" id="placeModalTitle">Place Individuelle</div>
-            <button class="modal-close" id="placeModalClose">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div style="font-size:13px; color:#6b7280; margin-bottom:6px;">
-                Espace de travail calme pour étudier seul.
-            </div>
-
-            <div>
-                <label>Date de réservation *</label>
-                <input type="date" id="placeDate">
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label>Heure de début *</label>
-                    <input type="text" id="placeStart" placeholder="--:--">
-                </div>
-                <div style="flex:1;">
-                    <label>Heure de fin *</label>
-                    <input type="text" id="placeEnd" placeholder="--:--">
-                </div>
-            </div>
-
-            <div>
-                <label>Équipements souhaités</label><br>
-                <label><input type="checkbox"> Wi-Fi</label><br>
-                <label><input type="checkbox"> Prise électrique</label><br>
-                <label><input type="checkbox"> Tableau blanc</label><br>
-                <label><input type="checkbox"> Webcam</label><br>
-                <label><input type="checkbox"> Écran supplémentaire</label><br>
-                <label><input type="checkbox"> Projecteur</label>
-            </div>
-
-            <div>
-                <label>Commentaires (optionnel)</label>
-                <textarea placeholder="Précisions sur votre réservation..."></textarea>
-            </div>
-
-            <div style="background:#e0f2fe; border-radius:8px; padding:8px 10px; font-size:12px;">
-                <strong>Informations importantes :</strong><br>
-                • Durée maximale : 4 heures par réservation<br>
-                • Annulation gratuite jusqu'à 2 heures avant<br>
-                • Présentez votre carte étudiante à l'accueil<br>
-                • Respectez les horaires de réservation
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="placeModalCancel">Annuler</button>
-            <button class="btn-primary-modal" id="placeModalConfirm">Confirmer la réservation</button>
-        </div>
-    </div>
-</div>
-
-<div class="toast" id="placeToast">
-    <div class="toast-title">Réservation confirmée !</div>
-    <div class="toast-text">Votre réservation de place a été enregistrée.</div>
-</div>
 
 <script>
     // ouverture modal

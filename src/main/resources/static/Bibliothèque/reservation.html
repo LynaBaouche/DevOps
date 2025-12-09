@@ -2,43 +2,66 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mes Réservations – Bibliothèque</title>
+    <title>Mes Réservations – BU</title>
     <link rel="stylesheet" href="bu.css">
 </head>
+
 <body>
 
 <header>
     <nav class="navbar">
-        <!-- header EtudLife -->
+        <a href="/" class="logo">
+            <img src="../images/etudlife.png">
+            <span>EtudLife</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
+        </ul>
+
+        <div class="profile"><img src="../images/compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="emprunts.html">Mes Emprunts</a>
+        <a href="reservation.html" class="active">Réservations</a>
+        <a href="places.html">Réserver une Place</a>
+        <a href="services.html">Services</a>
     </nav>
 </header>
 
-<nav class="bu-submenu">
-    <a href="catalogue.html">Catalogue</a>
-    <a href="emprunts.html">Mes Emprunts</a>
-    <a href="reservation.html" class="active">Réservations</a>
-    <a href="places.html">Réserver une Place</a>
-    <a href="services.html">Services</a>
-    <a href="notes.html">Notes</a>
-    <a href="transports.html">Transports</a>
-</nav>
 
 <main class="page">
-    <h1 class="page-title">Mes Réservations</h1>
+
+    <h1 class="page-title">Mes réservations</h1>
 
     <section class="reservations-list">
+
         <article class="reservation-card">
-            <img src="cover_ia.png" class="cover" alt="">
+            <img src="cover_4.png" class="cover">
             <div>
-                <h3>Intelligence Artificielle</h3>
-                <p class="author">Stuart Russell</p>
-                <p class="due red">Disponible le 20 Janvier 2024</p>
+                <h3>Base de Données Relationnelles</h3>
+                <p class="author">Elmasri</p>
+                <div class="book-meta">Réservé le 01/12/2024</div>
             </div>
             <button class="btn-cancel">Annuler</button>
         </article>
-    </section>
-</main>
 
+        <article class="reservation-card">
+            <img src="cover_2.png" class="cover">
+            <div>
+                <h3>Mathématiques pour l'Informatique</h3>
+                <p class="author">Rosen</p>
+                <div class="book-meta">Réservé le 25/11/2024</div>
+            </div>
+            <button class="btn-cancel">Annuler</button>
+        </article>
+
+    </section>
+
+</main>
 <script>
     document.querySelectorAll(".btn-cancel").forEach(btn => {
     btn.addEventListener("click", () => {

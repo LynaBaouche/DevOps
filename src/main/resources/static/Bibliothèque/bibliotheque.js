@@ -1,59 +1,71 @@
-// ======== DONNÉES SIMULÉES ========
 const zones = [
-    { nom:"RDC – Espace individuel", type:"individuel", total:90, libres:52 },
-    { nom:"Étage 1 – Silencieux", type:"silencieux", total:120, libres:87 },
-    { nom:"Étage 2 – Groupe", type:"groupe", total:96, libres:18 },
-    { nom:"Étage 3 – Révisions", type:"individuel", total:75, libres:4 },
-    { nom:"Salle Informatique", type:"info", total:40, libres:26 }
+    {
+        etage: "Étage 0",
+        type: "groupe",
+        libres: 12,
+        total: 40,
+        confort: "Bon"
+    },
+    {
+        etage: "Étage 1",
+        type: "individuel",
+        libres: 5,
+        total: 30,
+        confort: "Moyen"
+    },
+    {
+        etage: "Étage 2",
+        type: "silencieux",
+        libres: 1,
+        total: 20,
+        confort: "Faible"
+    },
+    {
+        etage: "Salle informatique",
+        type: "info",
+        libres: 7,
+        total: 25,
+        confort: "Bon"
+    }
 ];
 
-function statusColor(zone) {
-    const ratio = zone.libres / zone.total;
-    if (ratio >= 0.4) return "success";
-    if (ratio >= 0.15) return "warning";
-    return "danger";
-}
+const cards = document.getElementById("cards");
 
-// ======== RENDER ========
-function updatePage() {
-    const total = zones.reduce((s, z) => s + z.total, 0);
-    const libres = zones.reduce((s, z) => s + z.libres, 0);
-    const occupees = total - libres;
-    const percent = Math.round((occupees / total) * 100);
+function render() {
+    let totalPlaces = 0;
+    let totalLibres = 0;
 
-    document.getElementById("totalPlaces").innerText = total;
-    document.getElementById("totalDisponibles").innerText = libres;
-    document.getElementById("totalOccupees").innerText = occupees;
-    document.getElementById("lastUpdateLabel").innerText = "à l’instant";
-
-    document.getElementById("percent").innerText = percent + "%";
-    document.getElementById("libresInfo").innerText = "Places libres : " + libres;
-    document.getElementById("occupeesInfo").innerText = "Places occupées : " + occupees;
-
-    const circle = document.getElementById("circle");
-    const angle = (percent / 100) * 360;
-    circle.style.background =
-        `conic-gradient(#4d8fff ${angle}deg, #d9e6ff ${angle}deg)`;
-
-
-    const cardsContainer = document.getElementById("cards");
-    cardsContainer.innerHTML = "";
+    cards.innerHTML = "";
 
     zones.forEach(z => {
-        const card = document.createElement("div");
-        card.className = "card";
+        totalPlaces += z.total;
+        totalLibres += z.libres;
 
-        const color = statusColor(z);
-
-        card.innerHTML = `
-            <div class="card-title">${z.nom}</div>
-            <span class="badge ${color}">${color === "success" ? "Disponible" : color === "warning" ? "Élevée" : "Pleine"}</span>
-            <p>${z.libres} / ${z.total} places libres</p>
-            <div class="card-footer">Mis à jour à l’instant</div>
+        cards.innerHTML += `
+            <article class="card">
+                <div class="card-title">${z.etage}</div>
+                <div class="badge success">Places libres : ${z.libres}</div>
+                <div class="badge warning">Occupées : ${z.total - z.libres}</div>
+                <div class="card-footer">Confort : ${z.confort}</div>
+            </article>
         `;
-
-        cardsContainer.appendChild(card);
     });
+
+    document.getElementById("totalPlaces").textContent = totalPlaces;
+    document.getElementById("totalDisponibles").textContent = totalLibres;
+    document.getElementById("totalOccupees").textContent = totalPlaces - totalLibres;
+
+    const pct = Math.round(((totalPlaces - totalLibres) / totalPlaces) * 100);
+
+    document.getElementById("percent").textContent = pct + "%";
+    document.getElementById("libresInfo").textContent = "Places libres : " + totalLibres;
+    document.getElementById("occupeesInfo").textContent = "Places occupées : " + (totalPlaces - totalLibres);
+
+    const circle = document.getElementById("circle");
+    circle.style.background = `conic-gradient(#2563eb ${pct * 3.6}deg, #dbeafe 0deg)`;
+
+    const now = new Date();
+    document.getElementById("lastUpdateLabel").textContent = now.toLocaleTimeString();
 }
 
-document.addEventListener("DOMContentLoaded", updatePage);
+render();

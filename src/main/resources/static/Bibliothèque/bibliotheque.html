@@ -3,74 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Bibliothèque – Disponibilité des Places</title>
-    <link rel="stylesheet" href="bibliotheque.css">
 
-    <link rel="stylesheet" href="bu.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="bibliotheque.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<!-- ========= NAVBAR EXISTANTE ========= -->
+<!-- NAVBAR -->
 <header>
-    <!-- ===== MENU BIBLIOTHÈQUE ===== -->
     <nav class="navbar">
         <a href="/" class="logo">
-            <img src="etudlife.png" alt="logo">
+            <img src="../images/etudlife.png" alt="logo">
             <span>EtudLife</span>
         </a>
+
         <ul class="nav-links">
-            <li><a href="/" >Accueil</a></li>
-            <li><a href="/static/style.css">Agenda</a></li>
-            <li><a href="/static/Cours.html">Cours</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/static/Agenda.html">Agenda</a></li>
+            <li><a href="/Cours.html">Cours</a></li>
             <li><a href="transports.html">Transports</a></li>
             <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
-            <li><a href="/static/Campus.html">Campus</a></li>
-            <li><a href="/static/Restaurant.html">Restaurant</a></li>
+            <li><a href="/Campus.html">Campus</a></li>
+            <li><a href="/Restaurant.html">Restaurant</a></li>
             <li><a href="/static/Annonce/annonces.html">Annonces</a></li>
             <li><a href="/static/messages.html">Messages</a></li>
         </ul>
-        <div class="profile"><img src="compte.png"></div>
+
+        <div class="profile">
+            <img src="../images/compte.png">
+        </div>
     </nav>
 
+    <!-- Sous-menu -->
     <nav class="bu-submenu">
-        <a href="catalogue.html" class="active">Catalogue</a>
+        <a href="catalogue.html">Catalogue</a>
         <a href="emprunts.html">Mes Emprunts</a>
         <a href="reservation.html">Réservations</a>
         <a href="places.html">Réserver une Place</a>
         <a href="services.html">Services</a>
-        <a href="notes.html">Notes</a>
-        <a href="transports.html">Transports</a>
     </nav>
 </header>
 
-<!-- ========= CONTENU ========= -->
 
+<!-- CONTENU -->
 <main class="page">
 
     <h1 class="page-title">Disponibilité des places à la bibliothèque</h1>
-    <p class="page-subtitle">Affichage en temps réel du nombre de places libres par étage.</p>
+    <p class="page-subtitle">Données actualisées en temps réel par étage.</p>
 
     <!-- BARRE DE RECHERCHE -->
-    <section class="search-box">
+    <section class="search-area">
         <input type="text" id="searchInput" placeholder="Rechercher une salle, un étage, une zone…">
         <select id="categorySelect">
             <option value="all">Toutes les zones</option>
             <option value="individuel">Travail individuel</option>
-            <option value="groupe">Travail en groupe</option>
+            <option value="groupe">Travail de groupe</option>
             <option value="silencieux">Silencieux</option>
-            <option value="info">Informatique</option>
+            <option value="info">Salle informatique</option>
         </select>
     </section>
 
     <!-- STATISTIQUES -->
-    <section class="stats">
+    <section class="stats-bar">
         <span><strong id="totalPlaces">0</strong> places au total</span>
         <span><strong id="totalDisponibles">0</strong> disponibles</span>
         <span><strong id="totalOccupees">0</strong> occupées</span>
         <span>Dernière mise à jour : <strong id="lastUpdateLabel">—</strong></span>
     </section>
 
-    <!-- WIDGET GLOBAL -->
+    <!-- WIDGET -->
     <section class="widget">
         <h3>Taux d’occupation actuel</h3>
         <div class="widget-content">
@@ -89,8 +92,8 @@
         </div>
     </section>
 
-    <!-- CARTES -->
-    <section id="cards" class="cards"></section>
+    <!-- CARTES ÉTAGES -->
+    <section class="cards" id="cards"></section>
 
 </main>
 

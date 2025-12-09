@@ -2,75 +2,64 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Services – Bibliothèque</title>
+    <title>Services – BU</title>
     <link rel="stylesheet" href="bu.css">
 </head>
+
 <body>
 
 <header>
     <nav class="navbar">
-        <!-- header EtudLife -->
+        <a href="/" class="logo"><img src="../images/etudlife.png"> <span>EtudLife</span></a>
+        <ul class="nav-links"><li><a href="/" >Accueil</a></li><li><a href="/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li></ul>
+        <div class="profile"><img src="../images/compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="emprunts.html">Mes Emprunts</a>
+        <a href="reservation.html">Réservations</a>
+        <a href="places.html">Réserver une Place</a>
+        <a href="services.html" class="active">Services</a>
     </nav>
 </header>
 
-<nav class="bu-submenu">
-    <a href="catalogue.html">Catalogue</a>
-    <a href="emprunts.html">Mes Emprunts</a>
-    <a href="reservation.html">Réservations</a>
-    <a href="places.html">Réserver une Place</a>
-    <a href="services.html" class="active">Services</a>
-    <a href="notes.html">Notes</a>
-    <a href="transports.html">Transports</a>
-</nav>
 
 <main class="page">
-    <h1 class="page-title">Services de la Bibliothèque</h1>
+
+    <h1 class="page-title">Services de la BU</h1>
 
     <section class="services-grid">
+
         <article class="service-card">
-            <div class="service-icon blue">🏠</div>
-            <div class="service-title">Espaces de Travail</div>
-            <div class="service-desc">Réservez des salles d’étude individuelles ou en groupe.</div>
-            <a class="service-link blue" href="places.html">Réserver →</a>
+            <div class="service-icon blue">📚</div>
+            <div class="service-title">Prêt de livres</div>
+            <div class="service-desc">Empruntez facilement des ouvrages.</div>
+            <a class="service-link blue" href="catalogue.html">Voir le catalogue →</a>
         </article>
 
         <article class="service-card">
-            <div class="service-icon green">🖨</div>
+            <div class="service-icon green">🖨️</div>
             <div class="service-title">Impression & Scan</div>
-            <div class="service-desc">Services d’impression, photocopie et numérisation.</div>
-            <a class="service-link blue" href="#">Accéder →</a>
+            <div class="service-desc">Disponible à tous les étages.</div>
         </article>
 
         <article class="service-card">
-            <div class="service-icon purple">🔍</div>
-            <div class="service-title">Aide à la Recherche</div>
-            <div class="service-desc">Assistance pour vos recherches documentaires.</div>
-            <a class="service-link purple" href="#">Demander →</a>
+            <div class="service-icon orange">💼</div>
+            <div class="service-title">Salles de réunion</div>
+            <div class="service-desc">Réservables sur l'application.</div>
+            <a class="service-link orange" href="places.html">Réserver →</a>
         </article>
 
         <article class="service-card">
-            <div class="service-icon orange">🎓</div>
-            <div class="service-title">Formations</div>
-            <div class="service-desc">Ateliers sur les outils de recherche et de citation.</div>
-            <a class="service-link orange" href="#">S’inscrire →</a>
+            <div class="service-icon purple">🧑‍🏫</div>
+            <div class="service-title">Aide à la recherche</div>
+            <div class="service-desc">Un bibliothécaire peut vous aider.</div>
         </article>
 
-        <article class="service-card">
-            <div class="service-icon red">📚</div>
-            <div class="service-title">Prêt Inter-Bibliothèques</div>
-            <div class="service-desc">Accédez aux ressources d’autres établissements.</div>
-            <a class="service-link red" href="#">Demander →</a>
-        </article>
-
-        <article class="service-card">
-            <div class="service-icon blue">💻</div>
-            <div class="service-title">Accès Numérique</div>
-            <div class="service-desc">Bases de données et ressources en ligne.</div>
-            <a class="service-link blue" href="#">Accéder →</a>
-        </article>
     </section>
-</main>
 
+</main>
 <script>
     console.log("Page Services BU chargée.");
 

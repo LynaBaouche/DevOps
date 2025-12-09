@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Réservations</title>
+    <link rel="stylesheet" href="bu.css">
+</head>
+
+<body>
+
+<header>
+    <h1 style="text-align:center;">📚 Mes Réservations</h1>
+</header>
+
+<main class="page">
+
+    <!-- 🔥 Correctif : bonne classe correspondant au CSS -->
+    <section class="reservations-list" id="reservationsList"></section>
+
+</main>
+
+<script>
+    /* ============================================================
+       CHARGER LES RÉSERVATIONS DU BACKEND
+    ============================================================ */
+
+    async function loadReservations() {
+        try {
+            const res = await fetch("http://localhost:8080/api/reservations/user/1");
+            const reservations = await res.json();
+
+            const container = document.querySelector(".reservations-list");
+            container.innerHTML = "";
+
+            if (!reservations || reservations.length === 0) {
+                container.innerHTML = "<p>Aucune réservation en cours.</p>";
+                return;
+            }
+
+            reservations.forEach(r => {
+
+                const date = r.dateReservation ? r.dateReservation.substring(0,10) : "—";
+
+                const card = document.createElement("article");
+                card.className = "reservation-card";
+
+                card.innerHTML = `
+                    <img src="cover_${r.idLivre}.png" class="cover">
+
+                    <div>
+                        <h3>Livre #${r.idLivre}</h3>
+                        <p class="author">Utilisateur : ${r.idUser}</p>
+                        <div class="book-meta">Réservé le : ${date}</div>
+                    </div>
+
+                    <button class="btn-cancel" data-id="${r.id}">Annuler</button>
+                `;
+
+                container.appendChild(card);
+            });
+
+            // 🔥 Ajout de l'action "Annuler"
+            document.querySelectorAll(".btn-cancel").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = btn.dataset.id;
+                    annulerReservation(id);
+                });
+            });
+
+        } catch (e) {
+            console.error("Erreur de chargement :", e);
+        }
+    }
+
+
+    /* ============================================================
+       ANNULER UNE RÉSERVATION
+    ============================================================ */
+
+    async function annulerReservation(idReservation) {
+
+        if (!confirm("Voulez-vous vraiment annuler cette réservation ?")) return;
+
+        try {
+            await fetch(`http://localhost:8080/api/reservations/${idReservation}`, {
+                method: "DELETE"
+            });
+
+            loadReservations(); // 🔥 recharge proprement
+
+        } catch (e) {
+            alert("Erreur lors de l'annulation");
+            console.error(e);
+        }
+    }
+
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+
+    document.addEventListener("DOMContentLoaded", loadReservations);
+
+</script>
+
+</body>
+</html>
