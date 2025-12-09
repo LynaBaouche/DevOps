@@ -24,4 +24,20 @@ public class AnnonceService {
     public List<Annonce> findByCategorie(String categorie) {
         return repository.findByCategorie(categorie);
     }
+    public Annonce findById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+    public Annonce save(Annonce annonce) {
+        return repository.save(annonce);
+    }
+    public List<Annonce> findByUtilisateurId(Long utilisateurId) {
+        return repository.findByUtilisateurId(utilisateurId);
+    }
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
 }
+
+
+

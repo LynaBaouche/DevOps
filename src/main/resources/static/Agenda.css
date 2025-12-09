@@ -1,3 +1,26 @@
+/* === FIX HEADER ALIGNMENT FOR ANNONCES PAGE === */
+body.page-annonces {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.main-header {
+    width: 100vw !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.header-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+
+
 
 body {
     background: #f8f9fc;

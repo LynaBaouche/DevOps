@@ -9,5 +9,10 @@ import java.util.List;
 public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
 
     List<Annonce> findByCategorie(String categorie);
+    List<Annonce> findByUtilisateurId(Long utilisateurId);
+
+
+
 }
+
 

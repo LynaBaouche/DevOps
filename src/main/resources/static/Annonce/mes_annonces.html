@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Annonces | EtudLife</title>
+
+    <!-- CSS global -->
+    <link rel="stylesheet" href="/Annonce/annonces.css">
+
+    <!-- Script JS -->
+    <script defer src="/Annonce/annonces.js"></script>
+
+    <!-- Sécurité connexion -->
+    <script>
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            alert("⚠️ Vous devez vous connecter pour accéder à vos annonces.");
+            window.location.href = "/login.html";
+        }
+    </script>
+    <script>
+        // =========================================================
+        // 🟧 CHARGEMENT DES ANNONCES DE L’UTILISATEUR
+        // =========================================================
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // On vérifie qu'on est sur la bonne page
+            if (!window.location.href.includes("mes_annonces.html")) return;
+
+            const user = JSON.parse(localStorage.getItem("utilisateur"));
+            if (!user) return;
+
+            loadMesAnnonces(user.id);
+        });
+
+        // Charger les annonces de l'utilisateur
+        async function loadMesAnnonces(userId) {
+
+            const res = await fetch(`/api/annonces/utilisateur/${userId}`);
+            const mesAnnonces = await res.json();
+
+            // ==== Mise à jour stats ====
+            document.getElementById("stat-publiees").textContent = mesAnnonces.length;
+            document.getElementById("stat-vues").textContent = mesAnnonces.reduce((t, a) => t + a.vues, 0);
+
+            // ==== Affichage des cartes ====
+            const container = document.getElementById("mes-annonces-list");
+
+            container.innerHTML = mesAnnonces.map(a => `
+        <div class="card-pro">
+
+            <div class="card-img-wrapper">
+                <img src="/images/${a.image}" class="card-img">
+                <span class="cat-badge">${a.categorie}</span>
+            </div>
+
+            <div class="card-body">
+                <h3>${a.titre}</h3>
+                <p>${a.description.substring(0, 100)}...</p>
+
+                <div class="price-date">
+                    <span class="price">${a.prix} €</span>
+                    <span class="date">${a.datePublication}</span>
+                </div>
+
+                <div class="icons">
+                    <p>📍 ${a.ville}</p>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-details" onclick="window.location.href='/Annonce/modifier.html?id=${a.id}'">
+                        Modifier
+                    </button>
+
+                    <button class="btn-delete" onclick="supprimerAnnonce(${a.id})">
+                        🗑
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    `).join("");
+        }
+
+//supprimer annonce
+        async function supprimerAnnonce(id) {
+            if (!confirm("Voulez-vous supprimer cette annonce ?")) return;
+
+            const res = await fetch(`/api/annonces/${id}`, { method: "DELETE" });
+
+            if (res.ok) {
+                // 🔥 Supprime aussi dans la page Annonces (localStorage favoris)
+                let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+                favoris = favoris.filter(f => f.id !== id);
+                localStorage.setItem("favoris", JSON.stringify(favoris));
+
+                // 🔥 Recharge la liste MES ANNONCES
+                const user = JSON.parse(localStorage.getItem("utilisateur"));
+                loadMesAnnonces(user.id);
+            } else {
+                alert("❌ Erreur lors de la suppression.");
+            }
+        }
+
+
+
+        // =========================================================
+        // 🔵 MODAL : OUVRIR / FERMER LA CRÉATION D'ANNONCE
+        // =========================================================
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const openBtn = document.getElementById("open-create-modal");
+            const modal = document.getElementById("create-modal");
+            const closeBtn = document.getElementById("close-create-modal");
+            const cancelBtn = document.getElementById("cancel-create-modal");
+
+            if (!modal) return;
+
+            // Ouvrir
+            if (openBtn) {
+                openBtn.addEventListener("click", () => {
+                    modal.classList.remove("hidden");
+                });
+            }
+
+            // Fermer
+            if (closeBtn) {
+                closeBtn.addEventListener("click", () => {
+                    modal.classList.add("hidden");
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener("click", () => {
+                    modal.classList.add("hidden");
+                });
+            }
+        });
+
+    </script>
+    <script>
+        // =========================================================
+        // 🚀 CRÉATION D’UNE ANNONCE (POST)
+        // =========================================================
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const form = document.getElementById("form-create-annonce");
+            const modal = document.getElementById("create-modal");
+
+            if (!form) return;
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const user = JSON.parse(localStorage.getItem("utilisateur"));
+                if (!user) {
+                    alert("Vous devez être connecté.");
+                    return;
+                }
+
+                const newAnnonce = {
+                    titre: document.getElementById("titre").value,
+                    categorie: document.getElementById("categorie").value.toLowerCase(),
+                    prix: document.getElementById("prix").value,
+                    ville: document.getElementById("ville").value,
+                    description: document.getElementById("description").value,
+                    image: "default.jpg",
+                    auteur: user.prenom + " " + user.nom,
+                    datePublication: new Date().toISOString().split("T")[0],
+
+                    // ⭐ LE CHAMP QUI RÈGLE TOUT
+                    utilisateurId: user.id
+                };
+
+
+
+
+
+                // Envoi au backend
+                const res = await fetch("/api/annonces", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newAnnonce)
+                });
+
+                if (!res.ok) {
+                    alert("Erreur lors de la création.");
+                    return;
+                }
+
+                // Fermer la modale
+                modal.classList.add("hidden");
+
+                // Recharger la liste des annonces
+                loadMesAnnonces(user.id);
+            });
+
+        });
+    </script>
+    <script>
+    /* ======================================================
+    🟢 GESTION DU MENU DÉROULANT (HEADER) - PAGE ANNONCES
+    ====================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+
+    const accountIcon = document.getElementById("account-icon");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+
+    // 1️⃣ Ouvrir / fermer le menu utilisateur
+    if (accountIcon && dropdownMenu) {
+    accountIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdownMenu.style.display =
+    dropdownMenu.style.display === "block" ? "none" : "block";
+    });
+
+    // Fermer si on clique ailleurs
+    document.addEventListener("click", (e) => {
+    if (!accountIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+    dropdownMenu.style.display = "none";
+    }
+    });
+    }
+
+    // 2️⃣ Récupération utilisateur
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    const connectedItems = document.querySelectorAll(".connected-only");
+    const disconnectedItems = document.querySelectorAll(".disconnected-only");
+    const menuTitle = document.querySelector(".menu-title");
+    const menuSubtitle = document.querySelector(".menu-subtitle");
+
+    if (user) {
+    // Mode connecté
+    connectedItems.forEach(el => el.style.display = "block");
+    disconnectedItems.forEach(el => el.style.display = "none");
+
+    menuTitle.textContent = `${user.prenom} ${user.nom}`;
+    menuSubtitle.textContent = user.email;
+
+    // Bouton PROFIL → retourne à l’accueil avec option profil
+    const btnProfil = document.getElementById("btn-profil");
+    if (btnProfil) {
+    btnProfil.addEventListener("click", () => {
+    window.location.href = "/index.html?profil=true";
+    });
+    }
+
+    } else {
+    // Mode invité
+    connectedItems.forEach(el => el.style.display = "none");
+    disconnectedItems.forEach(el => el.style.display = "block");
+
+    menuTitle.textContent = "Invité";
+    menuSubtitle.textContent = "Non connecté";
+    }
+
+    // 3️⃣ Gestion du bouton Déconnexion
+    const logoutBtn = document.getElementById("logout-btn");
+    if (logoutBtn) {
+    const newLogoutBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+
+    newLogoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("utilisateur");
+    window.location.href = "/index.html";
+    });
+    }
+    });
+    </script>
+</head>
+
+<body class="page-annonces">
+
+<!-- ===========================
+     🔷 HEADER MODERNE
+=========================== -->
+<header class="main-header">
+    <div class="header-container">
+
+        <!-- Logo -->
+        <div class="header-left">
+            <div class="logo">
+                <img src="/images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
+                <span class="logo-text"><strong>Etud</strong>Life</span>
+            </div>
+        </div>
+
+        <!-- Menu -->
+        <nav class="header-nav">
+            <a href="/index.html">Accueil</a>
+            <a href="/Agenda.html">Agenda</a>
+            <a href="#">Cours</a>
+            <a href="#">Transports</a>
+            <a href="#">Bibliothèque</a>
+            <a href="#">Campus</a>
+            <a href="#">Restaurant</a>
+            <a href="/Annonce/annonces.html">Annonces</a>
+            <a href="/messages.html">Messages</a>
+            <a href="/proches.html">Ajouter un proche</a>
+        </nav>
+
+        <!-- Profil utilisateur -->
+        <div class="account-menu">
+            <img src="/images/compte.png" class="icon-img" id="account-icon">
+
+            <div class="dropdown-menu" id="dropdown-menu">
+                <p class="menu-title">Invité</p>
+                <p class="menu-subtitle">Non connecté</p>
+
+                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+                <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
+                <a href="#" class="menu-item">Aide</a>
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+<!-- ===========================
+     ⭐ CONTENU PRINCIPAL
+=========================== -->
+<section class="mes-annonces-container">
+
+    <!-- Bouton retour -->
+    <button class="btn-blue" onclick="window.location.href='/Annonce/annonces.html'" style="margin-bottom:20px;">
+        ← Retour aux annonces
+    </button>
+
+    <!-- HEADER PAGE -->
+    <div class="mes-annonces-header" style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    ">
+
+        <div>
+            <h1 style="margin: 0;">Mes Annonces</h1>
+            <p class="subtitle" style="margin: 0;">Gérez vos annonces publiées</p>
+        </div>
+
+        <!-- Bouton ouvrir modal -->
+        <button id="open-create-modal" class="btn-blue" style="margin-bottom:20px;">
+            + Créer une annonce
+        </button>
+    </div>
+
+    <!-- STATISTIQUES -->
+    <div class="stats-mes-annonces">
+
+        <div class="stat-box">
+            <div class="stat-icon blue">📄</div>
+            <div>
+                <h2 id="stat-publiees">0</h2>
+                <p>Annonces publiées</p>
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-icon green">👁️</div>
+            <div>
+                <h2 id="stat-vues">0</h2>
+                <p>Vues totales</p>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <!-- LISTE DES ANNONCES PUBLIÉES -->
+    <div id="mes-annonces-list" class="annonces-grid"></div>
+
+</section>
+
+
+<!-- ===========================
+     🟦 MODAL CRÉATION ANNONCE
+=========================== -->
+<div id="create-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Créer une annonce</h2>
+            <span class="modal-close" id="close-create-modal">&times;</span>
+        </div>
+
+        <form id="form-create-annonce" class="modal-form">
+
+            <label>Titre de l'annonce *</label>
+            <input type="text" id="titre" placeholder="Ex: Chambre meublée proche campus" required>
+
+            <label>Catégorie *</label>
+            <select id="categorie" required>
+                <option value="">Sélectionner…</option>
+                <option>Logement</option>
+                <option>Cours</option>
+                <option>Emploi</option>
+                <option>Service</option>
+                <option>Objet</option>
+            </select>
+
+            <div class="form-row">
+                <div>
+                    <label>Prix *</label>
+                    <input type="text" id="prix" placeholder="Ex: 450€/mois" required>
+                </div>
+
+                <div>
+                    <label>Localisation *</label>
+                    <input type="text" id="ville" placeholder="Ex: Quartier Latin" required>
+                </div>
+            </div>
+
+            <label>Description *</label>
+            <textarea id="description" placeholder="Décrivez votre annonce en détail…" maxlength="500"
+                      required></textarea>
+
+            <div class="form-row">
+                <div>
+                    <label>Email de contact *</label>
+                    <input type="email" id="email" placeholder="votre.email@example.com" required>
+                </div>
+
+                <div>
+                    <label>Téléphone *</label>
+                    <input type="text" id="tel" placeholder="06 12 34 56 78" required>
+                </div>
+            </div>
+
+            <label>
+                <input type="checkbox" id="urgent">
+                Marquer comme urgent
+            </label>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancel-create-modal">Annuler</button>
+                <button type="submit" class="btn-submit">Publier l’annonce</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

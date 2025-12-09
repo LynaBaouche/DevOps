@@ -20,5 +20,12 @@ public class Annonce {
     private String ville;
     private String auteur;
     private String datePublication;
+    @Column(name = "utilisateur_id")
+    private Long utilisateurId;
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private int vues;
+
+
+
 }
 

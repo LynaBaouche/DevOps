@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Annonce | EtudLife</title>
+
+    <!-- CSS global -->
+    <link rel="stylesheet" href="/Annonce/annonces.css">
+
+    <style>
+        .edit-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 18px;
+            border: 1px solid #d0d7e2;
+            border-radius: 8px;
+        }
+
+        .btn-blue {
+            width: 100%;
+            background: #1e66ff;
+            padding: 12px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn-blue:hover {
+            background: #0f4cd5;
+        }
+    </style>
+</head>
+
+<body class="page-annonces">
+
+<h1 style="text-align:center; margin-top:25px;">Modifier l'annonce</h1>
+
+<div class="edit-container">
+
+    <form id="edit-form">
+
+        <label>Titre</label>
+        <input type="text" id="titre" required>
+
+        <label>Catégorie</label>
+        <select id="categorie" required>
+            <option>Logement</option>
+            <option>Cours</option>
+            <option>Emploi</option>
+            <option>Service</option>
+            <option>Objet</option>
+        </select>
+
+        <label>Prix</label>
+        <input type="text" id="prix" required>
+
+        <label>Ville</label>
+        <input type="text" id="ville" required>
+
+        <label>Description</label>
+        <textarea id="description" required></textarea>
+
+        <button type="submit" class="btn-blue">Enregistrer les modifications</button>
+
+    </form>
+
+</div>
+
+
+<!-- ===========================
+     🟦 JAVASCRIPT INTÉGRÉ
+============================ -->
+<script>
+    // Récupérer ID dans l’URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    // Charger l’annonce existante
+    async function loadAnnonce() {
+        const res = await fetch(`/api/annonces/${id}`);
+        const a = await res.json();
+
+        document.getElementById("titre").value = a.titre;
+        document.getElementById("categorie").value = a.categorie;
+        document.getElementById("prix").value = a.prix;
+        document.getElementById("ville").value = a.ville;
+        document.getElementById("description").value = a.description;
+    }
+
+    loadAnnonce();
+
+    // Sauvegarder modification
+    document.getElementById("edit-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const annonceModifiee = {
+            titre: document.getElementById("titre").value,
+            categorie: document.getElementById("categorie").value,
+            prix: document.getElementById("prix").value,
+            ville: document.getElementById("ville").value,
+            description: document.getElementById("description").value,
+            image: "default.jpg"
+        };
+
+        await fetch(`/api/annonces/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(annonceModifiee)
+        });
+
+        alert("Annonce modifiée !");
+        window.location.href = "/Annonce/mes_annonces.html";
+    });
+</script>
+
+</body>
+</html>

@@ -1,6 +1,13 @@
+oui
 .page-annonces {
+    background: #f8f9fc;
+}
+
+/* NOUVEAU : wrapper qui contient le contenu (sans toucher le header) */
+.annonces-content {
     padding: 20px 40px;
 }
+
 
 .search-bar input {
     width: 100%;
@@ -20,19 +27,21 @@
     background: #f1f5ff;
     border-radius: 12px;
     border: none;
+    cursor: pointer;
 }
-
 .filter.active {
     background: #1e66ff;
     color: white;
 }
 
+/* =========================
+    📊 STATISTIQUES
+========================= */
 .stats-boxes {
     margin-top: 25px;
     display: flex;
     gap: 20px;
 }
-
 .stats-box {
     background: white;
     padding: 20px;
@@ -42,39 +51,1014 @@
     text-align: center;
 }
 
+/* =========================
+    🟦 GRILLE D'ANNONCES
+========================= */
 .annonces-grid {
     margin-top: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
 }
 
-.card {
-    background: white;
-    border-radius: 14px;
+/* =========================
+   🟦 CARTE STYLE PRO — VERSION FINALE
+========================= */
+.card-pro {
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.07);
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+    border: 1px solid #e5e7eb;
+}
+.card-pro:hover {
+    transform: translateY(-4px);
 }
 
-.card img {
+/* Image */
+.card-img-wrapper {
+    position: relative;
     width: 100%;
     height: 180px;
+    overflow: hidden;
+}
+.card-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-bottom: 1px solid #eee;
 }
 
-.card-content {
-    padding: 18px;
+/* Badge catégorie */
+.cat-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #eef3ff;
+    color: #1e66ff;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.badge {
-    display: inline-block;
-    padding: 6px 10px;
-    background: #1e66ff22;
-    border-radius: 6px;
+/* Corps */
+.card-body {
+    padding: 16px;
+}
+
+.card-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.card-desc {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+/* Prix + Date */
+.price-date {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
     margin-bottom: 10px;
 }
 
 .price {
-    font-weight: bold;
     color: #1e66ff;
+    font-weight: bold;
+}
+.date {
+    color: #777;
+}
+
+/* Icônes */
+.icons p {
+    font-size: 14px;
+    margin: 3px 0;
+}
+
+/* Boutons */
+.card-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 14px;
+}
+
+.btn-details {
+    flex: 1;
+    background: #1e66ff;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-details:hover {
+    background: #1557d6;
+}
+
+.btn-fav {
+    margin-left: 10px;
+    background: white;
+    border: 1px solid #d7d7d7;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+
+/* ================
+   MODAL PREMIUM
+================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+}
+
+.hidden { display: none !important; }
+
+/* Fenêtre de la modale */
+.modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+    /* ⬇️ Taille de la fenêtre */
+    width: 600px;        /* avant : plus petit */
+    max-width: 95%;      /* pour rester responsive */
+    max-height: 90vh;    /* ne dépasse pas la hauteur écran */
+    overflow-y: auto;    /* scroll interne si le contenu est long */
+}
+
+
+/* Animation */
+@keyframes zoomIn {
+    from { transform: scale(0.92); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* Image */
+.modal-img {
+    width: 100%;
+    height: 220px;                  /* ↓ réduit */
+    object-fit: cover;
+    border-radius: 16px 16px 0 0;
+}
+
+/* Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* --- CROIX MODAL EN HAUT À DROITE --- */
+.modal-box {
+    position: relative; /* obligatoire */
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 26px;
+    color: #444;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #1e66ff;
+}
+
+
+.price-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* aligné à droite comme sur ton design */
+    gap: 3px;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e66ff;
+}
+
+.date {
+    font-size: 13px;
+    color: #777;
+}
+.modal-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #eef3ff;
+    color: #1e66ff;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.modal-body { padding: 20px; }
+
+/* Contact */
+.contact-box {
+    background: #f4f6ff;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #dce3ff;
+}
+
+/* Actions */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-blue {
+    background: #1e66ff;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.fav-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+
+/*bouton mes favoris et mes annonces*/
+/* Zone des actions en haut */
+.annonce-top-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Boutons généraux */
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid #d0d7e2;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.25s;
+}
+
+.action-btn:hover {
+    background: #f1f4ff;
+}
+
+/* Bouton "Mes annonces" version bleu */
+.action-btn.primary {
+    background: #1e66ff;
+    color: white;
+    border-color: #1e66ff;
+}
+
+.action-btn.primary:hover {
+    background: #1557d6;
+}
+
+/* ============================
+   ⭐ PAGE MES FAVORIS
+============================ */
+
+.favoris-container {
+    padding: 40px;
+    max-width: 900px;
+    margin: auto;
+    font-family: "Poppins", sans-serif;
+}
+
+.favoris-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.favoris-container .subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* 🟦 Carte du compteur */
+.card-stats {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.stat-icon {
+    font-size: 32px;
+}
+
+.stat-info h2 {
+    font-size: 26px;
+    margin: 0;
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+
+
+/* 🩶 Section vide des favoris */
+.empty-favoris {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.empty-icon {
+    font-size: 50px;
+    background: white;
+    padding: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.empty-favoris h3 {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.empty-favoris p {
+    color: #666;
+    margin-bottom: 20px;
+}
+.btn-fav.active {
+    color: red;
+}
+.btn-fav-header {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#fav-count {
+    background: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+.btn-fav {
+    font-size: 20px;
+    border: 1px solid #d7d7d7;
+    padding: 8px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    background: white;
+}
+
+.btn-fav.active {
+    color: red !important;
+}
+/* Bouton cœur (favori) */
+.btn-fav {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s;
+}
+
+/* Cœur rempli (rouge) */
+.btn-fav.active {
+    color: red;
+}
+/* --- Ajustement du layout pour la page Favoris --- */
+
+.favoris-container .annonces-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+/* --- Mise en page correcte de la page favoris --- */
+
+/* Centre les cartes et limite la largeur */
+.favoris-container .annonces-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    justify-content: center;
+}
+
+/* Réduit la largeur des cartes (évite d'étirer en pleine largeur) */
+.favoris-container .card-pro {
+    max-width: 380px;
+    margin: auto;
+}
+/* ============================
+   ⭐ COMPTEUR FAVORIS — VERSION COMPACTE
+============================ */
+
+.card-stats {
+    background: #ffffff;
+    padding: 18px 25px;      /* ↓ réduit */
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+/* Cœur rouge plus petit */
+.stat-icon {
+    font-size: 36px;         /* ↓ réduit */
+    color: red;
+}
+
+/* Groupe cœur + compteur */
+.stat-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;               /* ↓ réduit */
+}
+
+/* Bloc du texte */
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Compteur rouge compact */
+.stat-info h2 {
+    background: red;
+    color: white;
+    padding: 4px 14px;       /* ↓ réduit */
+    border-radius: 6px;
+    font-size: 20px;         /* ↓ réduit */
+    font-weight: 700;
+    margin: 0 0 3px 0;
+}
+
+/* Texte sous le compteur */
+.stat-info p {
+    margin: 0;
+    font-size: 13px;         /* ↓ réduit */
+    color: #666;
+}
+
+/* Bouton bleu légèrement plus petit */
+.btn-blue {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 10px 18px;      /* ↓ réduit */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;         /* ↓ réduit */
+    transition: 0.25s;
+}
+
+.btn-blue:hover {
+    background: #0050d4;
+}
+
+
+
+
+/* =========================
+   🔷 HEADER MODERNE ETUDLIFE (avec images)
+   ========================= */
+.main-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-family: "Poppins", sans-serif;
+}
+
+/* Structure principale */
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.6rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* =========================
+   🎓 LOGO GAUCHE
+   ========================= */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+.logo-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.logo-text strong {
+    color: #0066ff;
+}
+
+/* =========================
+   🧭 NAVIGATION CENTRALE
+   ========================= */
+.header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.header-nav a:hover {
+    background: #e8f0ff;
+    color: #0066ff;
+}
+
+.header-nav a.active {
+    background: #e8f0ff;
+    color: #0066ff;
+    font-weight: 600;
+}
+
+/* =========================
+   👤 SECTION DROITE (profil + logout)
+   ========================= */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.header-nav {
+    display: flex;
+    flex-wrap: nowrap;   /* ← empêche de passer sur 2 lignes */
+    gap: 12px;           /* ← réduit (au lieu de 20px) */
+}
+
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.icon-btn:hover {
+    background: #e8f0ff;
+}
+
+/* Image profil */
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0; /* ✅ empêche le débordement */
+}
+
+/* Légère animation au survol */
+.icon-btn:hover .icon-img {
+    transform: scale(1.03);
+}
+
+/* Bouton déconnexion (rouge) */
+.icon-btn.logout {
+    background: #fff;
+    border: 1px solid #d93025;
+    color: #d93025;
+    font-size: 1.1rem;
+}
+.icon-btn.logout:hover {
+    background: #fee2e2;
+}
+
+.icon-btn:hover {
+    background: rgba(0, 102, 255, 0.1);
+}
+
+.icon-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.icon-btn:hover .icon-img {
+    transform: scale(1.03);
+}
+.account-menu {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+#account-icon {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 3px;
+    background: #eee;
+}
+
+/* Le menu déroulant (caché par défaut) */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    padding: 10px 0;
+    z-index: 999;
+}
+
+/* Titre */
+.menu-title {
+    font-weight: bold;
+    padding: 8px 15px 2px;
+}
+
+/* Sous-titre */
+.menu-subtitle {
+    font-size: 12px;
+    color: gray;
+    padding: 0 15px 10px;
+}
+
+/* Liens */
+.menu-item {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.menu-item:hover {
+    background: #f3f3f3;
+}
+
+/* =========================
+   📱 Responsive
+   ========================= */
+@media (max-width: 900px) {
+    .header-nav {
+        display: none; /* cache le menu sur petits écrans */
+    }
+    .header-container {
+        justify-content: space-between;
+    }
+}
+
+
+/* =========================
+   ⭐ PAGE : MES ANNONCES — Style premium
+========================= */
+
+.mes-annonces-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+    font-family: "Poppins", sans-serif;
+}
+
+.mes-annonces-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.mes-annonces-container .subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* --- GRILLE DE STATISTIQUES --- */
+.stats-mes-annonces {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    background: white;
+    padding: 22px 20px;
+    border-radius: 14px;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: 0.25s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    background: #eef4ff;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.stat-box h2 {
+    font-size: 26px;
+    margin: 5px 0;
+    font-weight: 800;
+}
+
+.stat-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* --- Bouton créer une annonce --- */
+.create-btn {
+    align-self: center;
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #1e66ff;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(30, 102, 255, 0.25);
+    transition: 0.2s ease;
+}
+
+.create-btn:hover {
+    background: #1557d6;
+    box-shadow: 0 4px 12px rgba(30, 102, 255, 0.35);
+}
+
+/* =========================
+   ⭐ PAGE : MES ANNONCES — Style premium
+========================= */
+
+.mes-annonces-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+    font-family: "Poppins", sans-serif;
+}
+
+.mes-annonces-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.mes-annonces-container .subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* --- GRILLE DE STATISTIQUES --- */
+.stats-mes-annonces {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    background: white;
+    padding: 22px 20px;
+    border-radius: 14px;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: 0.25s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    background: #eef4ff;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.stat-box h2 {
+    font-size: 26px;
+    margin: 5px 0;
+    font-weight: 800;
+}
+
+.stat-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* --- Grille d’annonces publiées --- */
+#mes-annonces-list {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 30px;
+}
+
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-close {
+    cursor: pointer;
+    font-size: 24px;
+    color: #555;
+}
+
+.modal-form label {
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d0d3dd;
+    margin-top: 5px;
+}
+
+/* Ligne 2 colonnes */
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+/* Bas modal */
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.btn-cancel {
+    background: #f0f0f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+}
+
+.btn-submit {
+    background: #0d63f3;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+}
+/* 🔵 Overlay derrière la modal */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55); /* fond sombre */
+    z-index: 1;
+}
+
+/* 🔵 La modal blanche doit passer devant l’overlay */
+.modal-box {
+    position: relative;
+    z-index: 2;
+}
+/* ===============================
+   🎯 Amélioration "Mes Annonces"
+   =============================== */
+
+/* Réduit la largeur du bouton Modifier */
+#mes-annonces-list .btn-details {
+    width: 75%;               /* bouton plus petit */
+    padding: 10px 0;
+    margin-right: 12px;       /* espace avant la corbeille */
+    font-size: 14px;
+}
+
+/* Bouton corbeille amélioré */
+#mes-annonces-list .btn-delete {
+    background: white;
+    border: 1px solid #cfcfcf;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 22px;          /* icône plus grande */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+}
+
+/* Animation au survol (effet moderne) */
+#mes-annonces-list .btn-delete:hover {
+    background: #ffe5e5;
+    border-color: #ff7a7a;
+    transform: scale(1.15);   /* léger zoom */
 }
