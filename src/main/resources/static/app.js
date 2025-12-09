@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 function logout() {
     localStorage.removeItem("utilisateur");
     currentUser = null;
-    window.location.href = "index.html";
+    window.location.href = "/index.html";
 }
 
 /*
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             alert("✅ Connexion réussie !");
-            window.location.href = "index.html";
+            window.location.href = "/index.html";
 
         } catch (err) {
             document.getElementById("passwordError").textContent = "Erreur réseau : " + err.message;
@@ -884,7 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ----- ❌ Déconnexion -----
         document.getElementById("logout-btn").addEventListener("click", () => {
             localStorage.removeItem("utilisateur");
-            window.location.href = "index.html";
+            window.location.href = "/index.html";
         });
 
     } else {
@@ -945,7 +945,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     await loadApplicationData();
                 } else {
                     // Sinon, on redirige vers l'accueil connecté
-                    window.location.href = "index.html?profil=true";
+                    window.location.href = "/index.html?profil=true";
                 }
             });
         }
@@ -968,7 +968,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newLogoutBtn.addEventListener("click", () => {
             localStorage.removeItem("utilisateur");
-            window.location.href = "index.html";
+            window.location.href = "/index.html";
         });
     }
 });
