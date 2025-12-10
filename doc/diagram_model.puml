@@ -1,0 +1,211 @@
+@startuml
+
+skinparam shadowing false
+package com.etudlife.model {
+	class com.etudlife.model.Annonce {
+		--
+	}
+
+	class com.etudlife.model.Compte {
+		--
+		+Compte()
+		+Compte(prenom: String, nom: String, email: String, motDePasse: String)
+		..
+		+getEmail(): String
+		+setEmail(email: String)
+		+getGroupes(): List<Groupe>
+		+setGroupes(groupes: List<Groupe>)
+		+getId(): Long
+		+setId(id: Long)
+		+getLiens(): List<Lien>
+		+setLiens(liens: List<Lien>)
+		+getMotDePasse(): String
+		+setMotDePasse(motDePasse: String)
+		+getNom(): String
+		+setNom(nom: String)
+		+getPosts(): List<Post>
+		+setPosts(posts: List<Post>)
+		+getPrenom(): String
+		+setPrenom(prenom: String)
+	}
+
+	class com.etudlife.model.Document {
+		--
+		+getChemin(): String
+		+setChemin(chemin: String)
+		+getDateUpload(): Instant
+		+setDateUpload(dateUpload: Instant)
+		+getGroupId(): Long
+		+setGroupId(groupId: Long)
+		+getId(): Long
+		+setId(id: Long)
+		+getNom(): String
+		+setNom(nom: String)
+		+getTaille(): long
+		+setTaille(taille: long)
+		+getType(): String
+		+setType(type: String)
+		+getUploaderId(): Long
+		+setUploaderId(uploaderId: Long)
+	}
+
+	class com.etudlife.model.EntreeMenu {
+		--
+		+EntreeMenu()
+		+EntreeMenu(jour: String, moment: String, recette: Recette, utilisateur: Compte)
+		..
+		+getId(): Long
+		+setId(id: Long)
+		+getJour(): String
+		+setJour(jour: String)
+		+getMoment(): String
+		+setMoment(moment: String)
+		+getRecette(): Recette
+		+setRecette(recette: Recette)
+		+getUtilisateur(): Compte
+		+setUtilisateur(utilisateur: Compte)
+	}
+
+	class com.etudlife.model.Evenement {
+		--
+		+getCouleur(): String
+		+setCouleur(couleur: String)
+		+getDateDebut(): LocalDateTime
+		+setDateDebut(dateDebut: LocalDateTime)
+		+getDateFin(): LocalDateTime
+		+setDateFin(dateFin: LocalDateTime)
+		+getDescription(): String
+		+setDescription(description: String)
+		+getId(): Long
+		+setId(id: Long)
+		+getTitre(): String
+		+setTitre(titre: String)
+		+getUtilisateur(): Compte
+		+setUtilisateur(utilisateur: Compte)
+	}
+
+	class com.etudlife.model.Groupe {
+		--
+		+Groupe()
+		+Groupe(nom: String, description: String)
+		..
+		+getDescription(): String
+		+setDescription(description: String)
+		+getId(): Long
+		+setId(id: Long)
+		+getMembres(): List<Compte>
+		+setMembres(membres: List<Compte>)
+		+getNom(): String
+		+setNom(nom: String)
+		+getPosts(): List<Post>
+		+setPosts(posts: List<Post>)
+		..
+		+ajouterMembre(compte: Compte)
+	}
+
+	class com.etudlife.model.Lien {
+		--
+		+Lien()
+		+Lien(compteSource: Compte, compteCible: Compte)
+		..
+		+getCompteCible(): Compte
+		+setCompteCible(compteCible: Compte)
+		+getCompteSource(): Compte
+		+setCompteSource(compteSource: Compte)
+		+getDateCreation(): LocalDateTime
+		+setDateCreation(dateCreation: LocalDateTime)
+		+getId(): Long
+		+setId(id: Long)
+	}
+
+	class com.etudlife.model.Livre {
+		--
+		+getDispo(): boolean
+		+setDispo(dispo: boolean)
+	}
+
+	class com.etudlife.model.Message {
+		--
+		+Message()
+		..
+		+getContent(): String
+		+setContent(content: String)
+		+getConversationId(): Long
+		+setConversationId(conversationId: Long)
+		+getId(): Long
+		+setId(id: Long)
+		+getReceiverId(): Long
+		+setReceiverId(receiverId: Long)
+		+getSenderId(): Long
+		+setSenderId(senderId: Long)
+		+getTimestamp(): Instant
+		+setTimestamp(timestamp: Instant)
+	}
+
+	class com.etudlife.model.Post {
+		--
+		+getAuteur(): Compte
+		+setAuteur(auteur: Compte)
+		+getContenu(): String
+		+setContenu(contenu: String)
+		+getDateCreation(): LocalDateTime
+		+setDateCreation(dateCreation: LocalDateTime)
+		+getGroupe(): Groupe
+		+setGroupe(groupe: Groupe)
+		+getId(): Long
+		+setId(id: Long)
+	}
+
+	class com.etudlife.model.Recette {
+		--
+		+Recette()
+		+Recette(titre: String, description: String, prixEstime: Double, tempsPreparation: String, categorie: String, ingredients: List<String>)
+		..
+		+getCategorie(): String
+		+setCategorie(categorie: String)
+		+getDescription(): String
+		+setDescription(description: String)
+		+getId(): Long
+		+setId(id: Long)
+		+getIngredients(): List<String>
+		+setIngredients(ingredients: List<String>)
+		+getPrixEstime(): Double
+		+setPrixEstime(prixEstime: Double)
+		+getTempsPreparation(): String
+		+setTempsPreparation(tempsPreparation: String)
+		+getTitre(): String
+		+setTitre(titre: String)
+	}
+
+	class com.etudlife.model.Reservation {
+		--
+		+getBookId(): Long
+		+setBookId(bookId: Long)
+		+getCommentaire(): String
+		+setCommentaire(commentaire: String)
+		+getDuree(): int
+		+setDuree(duree: int)
+		+getId(): Long
+		+setId(id: Long)
+		+getType(): String
+		+setType(type: String)
+		+getUserId(): Long
+		+setUserId(userId: Long)
+	}
+
+	class com.etudlife.model.ReservationBU {
+		--
+		+getIdLivre(): Long
+	}
+
+}
+
+com.etudlife.model.Compte "*" o--o "*" com.etudlife.model.Groupe
+com.etudlife.model.Compte "2" *--o "*" com.etudlife.model.Lien
+com.etudlife.model.Compte *--o "*" com.etudlife.model.Post
+com.etudlife.model.EntreeMenu --* com.etudlife.model.Recette
+com.etudlife.model.EntreeMenu --* com.etudlife.model.Compte
+com.etudlife.model.Evenement --* com.etudlife.model.Compte
+com.etudlife.model.Groupe *--o "*" com.etudlife.model.Post
+
+@enduml
