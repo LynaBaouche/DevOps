@@ -29,16 +29,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
-sourceSets {
-    umlModel {
-        java {
-            srcDirs = ['src/main/java/com/etudlife/model']
-        }
-    }
-}
-
 classDiagram {
-    sourceSet = sourceSets.umlModel
+    //  On utilise le sourceSet principal "main" qui contient déjà tout
+    sourceSet = sourceSets.main
+
     outputFile = file("$rootDir/doc/diagram_model.puml")
 
     visibility = 'package private'

@@ -7,7 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EtudlifeApp {
     public static void main(String[] args) {
         SpringApplication.run(EtudlifeApp.class, args) ;
-
-
     }
 }

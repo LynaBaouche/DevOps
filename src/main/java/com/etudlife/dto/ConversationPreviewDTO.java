@@ -12,7 +12,7 @@ public class ConversationPreviewDTO {
     // Constructeur pour le mapping du Repository
     public ConversationPreviewDTO(Long conversationId, Long contactId, String contactName, String lastMessageContent, Instant lastMessageTimestamp) {
         this.conversationId = conversationId;
-        this.contactId = contactId; // 👈 AJOUTÉ
+        this.contactId = contactId;
         this.contactName = contactName;
         this.lastMessageContent = lastMessageContent;
         this.lastMessageTimestamp = lastMessageTimestamp;

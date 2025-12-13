@@ -1,0 +1,43 @@
+name: Update UML Diagram
+
+on:
+  push:
+    branches:
+      - master  # Ou 'main' selon le nom de votre branche principale
+    paths:
+      - 'src/main/java/**' # Se lance uniquement si on touche au code Java
+      - 'build.gradle'
+
+permissions:
+  contents: write # Important pour pouvoir pusher le fichier modifié
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Installer Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Rendre gradlew exécutable
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. Générer le diagramme via Gradle
+      - name: Generate UML Diagram
+        run: ./gradlew buildClassDiagram
+
+      # 5. Commiter et Pusher le changement (si le fichier a changé)
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: Update UML diagram automatically"
+          file_pattern: doc/diagram_model.puml # On ne commit que ce fichier
