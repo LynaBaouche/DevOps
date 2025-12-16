@@ -30,6 +30,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew bootJar
+
       - name: Generate PDF Documentation
         uses: docker://pandoc/latex:latest
         with:
@@ -37,10 +38,8 @@ jobs:
             --output=Documentation_EtudLife.pdf
             --pdf-engine=xelatex
             --variable=geometry:a4paper,margin=2cm
-            --variable=mainfont="DejaVu Sans"
             --toc
             doc/documentation.md
-
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
