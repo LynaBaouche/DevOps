@@ -1,0 +1,54 @@
+name: Release & Documentation PDF
+
+on:
+  push:
+    tags:
+      - 'v*' # Se déclenche sur les tags comme v-alpha.0, v1.0, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar
+      - name: Generate PDF Documentation
+        uses: docker://pandoc/latex:latest
+        with:
+          args: >-
+            --output=Documentation_EtudLife.pdf
+            --pdf-engine=xelatex
+            --variable=geometry:a4paper,margin=2cm
+            --variable=mainfont="DejaVu Sans"
+            --toc
+            doc/documentation.md
+
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/libs/*.jar
+            Documentation_EtudLife.pdf
+          draft: false
+          prerelease: true
+          generate_release_notes: true
