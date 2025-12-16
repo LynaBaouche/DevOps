@@ -41,7 +41,7 @@ Nous avons adopté une méthodologie inspirée des méthodes **Agile/Scrum**, ad
     * **GitHub :** Gestion de version et hébergement du code source.
 
 * **Stratégie de Branches (Gitflow simplifié) :**
-  Nous utilisons une stratégie basée sur des branches `Master/Main` pour la production et des `Feature branches` pour le développement des nouvelles fonctionnalités.
+  Nous utilisons une stratégie basée sur des branches `Master/Main` pour la production.
 
 * **Pipeline CI/CD :**
   L'intégration et le déploiement continus sont assurés par **GitHub Actions**. La qualité du code est surveillée via **SonarCloud**.
