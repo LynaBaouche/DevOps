@@ -124,7 +124,7 @@ Voici quelques endpoints clés de l'API REST :
 |---------------------|------------------------------------------------|--------------|
 | Lyna Baouche        | [@LynaBaouche](https://github.com/LynaBaouche) | 42008865     |
 | Alicya-Pearl Marras | [@alicyap](https://github.com/alicyap)     | 44015522        |
-| Kenza Menad         | [@kenza-menad](https://github.com/kenza-menad) | 44015522             |
+| Kenza Menad         | [@kenza-menad](https://github.com/kenza-menad) | 44014761             |
 | Dyhia Sellah        | [@DyhiaSellah1](https://github.com/DyhiaSellah1)      | 44015522             |
 ---
 
