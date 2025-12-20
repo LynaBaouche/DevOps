@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Compte {
@@ -34,6 +38,13 @@ public class Compte {
     @JsonIgnoreProperties({"auteur"})
     private List<Post> posts = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "favoris_recettes",
+            joinColumns = @JoinColumn(name = "compte_id"),
+            inverseJoinColumns = @JoinColumn(name = "recette_id")
+    )
+    private Set<Recette> recettesFavorites = new HashSet<>();
     public Compte() {}
 
     public Compte(String prenom, String nom, String email, String motDePasse) {
@@ -67,4 +78,11 @@ public class Compte {
 
     public List<Post> getPosts() { return posts; }
     public void setPosts(List<Post> posts) { this.posts = posts; }
+
+    public Set<Recette> getRecettesFavorites() {
+        return recettesFavorites;
+    }
+    public void setRecettesFavorites(Set<Recette> recettesFavorites) {
+        this.recettesFavorites = recettesFavorites;
+    }
 }

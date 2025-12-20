@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Favoris - EtudLife</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="cuisine.css">
+</head>
+<body>
+
+<header class="main-header">
+    <div class="header-container">
+        <div class="header-left">
+            <a href="/index.html" class="logo">
+                <img src="/images/etudlife.png" alt="Logo" class="logo-icon">
+                <span class="logo-text"><strong>Etud</strong>Life</span>
+            </a>
+        </div>
+        <nav class="header-nav">
+            <a href="/index.html">Accueil</a>
+            <a href="/Recette/cuisine.html" class="active">Cuisine</a>
+        </nav>
+        <div class="account-menu">
+            <img src="/images/compte.png" class="icon-img" id="account-icon">
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="page-header">
+        <h1>Mes Recettes Favorites ❤️</h1>
+        <p>Retrouve ici tous tes plats préférés.</p>
+
+        <div style="margin-top: 20px;">
+            <a href="cuisine.html" class="btn-primary" style="text-decoration: none;">
+                ⬅ Voir toutes les recettes (Menu)
+            </a>
+        </div>
+    </div>
+
+    <div id="favorites-grid" class="weekly-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+        <p style="text-align: center; width: 100%;">Chargement de tes favoris...</p>
+    </div>
+</main>
+
+<div id="recipe-modal" class="modal hidden">
+    <div class="modal-content recipe-content">
+        <span class="close-modal" onclick="closeRecipeModal()">&times;</span>
+        <div class="recipe-header">
+            <div id="modal-tags" class="tags-container"></div>
+            <h2 id="modal-title">Titre</h2>
+            <div class="recipe-meta">
+                <span id="modal-price" class="meta-price"></span>
+                <span id="modal-time" class="meta-time"></span>
+            </div>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients-section">
+                <h3>🛒 Ingrédients</h3>
+                <ul id="modal-ingredients"></ul>
+            </div>
+            <div class="prep-section">
+                <h3>👨‍🍳 Préparation</h3>
+                <p id="modal-prep"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeRecipeModal()">Fermer</button>
+            <button class="btn-primary" onclick="addToAgenda()">📅 Mettre à l'agenda</button>
+        </div>
+    </div>
+</div>
+
+<script src="/app.js"></script>
+<script src="cuisine.js"></script> </body>
+</html>

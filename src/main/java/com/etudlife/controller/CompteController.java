@@ -5,7 +5,8 @@ import com.etudlife.service.CompteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.etudlife.model.Recette;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 
@@ -78,5 +79,21 @@ public class CompteController {
     @GetMapping("/{id}")
     public Compte getCompteById(@PathVariable Long id) {
         return compteService.lireCompteParId(id);
+    }
+    @PostMapping("/{id}/favoris/{recetteId}")
+    public ResponseEntity<Void> ajouterFavori(@PathVariable Long id, @PathVariable Long recetteId) {
+        compteService.ajouterFavori(id, recetteId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/favoris/{recetteId}")
+    public ResponseEntity<Void> retirerFavori(@PathVariable Long id, @PathVariable Long recetteId) {
+        compteService.retirerFavori(id, recetteId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/favoris")
+    public ResponseEntity<Set<Recette>> listerFavoris(@PathVariable Long id) {
+        return ResponseEntity.ok(compteService.listerFavoris(id));
     }
 }

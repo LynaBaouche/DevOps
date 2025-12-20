@@ -46,7 +46,12 @@
     <div class="page-header">
         <h1>Menu de la semaine</h1>
         <p>Des recettes simples, pas chères et équilibrées pour ton budget étudiant.</p>
-        <button class="btn-primary" onclick="genererNouveauMenu()">🔄 Générer un menu selon mon budget</button>
+        <div class="actions-buttons" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+            <button class="btn-primary" onclick="genererNouveauMenu()">🔄 Générer un nouveau menu</button>
+            <a href="favoris.html" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center;">
+                ❤️ Voir mes Favoris
+            </a>
+        </div>
     </div>
 
     <div id="weekly-grid" class="weekly-grid">

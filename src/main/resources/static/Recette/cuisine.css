@@ -142,3 +142,70 @@
     gap: 10px;
     justify-content: flex-end;
 }
+.modal {
+    position: fixed;        /* Reste fixe même si on scrolle */
+    z-index: 1000;          /* Passe au-dessus de tout le reste */
+    left: 0;
+    top: 0;
+    width: 100%;            /* Prend toute la largeur */
+    height: 100%;           /* Prend toute la hauteur */
+    overflow: auto;         /* Permet de scroller si la modale est trop haute */
+    background-color: rgba(0, 0, 0, 0.5); /* Fond noir semi-transparent */
+
+    /* Centrage de la boîte de contenu */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Animation d'apparition */
+    backdrop-filter: blur(4px); /* Petit effet de flou sympa sur l'arrière-plan */
+    transition: opacity 0.3s ease;
+}
+
+/* La classe pour cacher la modale */
+.hidden {
+    display: none !important;
+}
+
+/* La boîte blanche contenant la recette */
+.recipe-content {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Ombre portée pour l'effet "flottant" */
+    position: relative;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+
+    /* Animation d'entrée */
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Le bouton de fermeture (La croix X) */
+.close-modal {
+    color: #94a3b8;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #ef4444; /* Devient rouge au survol */
+}
+
+/* Petite animation pour faire descendre la modale */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

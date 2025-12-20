@@ -1,6 +1,3 @@
-/* =========================================
-   🍳 LOGIQUE FRONTEND - CUISINE & BUDGET
-   ========================================= */
 
 const API_RECETTES_URL = `${API_BASE_URL}/recettes`;
 const API_EVENEMENTS_URL = `${API_BASE_URL}/evenements`;
@@ -8,12 +5,14 @@ const API_EVENEMENTS_URL = `${API_BASE_URL}/evenements`;
 let menuSemaineGlobal = {}; // Pour stocker les données reçues
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Vérif connexion
-    if (!currentUser) {
-        window.location.href = "login.html";
-        return;
+    if (!currentUser) { window.location.href = "/login.html"; return; }
+
+    if (document.getElementById("weekly-grid")) {
+        await chargerMenuSemaine();
     }
-    await chargerMenuSemaine();
+    else if (document.getElementById("favorites-grid")) {
+        await chargerMesFavoris();
+    }
 });
 
 /* 🔄 Charge le menu depuis le Backend */
@@ -126,14 +125,60 @@ function closeRecipeModal() {
     document.getElementById("recipe-modal").style.display = "none";
 }
 
-/* ❤️ Favoris (Simulation) */
-function toggleFavorite() {
-    alert(`"${currentRecipe.titre}" ajouté aux favoris !`);
+/* =========================================
+   ❤️ GESTION DES FAVORIS (FRONTEND)
+   ========================================= */
+async function toggleFavorite() {
+    if (!currentUser || !currentRecipe) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/comptes/${currentUser.id}/favoris/${currentRecipe.id}`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            alert(`❤️ "${currentRecipe.titre}" a été ajouté à tes favoris !`);
+            closeRecipeModal();
+        } else {
+            alert("Erreur lors de l'ajout aux favoris.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erreur technique.");
+    }
+}
+async function chargerMesFavoris() {
+    const grid = document.getElementById("favorites-grid");
+    if(!grid) return;
+    grid.innerHTML = "";
+
+    try {
+        // Appel au backend pour récupérer les favoris de l'utilisateur
+        const res = await fetch(`${API_BASE_URL}/comptes/${currentUser.id}/favoris`);
+        if (!res.ok) throw new Error("Erreur chargement favoris");
+
+        const favoris = await res.json();
+
+        if (favoris.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
+                <h3>Tu n'as pas encore de favoris ! 🥕</h3>
+                <p>Retourne au menu, clique sur une recette et ajoute-la.</p>
+            </div>`;
+            return;
+        }
+
+        favoris.forEach(recette => {
+            // On affiche "❤️" au lieu du jour de la semaine
+            const card = createRecipeCard(recette, "❤️", "Favori");
+            grid.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error(err);
+        grid.innerHTML = "<p>Impossible de charger tes favoris.</p>";
+    }
 }
 
-/* ✅ AJOUTER À L'AGENDA (Feature demandée)
-   On convertit la recette en Événement
-*/
 async function addToAgenda() {
     if(!currentRecipe || !currentUser) return;
 
