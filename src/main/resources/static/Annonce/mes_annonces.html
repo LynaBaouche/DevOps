@@ -111,7 +111,8 @@
 
         document.addEventListener("DOMContentLoaded", () => {
 
-            const openBtn = document.getElementById("open-create-modal");
+            const openBtn = document.getElementById("btn-create-annonce");
+
             const modal = document.getElementById("create-modal");
             const closeBtn = document.getElementById("close-create-modal");
             const cancelBtn = document.getElementById("cancel-create-modal");
@@ -161,43 +162,38 @@
                     return;
                 }
 
-                const newAnnonce = {
-                    titre: document.getElementById("titre").value,
-                    categorie: document.getElementById("categorie").value.toLowerCase(),
-                    prix: document.getElementById("prix").value,
-                    ville: document.getElementById("ville").value,
-                    description: document.getElementById("description").value,
-                    image: "default.jpg",
-                    auteur: user.prenom + " " + user.nom,
-                    datePublication: new Date().toISOString().split("T")[0],
-
-                    // ⭐ LE CHAMP QUI RÈGLE TOUT
-                    utilisateurId: user.id
-                };
-
-
-
-
-
-                // Envoi au backend
-                const res = await fetch("/api/annonces", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newAnnonce)
-                });
-
-                if (!res.ok) {
-                    alert("Erreur lors de la création.");
+                const imageInput = document.getElementById("image");
+                if (!imageInput.files.length) {
+                    alert("Veuillez sélectionner une image.");
                     return;
                 }
 
-                // Fermer la modale
-                modal.classList.add("hidden");
+                const fd = new FormData();
+                fd.append("titre", document.getElementById("titre").value);
+                fd.append("categorie", document.getElementById("categorie").value.toLowerCase());
+                fd.append("prix", document.getElementById("prix").value);
+                fd.append("ville", document.getElementById("ville").value);
+                fd.append("description", document.getElementById("description").value);
+                fd.append("auteur", user.prenom + " " + user.nom);
+                fd.append("utilisateurId", user.id);
+                fd.append("lien", document.getElementById("lien").value); // ✅
+                fd.append("image", document.getElementById("image").files[0]); // ✅
 
-                // Recharger la liste des annonces
-                loadMesAnnonces(user.id);
+
+
+                const res = await fetch("/api/annonces", {
+                    method: "POST",
+                    body: fd
+                });
+
+                if (!res.ok) {
+                    alert("Erreur lors de la publication.");
+                    return;
+                }
+
+                alert("✅ Annonce publiée !");
+                window.location.href = "/Annonce/annonces.html";
             });
-
         });
     </script>
     <script>
@@ -333,23 +329,17 @@
     </button>
 
     <!-- HEADER PAGE -->
-    <div class="mes-annonces-header" style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-    ">
-
+    <div class="mes-annonces-header">
         <div>
-            <h1 style="margin: 0;">Mes Annonces</h1>
-            <p class="subtitle" style="margin: 0;">Gérez vos annonces publiées</p>
+            <h1>Mes Annonces</h1>
+            <p class="subtitle">Gérez vos annonces publiées</p>
         </div>
 
-        <!-- Bouton ouvrir modal -->
-        <button id="open-create-modal" class="btn-blue" style="margin-bottom:20px;">
+        <button id="btn-create-annonce" class="create-btn">
             + Créer une annonce
         </button>
     </div>
+
 
     <!-- STATISTIQUES -->
     <div class="stats-mes-annonces">
@@ -411,35 +401,34 @@
             <div class="form-row">
                 <div>
                     <label>Prix *</label>
-                    <input type="text" id="prix" placeholder="Ex: 450€/mois" required>
+                    <input type="text" id="prix" placeholder="Ex: 450">
                 </div>
 
                 <div>
                     <label>Localisation *</label>
-                    <input type="text" id="ville" placeholder="Ex: Quartier Latin" required>
+                    <input type="text" id="ville" placeholder="Ex: Quartier Latin">
                 </div>
             </div>
+
 
             <label>Description *</label>
             <textarea id="description" placeholder="Décrivez votre annonce en détail…" maxlength="500"
                       required></textarea>
 
-            <div class="form-row">
-                <div>
-                    <label>Email de contact *</label>
-                    <input type="email" id="email" placeholder="votre.email@example.com" required>
-                </div>
+            <label>Lien vers l’annonce (optionnel)</label>
+            <input
+                    type="url"
+                    id="lien"
+                    placeholder="https://exemple.com/annonce"
+            >
 
-                <div>
-                    <label>Téléphone *</label>
-                    <input type="text" id="tel" placeholder="06 12 34 56 78" required>
-                </div>
-            </div>
 
-            <label>
-                <input type="checkbox" id="urgent">
-                Marquer comme urgent
-            </label>
+            <label>Photo de l’annonce *</label>
+            <input type="file" id="image" accept="image/*" required>
+
+
+
+
 
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" id="cancel-create-modal">Annuler</button>

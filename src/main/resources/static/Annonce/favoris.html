@@ -34,9 +34,10 @@
             </div>
         </div>
 
-        <button class="btn-blue" onclick="window.location.href='annonces.html'">
+        <button class="btn-blue btn-small" onclick="window.location.href='annonces.html'">
             + Découvrir plus d’annonces
         </button>
+
     </div>
 
 
@@ -66,7 +67,9 @@
     // ⚠️ Le bon compteur dans favoris.html :
     const favCountDisplay = document.getElementById("fav-count-display");
 
-    let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    const key = `favoris_user_${user.id}`;
+    let favoris = JSON.parse(localStorage.getItem(key)) || [];
 
     // Mise à jour du compteur
     favCountDisplay.textContent = favoris.length;
@@ -126,10 +129,10 @@
        ❌ SUPPRESSION D’UN FAVORI
     ============================ */
     function removeFavori(id) {
+        const key = `favoris_user_${user.id}`;
         favoris = favoris.filter(f => f.id !== id);
-        localStorage.setItem("favoris", JSON.stringify(favoris));
+        localStorage.setItem(key, JSON.stringify(favoris));
 
-        // Mise à jour du compteur
         favCountDisplay.textContent = favoris.length;
 
         if (favoris.length === 0) {
@@ -139,6 +142,7 @@
             displayFavoris();
         }
     }
+
 </script>
 
 </body>

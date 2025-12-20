@@ -56,11 +56,11 @@
 
         <label>Catégorie</label>
         <select id="categorie" required>
-            <option>Logement</option>
-            <option>Cours</option>
-            <option>Emploi</option>
-            <option>Service</option>
-            <option>Objet</option>
+            <option value="logement">Logement</option>
+            <option value="cours">Cours</option>
+            <option value="emploi">Emploi</option>
+            <option value="service">Service</option>
+            <option value="objet">Objet</option>
         </select>
 
         <label>Prix</label>
@@ -72,55 +72,79 @@
         <label>Description</label>
         <textarea id="description" required></textarea>
 
+        <label>Lien vers l’annonce (optionnel)</label>
+        <input type="url" id="lien" placeholder="https://exemple.com/annonce">
+
+        <label>Nouvelle photo (optionnel)</label>
+        <input type="file" id="image" accept="image/*">
+
         <button type="submit" class="btn-blue">Enregistrer les modifications</button>
 
     </form>
 
 </div>
 
-
-<!-- ===========================
-     🟦 JAVASCRIPT INTÉGRÉ
-============================ -->
 <script>
     // Récupérer ID dans l’URL
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
+    if (!id) {
+        alert("ID annonce manquant !");
+        window.location.href = "/Annonce/mes_annonces.html";
+    }
+
     // Charger l’annonce existante
     async function loadAnnonce() {
         const res = await fetch(`/api/annonces/${id}`);
+        if (!res.ok) {
+            alert("Impossible de charger l’annonce");
+            window.location.href = "/Annonce/mes_annonces.html";
+            return;
+        }
+
         const a = await res.json();
 
-        document.getElementById("titre").value = a.titre;
-        document.getElementById("categorie").value = a.categorie;
-        document.getElementById("prix").value = a.prix;
-        document.getElementById("ville").value = a.ville;
-        document.getElementById("description").value = a.description;
+        document.getElementById("titre").value = a.titre || "";
+        document.getElementById("categorie").value = (a.categorie || "").toLowerCase();
+        document.getElementById("prix").value = a.prix || "";
+        document.getElementById("ville").value = a.ville || "";
+        document.getElementById("description").value = a.description || "";
+        document.getElementById("lien").value = a.lien || "";
     }
 
     loadAnnonce();
 
-    // Sauvegarder modification
+    // Sauvegarder modification (FormData)
     document.getElementById("edit-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const annonceModifiee = {
-            titre: document.getElementById("titre").value,
-            categorie: document.getElementById("categorie").value,
-            prix: document.getElementById("prix").value,
-            ville: document.getElementById("ville").value,
-            description: document.getElementById("description").value,
-            image: "default.jpg"
-        };
+        const fd = new FormData();
+        fd.append("titre", document.getElementById("titre").value);
+        fd.append("categorie", document.getElementById("categorie").value.toLowerCase());
+        fd.append("prix", document.getElementById("prix").value);
+        fd.append("ville", document.getElementById("ville").value);
+        fd.append("description", document.getElementById("description").value);
+        fd.append("lien", document.getElementById("lien").value);
 
-        await fetch(`/api/annonces/${id}`, {
+        const imageInput = document.getElementById("image");
+        if (imageInput.files.length > 0) {
+            fd.append("image", imageInput.files[0]); // optionnel
+        }
+
+        const res = await fetch(`/api/annonces/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(annonceModifiee)
+            body: fd
         });
 
-        alert("Annonce modifiée !");
+        if (!res.ok) {
+            const err = await res.text();
+            console.error("Erreur modification:", err);
+            alert("Erreur lors de la modification");
+            return;
+        }
+
+        alert("✅ Annonce modifiée !");
         window.location.href = "/Annonce/mes_annonces.html";
     });
 </script>

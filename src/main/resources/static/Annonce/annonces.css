@@ -1035,9 +1035,9 @@
 
 /* Réduit la largeur du bouton Modifier */
 #mes-annonces-list .btn-details {
-    width: 75%;               /* bouton plus petit */
+    width: 75%;
     padding: 10px 0;
-    margin-right: 12px;       /* espace avant la corbeille */
+    margin-right: 12px;
     font-size: 14px;
 }
 
@@ -1060,4 +1060,368 @@
     background: #ffe5e5;
     border-color: #ff7a7a;
     transform: scale(1.15);   /* léger zoom */
+}
+/* =========================
+   ✅ MODAL DETAILS (STYLE PRO)
+========================= */
+
+/* Overlay + centrage */
+.modal.hidden { display: none; }
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+}
+
+/* Box principale */
+.modal-box {
+    position: relative;
+    width: min(920px, 92vw);
+    max-height: 86vh;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Image top */
+.modal-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    background: #f2f3f7;
+}
+
+/* Badge URGENT */
+.modal-urgent {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #ff3b30;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    letter-spacing: .3px;
+    box-shadow: 0 8px 20px rgba(255,59,48,0.35);
+}
+
+/* Bouton fermer rond */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    user-select: none;
+}
+.modal-close:hover {
+    transform: translateY(-1px);
+}
+
+/* Corps scrollable */
+.modal-body {
+    padding: 18px 18px 22px;
+    overflow: auto;
+}
+
+/* Header titre/prix */
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.modal-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    color: #111827;
+}
+
+.modal-price-date {
+    text-align: right;
+    white-space: nowrap;
+}
+.modal-price {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1e66ff;
+}
+.modal-date {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+/* Badge catégorie */
+.modal-badge {
+    display: inline-block;
+    background: #eef4ff;
+    color: #1e66ff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+/* Infos (localisation + auteur) */
+.modal-info {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 16px;
+    color: #374151;
+    font-size: 14px;
+}
+.modal-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-info .info-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: #111827;
+    font-size: 14px;
+}
+
+/* Titres sections */
+.modal-body h3 {
+    margin: 16px 0 8px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* Description */
+#modal-desc {
+    margin: 0;
+    color: #374151;
+    line-height: 1.55;
+    font-size: 14px;
+}
+
+/* Zone lien externe */
+#modal-link a.btn-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    text-decoration: none;
+}
+
+/* Actions en bas */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.fav-btn,
+.btn-blue {
+    border: none;
+    cursor: pointer;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.btn-blue {
+    background: #1e66ff;
+    color: #fff;
+    flex: 1;
+}
+.btn-blue:hover { background: #0f4cd5; }
+
+.fav-btn {
+    background: #f3f4f6;
+    color: #111827;
+    min-width: 180px;
+}
+.fav-btn:hover { background: #e9edf3; }
+
+/* Responsive */
+@media (max-width: 680px) {
+    .modal-box { width: 96vw; }
+    .modal-img { height: 190px; }
+    .modal-header { flex-direction: column; }
+    .modal-price-date { text-align: left; }
+    .fav-btn { min-width: 0; flex: 1; }
+    .modal-actions { flex-direction: column; }
+}
+/* ===============================
+   FIX UNIQUEMENT : CRÉER ANNONCE
+================================ */
+
+/* empêcher le bouton d'être en pleine largeur */
+#btn-create-annonce {
+    width: auto !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px !important;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+/* s'assurer qu'il reste à droite du titre */
+.mes-annonces-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/* ======================================
+   🔧 RÉDUCTION TAILLE CARTES ANNONCES
+====================================== */
+
+/* grille : cartes un peu plus étroites */
+.annonces-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+/* carte globale plus compacte */
+.card-pro {
+    border-radius: 14px;
+}
+
+/* image plus petite */
+.card-img-wrapper {
+    height: 140px;
+}
+
+/* contenu interne plus serré */
+.card-body {
+    padding: 14px;
+}
+
+/* titre plus petit */
+.card-body h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+/* description plus compacte */
+.card-body p {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* prix + date plus discrets */
+.price {
+    font-size: 14px;
+}
+
+.date {
+    font-size: 11px;
+}
+
+/* boutons plus petits */
+.btn-details {
+    padding: 8px;
+    font-size: 13px;
+}
+
+.btn-fav {
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+
+.fav-btn {
+    background: #f3f4f6;
+    color: #111;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fav-btn.active {
+    background: #ffe4e6;
+    color: #e11d48; /* rouge */
+}
+.main-header,
+.header-container {
+    overflow: visible !important;
+}
+.account-menu {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    display: none;
+    background: white;
+    border-radius: 12px;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 99999;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.btn-small {
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 10px;
+    min-width: auto;
+    height: auto;
+    white-space: nowrap;
+}
+
+.card-stats .btn-blue.btn-small {
+    flex: 0 !important;
+    width: auto !important;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    white-space: nowrap;
 }

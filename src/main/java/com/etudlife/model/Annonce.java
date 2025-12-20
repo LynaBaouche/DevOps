@@ -24,7 +24,7 @@ public class Annonce {
     private Long utilisateurId;
     @Column(columnDefinition = "INT DEFAULT 0")
     private int vues;
-
+    private String lien;
 
 
 }

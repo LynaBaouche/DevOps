@@ -151,23 +151,62 @@
             <h3>Description</h3>
             <p id="modal-desc"></p>
 
-            <!-- CONTACT -->
-            <h3>Contact</h3>
-            <div class="contact-box">
-                <p><strong>Email</strong><br><span id="modal-email"></span></p>
-                <p><strong>Téléphone</strong><br><span id="modal-tel"></span></p>
-            </div>
+            <!-- LIEN EXTERNE -->
+            <div id="modal-link" style="margin-top:15px;"></div>
+
+
 
             <!-- ACTIONS -->
             <div class="modal-actions">
                 <button id="modal-fav-btn" class="fav-btn">🤍 Ajouter aux favoris</button>
-                <button class="btn-blue">Contacter</button>
+
             </div>
 
         </div>
 
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const accountIcon = document.getElementById("account-icon");
+        const dropdown = document.getElementById("dropdown-menu");
+
+        if (!accountIcon || !dropdown) return;
+
+        accountIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("show");
+        });
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener("click", () => {
+            dropdown.classList.remove("show");
+        });
+
+        dropdown.addEventListener("click", (e) => {
+            e.stopPropagation();
+        });
+
+        // 🔐 Gestion utilisateur connecté
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+
+        if (user) {
+            dropdown.querySelector(".menu-title").textContent =
+                `${user.prenom || ""} ${user.nom || ""}`.trim() || "Utilisateur";
+            dropdown.querySelector(".menu-subtitle").textContent = user.email || "";
+            document.querySelectorAll(".connected-only").forEach(el => el.style.display = "block");
+            document.querySelectorAll(".disconnected-only").forEach(el => el.style.display = "none");
+        }
+
+        // 🚪 Déconnexion
+        document.getElementById("logout-btn")?.addEventListener("click", () => {
+            localStorage.removeItem("utilisateur");
+            window.location.href = "/login.html";
+        });
+    });
+</script>
 
 
 
