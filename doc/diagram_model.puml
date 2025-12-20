@@ -7,203 +7,20 @@ package com.etudlife {
 		+{static} main(args: String[])
 	}
 
-	package com.etudlife.config {
-		class com.etudlife.config.WebConfig {
-			--
-			+addResourceHandlers(registry: ResourceHandlerRegistry)
-		}
-
-	}
-
-	package com.etudlife.controller {
-		class com.etudlife.controller.AnnonceController {
-			--
-			+AnnonceController(service: AnnonceService)
-			..
-			+create(titre: String, categorie: String, prix: String, ville: String, description: String, auteur: String, utilisateurId: Long, lien: String, image: MultipartFile): Annonce
-			+delete(id: Long)
-			+getAll(categorie: String): List<Annonce>
-			+getById(id: Long): Annonce
-			+getByUser(userId: Long): List<Annonce>
-			+incrementVue(id: Long): Annonce
-			+update(id: Long, titre: String, categorie: String, prix: String, ville: String, description: String, lien: String, image: MultipartFile): Annonce
-		}
-
-		class com.etudlife.controller.CompteController {
-			--
-			+CompteController(compteService: CompteService)
-			..
-			+getAllComptes(): List<Compte>
-			..
-			+creerCompte(compte: Compte): ResponseEntity<?>
-			+getCompteById(id: Long): Compte
-			+getCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
-			+login(credentials: Map<String,String>): ResponseEntity<?>
-		}
-
-		class com.etudlife.controller.ConversationController {
-			--
-			+getConversationPreviews(authenticatedUserId: Long): ResponseEntity<List<ConversationPreviewDTO>>
-		}
-
-		class com.etudlife.controller.DocumentController {
-			--
-			+DocumentController(service: DocumentService)
-			..
-			+getAllDocuments(): ResponseEntity<?>
-			..
-			+getDocumentById(id: Long): ResponseEntity<?>
-			+upload(file: MultipartFile, uploaderId: Long, groupId: Long): ResponseEntity<?>
-		}
-
-		class com.etudlife.controller.EvenementController {
-			--
-			+ajouter(userId: Long, evenement: Evenement): Evenement
-			+getEvenements(userId: Long): List<Evenement>
-			+getSharedEvents(userId: Long): List<Evenement>
-			+supprimer(id: Long)
-		}
-
-		class com.etudlife.controller.GroupeController {
-			--
-			+GroupeController(groupeService: GroupeService)
-			..
-			+getAllGroupes(): List<Groupe>
-			..
-			+ajouterMembre(groupeId: Long, compteId: Long): Groupe
-			+creerGroupe(groupe: Groupe): Groupe
-		}
-
-		class com.etudlife.controller.LienController {
-			--
-			+LienController(lienService: LienService)
-			..
-			+creerLien(idSource: Long, idCible: Long): Optional<Lien>
-			+getProches(idSource: Long): List<Lien>
-			+supprimerLien(id: Long)
-		}
-
-		class com.etudlife.controller.MenuController {
-			--
-			+MenuController(service: MenuService)
-			..
-			+generer(payload: Map<String,Object>): ResponseEntity<?>
-			+getMenu(userId: Long): List<EntreeMenu>
-		}
-
-		class com.etudlife.controller.MessageController {
-			--
-			+getMessages(conversationId: Long, afterId: Long): List<Message>
-			+sendMessage(conversationId: Long, request: MessageRequestDTO, authenticatedUserId: Long): ResponseEntity<Message>
-		}
-
-		class com.etudlife.controller.PostController {
-			--
-			+PostController(postService: PostService)
-			..
-			+creerPost(payload: Map<String,Object>): Post
-			+getPostsParGroupe(groupeId: Long): List<Post>
-		}
-
-		class com.etudlife.controller.RecetteController {
-			--
-			+RecetteController(service: RecetteService)
-			..
-			+getMenuSemaine(): ResponseEntity<Map<String,Map<String,Recette>>>
-		}
-
-		class com.etudlife.controller.ReservationController {
-			--
-			+getReservationsUser(idUser: Long): List<ReservationBU>
-			+reserver(reservation: ReservationBU): ResponseEntity<?>
-		}
-
-	}
-
-	package com.etudlife.dto {
-		class com.etudlife.dto.ConversationPreviewDTO {
-			--
-			+ConversationPreviewDTO(conversationId: Long, contactId: Long, contactName: String, lastMessageContent: String, lastMessageTimestamp: Instant)
-			..
-			+getContactId(): Long
-			+setContactId(contactId: Long)
-			+getContactName(): String
-			+setContactName(contactName: String)
-			+getConversationId(): Long
-			+setConversationId(conversationId: Long)
-			+getLastMessageContent(): String
-			+setLastMessageContent(lastMessageContent: String)
-			+getLastMessageTimestamp(): Instant
-			+setLastMessageTimestamp(lastMessageTimestamp: Instant)
-		}
-
-		interface com.etudlife.dto.ConversationPreviewProjection {
-			--
-			+getContactId(): Long
-			+getContactName(): String
-			+getConversationId(): Long
-			+getLastMessageContent(): String
-			+getLastMessageTimestamp(): Instant
-		}
-
-		class com.etudlife.dto.MessageRequestDTO {
-			--
-			+getContent(): String
-			+setContent(content: String)
-			+getReceiverId(): Long
-			+setReceiverId(receiverId: Long)
-			+getSenderId(): Long
-			+setSenderId(senderId: Long)
-		}
-
-	}
-
 	package com.etudlife.model {
-		class com.etudlife.model.Annonce {
+		class com.etudlife.model.Lien {
 			--
-		}
-
-		class com.etudlife.model.Compte {
-			--
-			+Compte()
-			+Compte(prenom: String, nom: String, email: String, motDePasse: String)
+			+Lien()
+			+Lien(compteSource: Compte, compteCible: Compte)
 			..
-			+getEmail(): String
-			+setEmail(email: String)
-			+getGroupes(): List<Groupe>
-			+setGroupes(groupes: List<Groupe>)
+			+getCompteCible(): Compte
+			+setCompteCible(compteCible: Compte)
+			+getCompteSource(): Compte
+			+setCompteSource(compteSource: Compte)
+			+getDateCreation(): LocalDateTime
+			+setDateCreation(dateCreation: LocalDateTime)
 			+getId(): Long
 			+setId(id: Long)
-			+getLiens(): List<Lien>
-			+setLiens(liens: List<Lien>)
-			+getMotDePasse(): String
-			+setMotDePasse(motDePasse: String)
-			+getNom(): String
-			+setNom(nom: String)
-			+getPosts(): List<Post>
-			+setPosts(posts: List<Post>)
-			+getPrenom(): String
-			+setPrenom(prenom: String)
-		}
-
-		class com.etudlife.model.Document {
-			--
-			+getChemin(): String
-			+setChemin(chemin: String)
-			+getDateUpload(): Instant
-			+setDateUpload(dateUpload: Instant)
-			+getGroupId(): Long
-			+setGroupId(groupId: Long)
-			+getId(): Long
-			+setId(id: Long)
-			+getNom(): String
-			+setNom(nom: String)
-			+getTaille(): long
-			+setTaille(taille: long)
-			+getType(): String
-			+setType(type: String)
-			+getUploaderId(): Long
-			+setUploaderId(uploaderId: Long)
 		}
 
 		class com.etudlife.model.EntreeMenu {
@@ -221,6 +38,29 @@ package com.etudlife {
 			+setRecette(recette: Recette)
 			+getUtilisateur(): Compte
 			+setUtilisateur(utilisateur: Compte)
+		}
+
+		class com.etudlife.model.Message {
+			--
+			+Message()
+			..
+			+getContent(): String
+			+setContent(content: String)
+			+getConversationId(): Long
+			+setConversationId(conversationId: Long)
+			+getId(): Long
+			+setId(id: Long)
+			+getReceiverId(): Long
+			+setReceiverId(receiverId: Long)
+			+getSenderId(): Long
+			+setSenderId(senderId: Long)
+			+getTimestamp(): Instant
+			+setTimestamp(timestamp: Instant)
+		}
+
+		class com.etudlife.model.ReservationBU {
+			--
+			+getIdLivre(): Long
 		}
 
 		class com.etudlife.model.Evenement {
@@ -260,43 +100,8 @@ package com.etudlife {
 			+ajouterMembre(compte: Compte)
 		}
 
-		class com.etudlife.model.Lien {
+		class com.etudlife.model.Annonce {
 			--
-			+Lien()
-			+Lien(compteSource: Compte, compteCible: Compte)
-			..
-			+getCompteCible(): Compte
-			+setCompteCible(compteCible: Compte)
-			+getCompteSource(): Compte
-			+setCompteSource(compteSource: Compte)
-			+getDateCreation(): LocalDateTime
-			+setDateCreation(dateCreation: LocalDateTime)
-			+getId(): Long
-			+setId(id: Long)
-		}
-
-		class com.etudlife.model.Livre {
-			--
-			+getDispo(): boolean
-			+setDispo(dispo: boolean)
-		}
-
-		class com.etudlife.model.Message {
-			--
-			+Message()
-			..
-			+getContent(): String
-			+setContent(content: String)
-			+getConversationId(): Long
-			+setConversationId(conversationId: Long)
-			+getId(): Long
-			+setId(id: Long)
-			+getReceiverId(): Long
-			+setReceiverId(receiverId: Long)
-			+getSenderId(): Long
-			+setSenderId(senderId: Long)
-			+getTimestamp(): Instant
-			+setTimestamp(timestamp: Instant)
 		}
 
 		class com.etudlife.model.Post {
@@ -350,117 +155,121 @@ package com.etudlife {
 			+setUserId(userId: Long)
 		}
 
-		class com.etudlife.model.ReservationBU {
+		class com.etudlife.model.Livre {
 			--
-			+getIdLivre(): Long
+			+getDispo(): boolean
+			+setDispo(dispo: boolean)
+		}
+
+		class com.etudlife.model.Document {
+			--
+			+getChemin(): String
+			+setChemin(chemin: String)
+			+getDateUpload(): Instant
+			+setDateUpload(dateUpload: Instant)
+			+getGroupId(): Long
+			+setGroupId(groupId: Long)
+			+getId(): Long
+			+setId(id: Long)
+			+getNom(): String
+			+setNom(nom: String)
+			+getTaille(): long
+			+setTaille(taille: long)
+			+getType(): String
+			+setType(type: String)
+			+getUploaderId(): Long
+			+setUploaderId(uploaderId: Long)
+		}
+
+		class com.etudlife.model.Compte {
+			--
+			+Compte()
+			+Compte(prenom: String, nom: String, email: String, motDePasse: String)
+			..
+			+getEmail(): String
+			+setEmail(email: String)
+			+getGroupes(): List<Groupe>
+			+setGroupes(groupes: List<Groupe>)
+			+getId(): Long
+			+setId(id: Long)
+			+getLiens(): List<Lien>
+			+setLiens(liens: List<Lien>)
+			+getMotDePasse(): String
+			+setMotDePasse(motDePasse: String)
+			+getNom(): String
+			+setNom(nom: String)
+			+getPosts(): List<Post>
+			+setPosts(posts: List<Post>)
+			+getPrenom(): String
+			+setPrenom(prenom: String)
+			+getRecettesFavorites(): Set<Recette>
+			+setRecettesFavorites(recettesFavorites: Set<Recette>)
 		}
 
 	}
 
-	package com.etudlife.repository {
-		interface com.etudlife.repository.AnnonceRepository {
+	package com.etudlife.dto {
+		class com.etudlife.dto.MessageRequestDTO {
 			--
-			+findByCategorie(categorie: String): List<Annonce>
-			+findByUtilisateurId(utilisateurId: Long): List<Annonce>
+			+getContent(): String
+			+setContent(content: String)
+			+getReceiverId(): Long
+			+setReceiverId(receiverId: Long)
+			+getSenderId(): Long
+			+setSenderId(senderId: Long)
 		}
 
-		interface com.etudlife.repository.CompteRepository {
+		interface com.etudlife.dto.ConversationPreviewProjection {
 			--
-			+findAllByNomIgnoreCaseAndPrenomIgnoreCase(nom: String, prenom: String): List<Compte>
-			+findByEmail(email: String): Optional<Compte>
+			+getContactId(): Long
+			+getContactName(): String
+			+getConversationId(): Long
+			+getLastMessageContent(): String
+			+getLastMessageTimestamp(): Instant
 		}
 
-		interface com.etudlife.repository.DocumentRepository {
+		class com.etudlife.dto.ConversationPreviewDTO {
 			--
-			+findByNomAndUploaderId(nom: String, uploaderId: Long): Optional<Document>
-		}
-
-		interface com.etudlife.repository.EntreeMenuRepository {
-			--
-			+deleteByUtilisateurId(utilisateurId: Long)
-			+findByUtilisateurId(utilisateurId: Long): List<EntreeMenu>
-		}
-
-		interface com.etudlife.repository.EvenementRepository {
-			--
-			+findByUtilisateurId(utilisateurId: Long): List<Evenement>
-			+findByUtilisateurIdIn(utilisateurIds: List<Long>): List<Evenement>
-		}
-
-		interface com.etudlife.repository.GroupeRepository {
-			--
-		}
-
-		interface com.etudlife.repository.LienRepository {
-			--
-			+findByCompteSource(compteSource: Compte): List<Lien>
-		}
-
-		interface com.etudlife.repository.LivreRepository {
-			--
-		}
-
-		interface com.etudlife.repository.MessageRepository {
-			--
-			+findByConversationIdAndIdGreaterThanOrderByTimestampAsc(conversationId: Long, afterId: Long): List<Message>
-			+findConversationPreviewsByUserId(userId: Long): List<ConversationPreviewProjection>
-			+findTop50ByConversationIdOrderByTimestampDesc(id: Long): List<Message>
-		}
-
-		interface com.etudlife.repository.PostRepository {
-			--
-			+findByGroupeIdOrderByDateCreationDesc(groupeId: Long): List<Post>
-		}
-
-		interface com.etudlife.repository.RecetteRepository {
-			--
-			+findByPrixEstimeLessThanEqual(prixMax: Double): List<Recette>
-		}
-
-		interface com.etudlife.repository.ReservationBURepository {
-			--
-			+findByIdUser(idUser: Long): List<ReservationBU>
+			+ConversationPreviewDTO(conversationId: Long, contactId: Long, contactName: String, lastMessageContent: String, lastMessageTimestamp: Instant)
+			..
+			+getContactId(): Long
+			+setContactId(contactId: Long)
+			+getContactName(): String
+			+setContactName(contactName: String)
+			+getConversationId(): Long
+			+setConversationId(conversationId: Long)
+			+getLastMessageContent(): String
+			+setLastMessageContent(lastMessageContent: String)
+			+getLastMessageTimestamp(): Instant
+			+setLastMessageTimestamp(lastMessageTimestamp: Instant)
 		}
 
 	}
 
 	package com.etudlife.service {
-		class com.etudlife.service.AnnonceService {
+		class com.etudlife.service.RecetteService {
 			--
-			+AnnonceService(repository: AnnonceRepository)
+			+RecetteService(recetteRepository: RecetteRepository)
 			..
-			+delete(id: Long)
-			+findAll(): List<Annonce>
-			+findByCategorie(categorie: String): List<Annonce>
-			+findById(id: Long): Annonce
-			+findByUtilisateurId(utilisateurId: Long): List<Annonce>
-			+save(annonce: Annonce): Annonce
+			+getAllRecettes(): List<Recette>
+			+getMenuDeLaSemaine(): Map<String,Map<String,Recette>>
+			..
+			+save(r: Recette): Recette
 		}
 
-		class com.etudlife.service.CompteService {
+		class com.etudlife.service.LienService {
 			--
-			+CompteService(compteRepository: CompteRepository, groupeRepository: GroupeRepository)
+			+LienService(lienRepository: LienRepository, compteRepository: CompteRepository)
 			..
-			+creerCompte(compte: Compte): Compte
-			+lireCompteParId(id: Long): Compte
-			+listerComptes(): List<Compte>
-			+login(email: String, motDePasse: String): Compte
-			+trouverCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
+			+creerLien(idSource: Long, idCible: Long): Optional<Lien>
+			+getLiensPourCompte(idSource: Long): List<Lien>
+			+getProcheIds(idSource: Long): List<Long>
+			+supprimerLien(id: Long)
 		}
 
 		class com.etudlife.service.ConversationService {
 			--
 			+getPreviewsByUserId(userId: Long): List<ConversationPreviewDTO>
-		}
-
-		class com.etudlife.service.DocumentService {
-			--
-			+DocumentService(repo: DocumentRepository)
-			..
-			+getAllDocuments(): List<Document>
-			..
-			+enregistrer(fichier: MultipartFile, uploaderId: Long, groupId: Long): Document
-			+getDocumentById(id: Long): Optional<Document>
 		}
 
 		class com.etudlife.service.EvenementService {
@@ -481,14 +290,21 @@ package com.etudlife {
 			+creerGroupe(nom: String, description: String): Groupe
 		}
 
-		class com.etudlife.service.LienService {
+		class com.etudlife.service.DocumentService {
 			--
-			+LienService(lienRepository: LienRepository, compteRepository: CompteRepository)
+			+DocumentService(repo: DocumentRepository)
 			..
-			+creerLien(idSource: Long, idCible: Long): Optional<Lien>
-			+getLiensPourCompte(idSource: Long): List<Lien>
-			+getProcheIds(idSource: Long): List<Long>
-			+supprimerLien(id: Long)
+			+getAllDocuments(): List<Document>
+			..
+			+enregistrer(fichier: MultipartFile, uploaderId: Long, groupId: Long): Document
+			+getDocumentById(id: Long): Optional<Document>
+		}
+
+		class com.etudlife.service.MessageService {
+			--
+			+getLatestMessages(conversationId: Long): List<Message>
+			+getNewMessagesAfter(conversationId: Long, afterId: Long): List<Message>
+			+saveNewMessage(conversationId: Long, senderId: Long, receiverId: Long, content: String): Message
 		}
 
 		class com.etudlife.service.MenuService {
@@ -499,11 +315,30 @@ package com.etudlife {
 			+getMenuUtilisateur(userId: Long): List<EntreeMenu>
 		}
 
-		class com.etudlife.service.MessageService {
+		class com.etudlife.service.CompteService {
 			--
-			+getLatestMessages(conversationId: Long): List<Message>
-			+getNewMessagesAfter(conversationId: Long, afterId: Long): List<Message>
-			+saveNewMessage(conversationId: Long, senderId: Long, receiverId: Long, content: String): Message
+			+CompteService(compteRepository: CompteRepository, groupeRepository: GroupeRepository, recetteRepository: RecetteRepository)
+			..
+			+ajouterFavori(compteId: Long, recetteId: Long)
+			+creerCompte(compte: Compte): Compte
+			+lireCompteParId(id: Long): Compte
+			+listerComptes(): List<Compte>
+			+listerFavoris(compteId: Long): Set<Recette>
+			+login(email: String, motDePasse: String): Compte
+			+retirerFavori(compteId: Long, recetteId: Long)
+			+trouverCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
+		}
+
+		class com.etudlife.service.AnnonceService {
+			--
+			+AnnonceService(repository: AnnonceRepository)
+			..
+			+delete(id: Long)
+			+findAll(): List<Annonce>
+			+findByCategorie(categorie: String): List<Annonce>
+			+findById(id: Long): Annonce
+			+findByUtilisateurId(utilisateurId: Long): List<Annonce>
+			+save(annonce: Annonce): Annonce
 		}
 
 		class com.etudlife.service.PostService {
@@ -514,16 +349,6 @@ package com.etudlife {
 			+getPostsParGroupe(groupeId: Long): List<Post>
 		}
 
-		class com.etudlife.service.RecetteService {
-			--
-			+RecetteService(recetteRepository: RecetteRepository)
-			..
-			+getAllRecettes(): List<Recette>
-			+getMenuDeLaSemaine(): Map<String,Map<String,Recette>>
-			..
-			+save(r: Recette): Recette
-		}
-
 		class com.etudlife.service.ReservationService {
 			--
 			+reserver(r: ReservationBU): ReservationBU
@@ -531,50 +356,235 @@ package com.etudlife {
 
 	}
 
+	package com.etudlife.config {
+		class com.etudlife.config.WebConfig {
+			--
+			+addResourceHandlers(registry: ResourceHandlerRegistry)
+		}
+
+	}
+
+	package com.etudlife.controller {
+		class com.etudlife.controller.AnnonceController {
+			--
+			+AnnonceController(service: AnnonceService)
+			..
+			+create(titre: String, categorie: String, prix: String, ville: String, description: String, auteur: String, utilisateurId: Long, lien: String, image: MultipartFile): Annonce
+			+delete(id: Long)
+			+getAll(categorie: String): List<Annonce>
+			+getById(id: Long): Annonce
+			+getByUser(userId: Long): List<Annonce>
+			+incrementVue(id: Long): Annonce
+			+update(id: Long, titre: String, categorie: String, prix: String, ville: String, description: String, lien: String, image: MultipartFile): Annonce
+		}
+
+		class com.etudlife.controller.ConversationController {
+			--
+			+getConversationPreviews(authenticatedUserId: Long): ResponseEntity<List<ConversationPreviewDTO>>
+		}
+
+		class com.etudlife.controller.LienController {
+			--
+			+LienController(lienService: LienService)
+			..
+			+creerLien(idSource: Long, idCible: Long): Optional<Lien>
+			+getProches(idSource: Long): List<Lien>
+			+supprimerLien(id: Long)
+		}
+
+		class com.etudlife.controller.ReservationController {
+			--
+			+getReservationsUser(idUser: Long): List<ReservationBU>
+			+reserver(reservation: ReservationBU): ResponseEntity<?>
+		}
+
+		class com.etudlife.controller.RecetteController {
+			--
+			+RecetteController(service: RecetteService)
+			..
+			+getMenuSemaine(): ResponseEntity<Map<String,Map<String,Recette>>>
+		}
+
+		class com.etudlife.controller.MessageController {
+			--
+			+getMessages(conversationId: Long, afterId: Long): List<Message>
+			+sendMessage(conversationId: Long, request: MessageRequestDTO, authenticatedUserId: Long): ResponseEntity<Message>
+		}
+
+		class com.etudlife.controller.MenuController {
+			--
+			+MenuController(service: MenuService)
+			..
+			+generer(payload: Map<String,Object>): ResponseEntity<?>
+			+getMenu(userId: Long): List<EntreeMenu>
+		}
+
+		class com.etudlife.controller.EvenementController {
+			--
+			+ajouter(userId: Long, evenement: Evenement): Evenement
+			+getEvenements(userId: Long): List<Evenement>
+			+getSharedEvents(userId: Long): List<Evenement>
+			+supprimer(id: Long)
+		}
+
+		class com.etudlife.controller.GroupeController {
+			--
+			+GroupeController(groupeService: GroupeService)
+			..
+			+getAllGroupes(): List<Groupe>
+			..
+			+ajouterMembre(groupeId: Long, compteId: Long): Groupe
+			+creerGroupe(groupe: Groupe): Groupe
+		}
+
+		class com.etudlife.controller.CompteController {
+			--
+			+CompteController(compteService: CompteService)
+			..
+			+getAllComptes(): List<Compte>
+			..
+			+ajouterFavori(id: Long, recetteId: Long): ResponseEntity<Void>
+			+creerCompte(compte: Compte): ResponseEntity<?>
+			+getCompteById(id: Long): Compte
+			+getCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
+			+listerFavoris(id: Long): ResponseEntity<Set<Recette>>
+			+login(credentials: Map<String,String>): ResponseEntity<?>
+			+retirerFavori(id: Long, recetteId: Long): ResponseEntity<Void>
+		}
+
+		class com.etudlife.controller.PostController {
+			--
+			+PostController(postService: PostService)
+			..
+			+creerPost(payload: Map<String,Object>): Post
+			+getPostsParGroupe(groupeId: Long): List<Post>
+		}
+
+		class com.etudlife.controller.DocumentController {
+			--
+			+DocumentController(service: DocumentService)
+			..
+			+getAllDocuments(): ResponseEntity<?>
+			..
+			+getDocumentById(id: Long): ResponseEntity<?>
+			+upload(file: MultipartFile, uploaderId: Long, groupId: Long): ResponseEntity<?>
+		}
+
+	}
+
+	package com.etudlife.repository {
+		interface com.etudlife.repository.EntreeMenuRepository {
+			--
+			+deleteByUtilisateurId(utilisateurId: Long)
+			+findByUtilisateurId(utilisateurId: Long): List<EntreeMenu>
+		}
+
+		interface com.etudlife.repository.DocumentRepository {
+			--
+			+findByNomAndUploaderId(nom: String, uploaderId: Long): Optional<Document>
+		}
+
+		interface com.etudlife.repository.ReservationBURepository {
+			--
+			+findByIdUser(idUser: Long): List<ReservationBU>
+		}
+
+		interface com.etudlife.repository.CompteRepository {
+			--
+			+findAllByNomIgnoreCaseAndPrenomIgnoreCase(nom: String, prenom: String): List<Compte>
+			+findByEmail(email: String): Optional<Compte>
+		}
+
+		interface com.etudlife.repository.GroupeRepository {
+			--
+		}
+
+		interface com.etudlife.repository.MessageRepository {
+			--
+			+findByConversationIdAndIdGreaterThanOrderByTimestampAsc(conversationId: Long, afterId: Long): List<Message>
+			+findConversationPreviewsByUserId(userId: Long): List<ConversationPreviewProjection>
+			+findTop50ByConversationIdOrderByTimestampDesc(id: Long): List<Message>
+		}
+
+		interface com.etudlife.repository.LienRepository {
+			--
+			+findByCompteSource(compteSource: Compte): List<Lien>
+		}
+
+		interface com.etudlife.repository.EvenementRepository {
+			--
+			+findByUtilisateurId(utilisateurId: Long): List<Evenement>
+			+findByUtilisateurIdIn(utilisateurIds: List<Long>): List<Evenement>
+		}
+
+		interface com.etudlife.repository.PostRepository {
+			--
+			+findByGroupeIdOrderByDateCreationDesc(groupeId: Long): List<Post>
+		}
+
+		interface com.etudlife.repository.RecetteRepository {
+			--
+			+findByPrixEstimeLessThanEqual(prixMax: Double): List<Recette>
+		}
+
+		interface com.etudlife.repository.LivreRepository {
+			--
+		}
+
+		interface com.etudlife.repository.AnnonceRepository {
+			--
+			+findByCategorie(categorie: String): List<Annonce>
+			+findByUtilisateurId(utilisateurId: Long): List<Annonce>
+		}
+
+	}
+
 }
 
+com.etudlife.model.Lien "*" o--* "2" com.etudlife.model.Compte
+com.etudlife.model.EntreeMenu --* com.etudlife.model.Recette
+com.etudlife.model.EntreeMenu --* com.etudlife.model.Compte
+com.etudlife.model.Evenement --* com.etudlife.model.Compte
+com.etudlife.model.Groupe "*" o--o "*" com.etudlife.model.Compte
+com.etudlife.model.Groupe *--o "*" com.etudlife.model.Post
+com.etudlife.model.Post "*" o--* com.etudlife.model.Compte
+com.etudlife.model.Compte --o "*" com.etudlife.model.Recette
+com.etudlife.service.RecetteService --* com.etudlife.repository.RecetteRepository
+com.etudlife.service.LienService --* com.etudlife.repository.LienRepository
+com.etudlife.service.LienService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.ConversationService --* com.etudlife.repository.MessageRepository
+com.etudlife.service.EvenementService --* com.etudlife.repository.EvenementRepository
+com.etudlife.service.EvenementService --* com.etudlife.service.LienService
+com.etudlife.service.GroupeService --* com.etudlife.repository.GroupeRepository
+com.etudlife.service.GroupeService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.DocumentService --* com.etudlife.repository.DocumentRepository
+com.etudlife.service.MessageService --* com.etudlife.repository.MessageRepository
+com.etudlife.service.MenuService --* com.etudlife.repository.EntreeMenuRepository
+com.etudlife.service.MenuService --* com.etudlife.repository.RecetteRepository
+com.etudlife.service.MenuService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.CompteService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.CompteService --* com.etudlife.repository.GroupeRepository
+com.etudlife.service.CompteService --* com.etudlife.repository.RecetteRepository
+com.etudlife.service.AnnonceService --* com.etudlife.repository.AnnonceRepository
+com.etudlife.service.PostService --* com.etudlife.repository.PostRepository
+com.etudlife.service.PostService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
+com.etudlife.service.ReservationService --* com.etudlife.repository.ReservationBURepository
+com.etudlife.service.ReservationService --* com.etudlife.repository.LivreRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.service.AnnonceService
-com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
 com.etudlife.controller.ConversationController --* com.etudlife.service.ConversationService
-com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
+com.etudlife.controller.LienController --* com.etudlife.service.LienService
+com.etudlife.controller.ReservationController --* com.etudlife.service.ReservationService
+com.etudlife.controller.RecetteController --* com.etudlife.service.RecetteService
+com.etudlife.controller.MessageController --* com.etudlife.service.MessageService
+com.etudlife.controller.MenuController --* com.etudlife.service.MenuService
 com.etudlife.controller.EvenementController --* com.etudlife.repository.EvenementRepository
 com.etudlife.controller.EvenementController --* com.etudlife.repository.CompteRepository
 com.etudlife.controller.EvenementController --* com.etudlife.service.EvenementService
 com.etudlife.controller.EvenementController --* com.etudlife.service.LienService
 com.etudlife.controller.GroupeController --* com.etudlife.service.GroupeService
-com.etudlife.controller.LienController --* com.etudlife.service.LienService
-com.etudlife.controller.MenuController --* com.etudlife.service.MenuService
-com.etudlife.controller.MessageController --* com.etudlife.service.MessageService
+com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
-com.etudlife.controller.RecetteController --* com.etudlife.service.RecetteService
-com.etudlife.controller.ReservationController --* com.etudlife.service.ReservationService
-com.etudlife.model.Compte "*" o--o "*" com.etudlife.model.Groupe
-com.etudlife.model.Compte "2" *--o "*" com.etudlife.model.Lien
-com.etudlife.model.Compte *--o "*" com.etudlife.model.Post
-com.etudlife.model.EntreeMenu --* com.etudlife.model.Recette
-com.etudlife.model.EntreeMenu --* com.etudlife.model.Compte
-com.etudlife.model.Evenement --* com.etudlife.model.Compte
-com.etudlife.model.Groupe *--o "*" com.etudlife.model.Post
-com.etudlife.service.AnnonceService --* com.etudlife.repository.AnnonceRepository
-com.etudlife.service.CompteService --* com.etudlife.repository.CompteRepository
-com.etudlife.service.CompteService --* com.etudlife.repository.GroupeRepository
-com.etudlife.service.ConversationService --* com.etudlife.repository.MessageRepository
-com.etudlife.service.DocumentService --* com.etudlife.repository.DocumentRepository
-com.etudlife.service.EvenementService --* com.etudlife.repository.EvenementRepository
-com.etudlife.service.EvenementService --* com.etudlife.service.LienService
-com.etudlife.service.GroupeService --* com.etudlife.repository.GroupeRepository
-com.etudlife.service.GroupeService --* com.etudlife.repository.CompteRepository
-com.etudlife.service.LienService --* com.etudlife.repository.LienRepository
-com.etudlife.service.LienService --* com.etudlife.repository.CompteRepository
-com.etudlife.service.MenuService --* com.etudlife.repository.EntreeMenuRepository
-com.etudlife.service.MenuService --* com.etudlife.repository.RecetteRepository
-com.etudlife.service.MenuService --* com.etudlife.repository.CompteRepository
-com.etudlife.service.MessageService --* com.etudlife.repository.MessageRepository
-com.etudlife.service.PostService --* com.etudlife.repository.PostRepository
-com.etudlife.service.PostService --* com.etudlife.repository.CompteRepository
-com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
-com.etudlife.service.RecetteService --* com.etudlife.repository.RecetteRepository
-com.etudlife.service.ReservationService --* com.etudlife.repository.ReservationBURepository
-com.etudlife.service.ReservationService --* com.etudlife.repository.LivreRepository
+com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
 
 @enduml
