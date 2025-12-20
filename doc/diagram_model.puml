@@ -351,18 +351,26 @@ package com.etudlife {
 
 	}
 
+	package com.etudlife.config {
+		class com.etudlife.config.WebConfig {
+			--
+			+addResourceHandlers(registry: ResourceHandlerRegistry)
+		}
+
+	}
+
 	package com.etudlife.controller {
 		class com.etudlife.controller.AnnonceController {
 			--
 			+AnnonceController(service: AnnonceService)
 			..
-			+create(annonce: Annonce): Annonce
+			+create(titre: String, categorie: String, prix: String, ville: String, description: String, auteur: String, utilisateurId: Long, lien: String, image: MultipartFile): Annonce
 			+delete(id: Long)
 			+getAll(categorie: String): List<Annonce>
 			+getById(id: Long): Annonce
 			+getByUser(userId: Long): List<Annonce>
 			+incrementVue(id: Long): Annonce
-			+update(id: Long, annonceModifiee: Annonce): Annonce
+			+update(id: Long, titre: String, categorie: String, prix: String, ville: String, description: String, lien: String, image: MultipartFile): Annonce
 		}
 
 		class com.etudlife.controller.ConversationController {
