@@ -136,12 +136,12 @@ async function loadApplicationData() {
    ============================ */
 async function renderModernUserProfile() {
     const container = document.getElementById("modern-user-profile");
-    if (!container) return; // On n'est pas sur la page groupes.html
+    if (!container) return;
 
     container.innerHTML = `
         <div class="profile-card-modern">
             <div class="profile-header-bg"></div>
-            
+
             <div class="profile-avatar-container">
                 <img src="images/compte.png" alt="Avatar" class="profile-avatar-modern">
             </div>
@@ -155,13 +155,47 @@ async function renderModernUserProfile() {
                 </div>
 
                 <div class="profile-detail">
+                    <span>📞</span> ${currentUser.telephone || "Non renseigné"}
+                </div>
+
+                <div class="profile-detail">
+                    <span>📍</span> ${currentUser.adresse || "Non renseignée"}
+                </div>
+
+                <div class="profile-detail">
+                    <span>📝</span> ${currentUser.biographie || "Aucune biographie"}
+                </div>
+
+                <div class="profile-detail">
                     <span>🆔</span> N° Étudiant : ${currentUser.id}
                 </div>
 
-                <button class="btn-edit-profile">Modifier le profil</button>
+                <button class="btn-edit-profile" onclick="openEditProfile()">
+                    Modifier le profil
+                </button>
             </div>
         </div>
     `;
+}
+
+// ================= MODIFIER PROFIL =================
+
+function openEditProfile() {
+    if (!currentUser) return;
+
+    // Pré-remplir les champs
+    document.getElementById("editNom").value =
+        `${currentUser.prenom} ${currentUser.nom}`;
+    document.getElementById("editEmail").value = currentUser.email;
+    document.getElementById("editTelephone").value = currentUser.telephone || "";
+    document.getElementById("editAdresse").value = currentUser.adresse || "";
+    document.getElementById("editBio").value = currentUser.biographie || "";
+
+    document.getElementById("editProfileModal").classList.remove("hidden");
+}
+
+function closeEditProfile() {
+    document.getElementById("editProfileModal").classList.add("hidden");
 }
 
 /*
@@ -971,4 +1005,46 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "/index.html";
         });
     }
+});
+
+// ================= SAUVEGARDE MODIFIER PROFIL =================
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("editProfileForm");
+    if (!form) return;
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const fullName = document.getElementById("editNom").value.trim();
+        const email = document.getElementById("editEmail").value.trim();
+        const telephone = document.getElementById("editTelephone").value.trim();
+        const adresse = document.getElementById("editAdresse").value.trim();
+        const bio = document.getElementById("editBio").value.trim();
+
+        // Séparer prénom / nom
+        const parts = fullName.split(" ");
+        const prenom = parts.shift();
+        const nom = parts.join(" ");
+
+        // 🔁 Mise à jour utilisateur
+        currentUser.prenom = prenom;
+        currentUser.nom = nom;
+        currentUser.email = email;
+        currentUser.telephone = telephone;
+        currentUser.adresse = adresse;
+        currentUser.biographie = bio;
+
+        // 💾 Sauvegarde locale
+        localStorage.setItem("utilisateur", JSON.stringify(currentUser));
+
+        // 🔄 Rafraîchir l’affichage
+        renderModernUserProfile();
+        renderUserProfile();
+
+        // ❌ Fermer la popup
+        closeEditProfile();
+
+        alert("✅ Profil mis à jour !");
+    });
 });
