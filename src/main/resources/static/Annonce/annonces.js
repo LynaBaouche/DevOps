@@ -226,14 +226,27 @@ async function openDetails(id) {
             markAsSeen(a.id);
         }
 
-        document.getElementById("modal-img").src = `/images/${a.image || "default.jpg"}`;
+        document.getElementById("modal-img").src  = `/images/${a.image || "default.jpg"}`;
         document.getElementById("modal-title").textContent = a.titre;
-        document.getElementById("modal-desc").textContent = a.description;
-        document.getElementById("modal-prix").textContent = a.prix;
+        document.getElementById("modal-desc").textContent  = a.description;
+        document.getElementById("modal-prix").textContent  = a.prix;
         document.getElementById("modal-auteur").textContent = a.auteur;
-        document.getElementById("modal-ville").textContent = a.ville;
-        document.getElementById("modal-date").textContent = a.datePublication;
-        document.getElementById("modal-cat").textContent = a.categorie;
+        document.getElementById("modal-ville").textContent  = a.ville;
+        document.getElementById("modal-date").textContent   = a.datePublication;
+        document.getElementById("modal-cat").textContent    = a.categorie;
+
+        // 🔗 ICI : afficher le lien externe s'il existe
+        const linkContainer = document.getElementById("modal-link");
+        if (a.lien) {
+            const safeUrl = a.lien.trim();
+            linkContainer.innerHTML = `
+                <a href="${safeUrl}" class="btn-blue" target="_blank" rel="noopener noreferrer">
+                    🌐 Voir l'annonce en ligne
+                </a>
+            `;
+        } else {
+            linkContainer.innerHTML = "";
+        }
 
         const modalFavBtn = document.getElementById("modal-fav-btn");
         modalFavBtn.classList.toggle("active", isFavori(a.id));
@@ -247,6 +260,7 @@ async function openDetails(id) {
         console.error("❌ Erreur détails annonce", err);
     }
 }
+
 
 /*************************************************
  ❤️ FAVORI DANS MODALE

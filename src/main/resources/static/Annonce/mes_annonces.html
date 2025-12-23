@@ -59,6 +59,7 @@
                 <h3>${a.titre}</h3>
                 <p>${a.description.substring(0, 100)}...</p>
 
+
                 <div class="price-date">
                     <span class="price">${a.prix} €</span>
                     <span class="date">${a.datePublication}</span>
@@ -83,25 +84,35 @@
     `).join("");
         }
 
-//supprimer annonce
         async function supprimerAnnonce(id) {
             if (!confirm("Voulez-vous supprimer cette annonce ?")) return;
 
             const res = await fetch(`/api/annonces/${id}`, { method: "DELETE" });
 
             if (res.ok) {
-                // 🔥 Supprime aussi dans la page Annonces (localStorage favoris)
-                let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-                favoris = favoris.filter(f => f.id !== id);
-                localStorage.setItem("favoris", JSON.stringify(favoris));
-
-                // 🔥 Recharge la liste MES ANNONCES
                 const user = JSON.parse(localStorage.getItem("utilisateur"));
+                if (user) {
+                    const key = `favoris_user_${user.id}`;
+                    let favoris = [];
+
+                    try {
+                        favoris = JSON.parse(localStorage.getItem(key)) || [];
+                    } catch (e) {
+                        favoris = [];
+                    }
+
+                    // On retire l’annonce supprimée des favoris
+                    favoris = favoris.filter(f => f.id !== id);
+                    localStorage.setItem(key, JSON.stringify(favoris));
+                }
+
+                // Recharge "Mes annonces"
                 loadMesAnnonces(user.id);
             } else {
                 alert("❌ Erreur lors de la suppression.");
             }
         }
+
 
 
 
