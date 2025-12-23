@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            alert("⚠️ Vous devez vous connecter pour accéder a la bibliothèque de l'université.");
+            window.location.href = "/login.html";
+        }
+    </script>
     <meta charset="UTF-8">
     <title>Bibliothèque – Disponibilité des Places</title>
 
@@ -12,29 +21,48 @@
 <body>
 
 <!-- NAVBAR -->
-<header>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <img src="../images/etudlife.png" alt="logo">
-            <span>EtudLife</span>
-        </a>
+<header class="main-header">
+    <div class="header-container">
 
-        <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/static/Agenda.html">Agenda</a></li>
-            <li><a href="/Cours.html">Cours</a></li>
-            <li><a href="transports.html">Transports</a></li>
-            <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
-            <li><a href="/Campus.html">Campus</a></li>
-            <li><a href="/Restaurant.html">Restaurant</a></li>
-            <li><a href="/static/Annonce/annonces.html">Annonces</a></li>
-            <li><a href="/static/messages.html">Messages</a></li>
-        </ul>
-
-        <div class="profile">
-            <img src="../images/compte.png">
+        <!-- Logo -->
+        <div class="header-left">
+            <div class="logo">
+                <img src="/images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
+                <span class="logo-text"><strong>Etud</strong>Life</span>
+            </div>
         </div>
-    </nav>
+
+        <!-- Navigation -->
+        <nav class="header-nav">
+            <a href="/index.html">Accueil</a>
+            <a href="/Agenda.html">Agenda</a>
+            <a href="/upload.html">Cours</a>
+            <a href="#">Transports</a>
+            <a href="/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a>
+            <a href="#">Campus</a>
+            <a href="/Recette/cuisine.html">Cuisine</a>
+            <a href="/Annonce/annonces.html" >Annonces</a>
+            <a href="/messages.html">Messages</a>
+            <a href="/proches.html">Ajouter un proche</a>
+        </nav>
+
+        <!-- Compte utilisateur -->
+        <div class="account-menu">
+            <img src="/images/compte.png" class="icon-img" id="account-icon">
+
+            <div class="dropdown-menu" id="dropdown-menu">
+                <p class="menu-title">Invité</p>
+                <p class="menu-subtitle">Non connecté</p>
+
+                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+                <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
+                <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
+                <a href="#" class="menu-item">Aide</a>
+                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
+            </div>
+        </div>
+
+    </div>
 
     <!-- Sous-menu -->
     <nav class="bu-submenu">

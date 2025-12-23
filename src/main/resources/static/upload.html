@@ -27,7 +27,7 @@
 
 
         header h1 {
-            color: #4338ca;
+            color: #1e66ff;
             font-size: 1.6rem;
             font-weight: 700;
         }
@@ -38,10 +38,10 @@
             font-weight: 500;
         }
         nav a:hover {
-            color: #4338ca;
+            color: #1e66ff;
         }
         .btn-primary {
-            background: #4338ca;
+            background: #1e66ff;
             color: white;
             border: none;
             padding: 8px 18px;
@@ -130,7 +130,7 @@
             border: none;
             background: none;
             cursor: pointer;
-            color: #4338ca;
+            color: #1e66ff;
             font-size: 1.1rem;
             margin-left: 8px;
         }
@@ -163,7 +163,7 @@
         }
 
         .modal-content button {
-            background: #4338ca;
+            background: #1e66ff;
             color: white;
             border: none;
             cursor: pointer;
@@ -192,12 +192,132 @@
 .btn-download {
     display: inline-block;
     margin-top: 10px;
-    background: #4f46e5;
+    background: #1e66ff;
     color: white;
     padding: 6px 12px;
     border-radius: 6px;
     text-decoration: none;
 }
+
+
+        .main-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main-header .header-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .main-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-header .logo-icon {
+            width: 36px;
+            height: 36px;
+        }
+
+        .main-header .logo-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        /* Navigation */
+        .main-header .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .main-header .header-nav a {
+            margin: 0;
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .main-header .header-nav a:hover {
+            background: #eef2ff;
+            color: #1e66ff;
+        }
+
+        .main-header .header-nav a.active {
+            background: #e0e7ff;
+            color: #1e66ff;
+            font-weight: 600;
+        }
+
+        /* Compte */
+        .main-header .account-menu {
+            position: relative;
+        }
+
+        .main-header .icon-img {
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+        }
+
+        /* Dropdown */
+        .main-header .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 220px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            padding: 10px;
+            display: none;
+        }
+
+        .main-header .account-menu:hover .dropdown-menu {
+            display: block;
+        }
+
+        .main-header .menu-title {
+            font-weight: 600;
+            color: #111827;
+            margin: 5px 0 0;
+        }
+
+        .main-header .menu-subtitle {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .main-header .menu-item {
+            display: block;
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .main-header .menu-item:hover {
+            background: #eef2ff;
+            color: #1e66ff;
+        }
+
 
     </style>
 </head>
@@ -221,14 +341,14 @@
 
         <!-- Navigation -->
         <nav class="header-nav">
-            <a href="index.html" class="active">Accueil</a>
+            <a href="index.html" >Accueil</a>
             <a href="Agenda.html" id="link-agenda">Agenda</a>
 
-            <a href="#">Cours</a>
+            <a href="#"class="active">Cours</a>
             <a href="#">Transports</a>
-            <a href="#">Bibliothèque</a>
+            <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>
             <a href="#">Campus</a>
-            <a href="#">Restaurant</a>
+            <a href="/Recette/cuisine.html">Cuisine</a>
             <a href="/Annonce/annonces.html">Annonces</a>
 
             <a href="messages.html">Messages</a>

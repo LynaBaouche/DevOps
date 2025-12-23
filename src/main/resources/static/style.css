@@ -874,3 +874,41 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
+/* =========================
+   🔷 FOOTER LINKS ETUDLIFE
+   ========================= */
+
+.etudlife-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.etudlife-footer li {
+    margin-bottom: 8px;
+}
+
+.etudlife-footer a {
+    text-decoration: none;
+    color: #374151; /* même gris que header */
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.etudlife-footer a:hover {
+    color: #4338ca; /* BLEU Annonces */
+}
+
+/* Titres */
+.etudlife-footer h4 {
+    color: #111827;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+/* Logo footer */
+.footer-logo-text {
+    font-size: 1.2rem;
+    color: #2563eb;
+    font-weight: 600;
+}

@@ -6,9 +6,6 @@
 
     <!-- CSS partagé -->
     <link rel="stylesheet" href="/Annonce/annonces.css">
-
-    <!-- JS des favoris -->
-    <script defer src="/Annonce/annonces.js"></script>
 </head>
 
 <body>
@@ -24,22 +21,18 @@
     <p class="subtitle">Retrouvez toutes les annonces que vous avez aimées</p>
 
     <div class="card-stats">
-
         <div class="stat-left">
             <span class="stat-icon">❤️</span>
-
             <div class="stat-info">
-                <h2 id="fav-count-display">3</h2>
+                <h2 id="fav-count-display">0</h2>
                 <p>Annonces favorites</p>
             </div>
         </div>
 
-        <button class="btn-blue btn-small" onclick="window.location.href='annonces.html'">
+        <button class="btn-blue btn-small" onclick="window.location.href='/Annonce/annonces.html'">
             + Découvrir plus d’annonces
         </button>
-
     </div>
-
 
     <!-- 🩶 Zone vide -->
     <div id="empty-favoris" class="empty-favoris hidden">
@@ -59,22 +52,26 @@
 
 <script>
     /* ============================
-       🔥 RÉCUPÉRATION DES FAVORIS
+       🔐 SÉCURITÉ UTILISATEUR
+    ============================ */
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    if (!user) {
+        alert("⚠️ Vous devez vous connecter pour accéder aux favoris.");
+        window.location.href = "/login.html";
+    }
+
+    /* ============================
+       ❤️ CHARGEMENT DES FAVORIS
     ============================ */
     const favContainer = document.getElementById("favoris-list");
     const emptySection = document.getElementById("empty-favoris");
-
-    // ⚠️ Le bon compteur dans favoris.html :
     const favCountDisplay = document.getElementById("fav-count-display");
 
-    const user = JSON.parse(localStorage.getItem("utilisateur"));
     const key = `favoris_user_${user.id}`;
     let favoris = JSON.parse(localStorage.getItem(key)) || [];
 
-    // Mise à jour du compteur
     favCountDisplay.textContent = favoris.length;
 
-    /* Si aucun favori → afficher message vide */
     if (favoris.length === 0) {
         emptySection.classList.remove("hidden");
     } else {
@@ -82,54 +79,49 @@
     }
 
     /* ============================
-       🟥 AFFICHER LES FAVORIS
+       🟥 AFFICHAGE DES FAVORIS
     ============================ */
     function displayFavoris() {
+        favContainer.innerHTML = favoris.map(a => `
+        <div class="card-pro">
 
-        favContainer.innerHTML = favoris
-            .map(a => `
-            <div class="card-pro">
+            <div class="card-img-wrapper">
+                <img src="/images/${a.image || "default.jpg"}" class="card-img">
+                <span class="cat-badge">${a.categorie}</span>
+            </div>
 
-                <div class="card-img-wrapper">
-                    <img src="/images/${a.image}" class="card-img">
-                    <span class="cat-badge">${a.categorie}</span>
+            <div class="card-body">
+                <h3>${a.titre}</h3>
+                <p>${a.description.substring(0,100)}...</p>
+
+                <div class="price-date">
+                    <span class="price">${a.prix}</span>
+                    <span class="date">${a.datePublication}</span>
                 </div>
 
-                <div class="card-body">
-                    <h3>${a.titre}</h3>
-                    <p>${a.description.substring(0,100)}...</p>
+                <div class="icons">
+                    <p>📍 ${a.ville}</p>
+                    <p>👤 ${a.auteur}</p>
+                </div>
 
-                    <div class="price-date">
-                        <span class="price">${a.prix}</span>
-                        <span class="date">${a.datePublication}</span>
-                    </div>
+                <div class="card-actions">
+                    <button class="btn-details" onclick="openDetails(${a.id})">
+                        Voir détails
+                    </button>
 
-                    <div class="icons">
-                        <p>📍 ${a.ville}</p>
-                        <p>👤 ${a.auteur}</p>
-                    </div>
-
-                    <div class="card-actions">
-                        <button class="btn-details" onclick="openDetails(${a.id})">
-                            Voir détails
-                        </button>
-
-                        <!-- Bouton favoris rouge -->
-                        <button class="btn-fav active" onclick='removeFavori(${a.id})'>
-                            ❤️
-                        </button>
-                    </div>
+                    <button class="btn-fav active" onclick="removeFavori(${a.id})">
+                        ❤️
+                    </button>
                 </div>
             </div>
-        `)
-            .join("");
+        </div>
+    `).join("");
     }
 
     /* ============================
-       ❌ SUPPRESSION D’UN FAVORI
+       ❌ SUPPRIMER UN FAVORI
     ============================ */
     function removeFavori(id) {
-        const key = `favoris_user_${user.id}`;
         favoris = favoris.filter(f => f.id !== id);
         localStorage.setItem(key, JSON.stringify(favoris));
 
@@ -143,6 +135,13 @@
         }
     }
 
+    /* ============================
+       🔍 VOIR DÉTAILS (REDIRECTION)
+    ============================ */
+    function openDetails(id) {
+        localStorage.setItem("selected_annonce_id", id);
+        window.location.href = "/Annonce/annonces.html";
+    }
 </script>
 
 </body>

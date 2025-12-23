@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            alert("⚠️ Vous devez vous connecter pour accéder au restaurant.");
+            window.location.href = "/login.html";
+        }
+    </script>
+
     <meta charset="UTF-8">
     <title>Cuisine & Budget - EtudLife</title>
     <link rel="stylesheet" href="/style.css">
@@ -10,28 +19,37 @@
 
 <header class="main-header">
     <div class="header-container">
+
+        <!-- Logo -->
         <div class="header-left">
-            <a href="/index.html" class="logo">
-                <img src="/images/etudlife.png" alt="Logo" class="logo-icon">
+            <div class="logo">
+                <img src="/images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
                 <span class="logo-text"><strong>Etud</strong>Life</span>
-            </a>
+            </div>
         </div>
+
+        <!-- Navigation -->
         <nav class="header-nav">
             <a href="/index.html">Accueil</a>
             <a href="/Agenda.html">Agenda</a>
-            <a href="/Recette/cuisine.html" class="active">Cuisine</a>
-            <a href="/groupes.html">Groupes</a>
             <a href="/upload.html">Cours</a>
-            <a href="/Annonce/annonces.html">Annonces</a>
+            <a href="#">Transports</a>
+            <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>
+            <a href="#">Campus</a>
+            <a href="/Recette/cuisine.html" class="active">Cuisine</a>
+            <a href="/Annonce/annonces.html" >Annonces</a>
             <a href="/messages.html">Messages</a>
-            <a href="/proches.html">Proches</a>
+            <a href="/proches.html">Ajouter un proche</a>
         </nav>
 
+        <!-- Compte utilisateur -->
         <div class="account-menu">
             <img src="/images/compte.png" class="icon-img" id="account-icon">
+
             <div class="dropdown-menu" id="dropdown-menu">
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
+
                 <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
                 <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
                 <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
@@ -39,6 +57,7 @@
                 <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
             </div>
         </div>
+
     </div>
 </header>
 

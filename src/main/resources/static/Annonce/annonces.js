@@ -10,14 +10,12 @@ function getUser() {
  *************************************************/
 function getFavorisKey() {
     const user = getUser();
-    if (!user) return null;
-    return `favoris_user_${user.id}`;
+    return user ? `favoris_user_${user.id}` : null;
 }
 
 function getFavoris() {
     const key = getFavorisKey();
-    if (!key) return [];
-    return JSON.parse(localStorage.getItem(key)) || [];
+    return key ? JSON.parse(localStorage.getItem(key)) || [] : [];
 }
 
 function isFavori(id) {
@@ -46,28 +44,21 @@ function syncCardFavori(id) {
     const btn = document.querySelector(`.btn-fav[data-id="${id}"]`);
     if (!btn) return;
 
-    if (isFavori(id)) {
-        btn.classList.add("active");
-        btn.innerHTML = "❤️";
-    } else {
-        btn.classList.remove("active");
-        btn.innerHTML = "🤍";
-    }
+    btn.classList.toggle("active", isFavori(id));
+    btn.innerHTML = isFavori(id) ? "❤️" : "🤍";
 }
 
 /*************************************************
- 👁️ VUES PAR UTILISATEUR (ANTI-DOUBLON)
+ 👁️ VUES PAR UTILISATEUR
  *************************************************/
 function getVuesKey() {
     const user = getUser();
-    if (!user) return null;
-    return `vues_user_${user.id}`;
+    return user ? `vues_user_${user.id}` : null;
 }
 
 function getVues() {
     const key = getVuesKey();
-    if (!key) return [];
-    return JSON.parse(localStorage.getItem(key)) || [];
+    return key ? JSON.parse(localStorage.getItem(key)) || [] : [];
 }
 
 function hasAlreadySeen(id) {
@@ -86,7 +77,7 @@ function markAsSeen(id) {
 }
 
 /*************************************************
- 🔗 CONSTANTES
+ 🔗 CONSTANTES DOM (SÉCURISÉES)
  *************************************************/
 const API_URL = "/api/annonces";
 const annoncesList = document.getElementById("annonces-list");
@@ -103,13 +94,15 @@ let currentAnnonce = null;
 async function loadAnnonces(cat = "toutes") {
     try {
         const res = await fetch(`${API_URL}?categorie=${cat}`);
+        if (!res.ok) throw new Error("Erreur API annonces");
+
         annonces = await res.json();
 
         displayStats();
         displayAnnonces(annonces);
         updateFavoriBadge();
     } catch (e) {
-        console.error("Erreur chargement annonces", e);
+        console.error("❌ Erreur chargement annonces", e);
     }
 }
 
@@ -135,7 +128,7 @@ function displayStats() {
 function displayAnnonces(list) {
     if (!annoncesList) return;
 
-    if (list.length === 0) {
+    if (!list.length) {
         annoncesList.innerHTML = "<p>Aucune annonce</p>";
         return;
     }
@@ -152,9 +145,7 @@ function displayAnnonces(list) {
                 <p>${a.description.substring(0, 100)}...</p>
 
                 <div class="price-date">
-                    <span class="price">
-                        ${a.prix.includes("€") ? a.prix : a.prix + " €"}
-                    </span>
+                    <span class="price">${a.prix.includes("€") ? a.prix : a.prix + " €"}</span>
                     <span class="date">${a.datePublication}</span>
                 </div>
 
@@ -178,7 +169,7 @@ function displayAnnonces(list) {
 }
 
 /*************************************************
- ❤️ CLIC SUR CŒUR (CARTE)
+ ❤️ CLIC SUR FAVORI (CARTE)
  *************************************************/
 document.addEventListener("click", (e) => {
     if (!e.target.classList.contains("btn-fav")) return;
@@ -219,87 +210,82 @@ filters.forEach(btn => {
 });
 
 /*************************************************
- 🪟 MODALE DÉTAILS (VUES CORRIGÉES)
+ 🪟 MODALE DÉTAILS
  *************************************************/
 async function openDetails(id) {
-    const user = getUser();
+    try {
+        const user = getUser();
+        const res = await fetch(`${API_URL}/${id}`);
+        if (!res.ok) throw new Error("Annonce introuvable");
 
-    const res = await fetch(`/api/annonces/${id}`);
-    const a = await res.json();
-    currentAnnonce = a;
+        const a = await res.json();
+        currentAnnonce = a;
 
-    // ✅ Incrémenter la vue UNE SEULE FOIS par utilisateur différent
-    if (
-        user &&
-        user.id !== a.utilisateurId &&
-        !hasAlreadySeen(a.id)
-    ) {
-        await fetch(`/api/annonces/${a.id}/vue`, { method: "PUT" });
-        markAsSeen(a.id);
+        if (user && user.id !== a.utilisateurId && !hasAlreadySeen(a.id)) {
+            await fetch(`${API_URL}/${a.id}/vue`, { method: "PUT" });
+            markAsSeen(a.id);
+        }
+
+        document.getElementById("modal-img").src = `/images/${a.image || "default.jpg"}`;
+        document.getElementById("modal-title").textContent = a.titre;
+        document.getElementById("modal-desc").textContent = a.description;
+        document.getElementById("modal-prix").textContent = a.prix;
+        document.getElementById("modal-auteur").textContent = a.auteur;
+        document.getElementById("modal-ville").textContent = a.ville;
+        document.getElementById("modal-date").textContent = a.datePublication;
+        document.getElementById("modal-cat").textContent = a.categorie;
+
+        const modalFavBtn = document.getElementById("modal-fav-btn");
+        modalFavBtn.classList.toggle("active", isFavori(a.id));
+        modalFavBtn.innerHTML = isFavori(a.id)
+            ? "❤️ Retirer des favoris"
+            : "🤍 Ajouter aux favoris";
+
+        document.getElementById("detailsModal")?.classList.remove("hidden");
+
+    } catch (err) {
+        console.error("❌ Erreur détails annonce", err);
     }
-
-    document.getElementById("modal-img").src =
-        `/images/${a.image || "default.jpg"}`;
-    document.getElementById("modal-title").textContent = a.titre;
-    document.getElementById("modal-desc").textContent = a.description;
-
-    document.getElementById("modal-prix").textContent =
-        a.prix.includes("€") ? a.prix : a.prix + " €";
-
-    document.getElementById("modal-auteur").textContent = a.auteur;
-    document.getElementById("modal-ville").textContent = a.ville;
-    document.getElementById("modal-date").textContent = a.datePublication;
-    document.getElementById("modal-cat").textContent = a.categorie;
-
-    const linkContainer = document.getElementById("modal-link");
-    linkContainer.innerHTML = a.lien
-        ? `<a href="${a.lien}" target="_blank" class="btn-blue">🔗 Voir l’annonce complète</a>`
-        : "";
-
-    const modalFavBtn = document.getElementById("modal-fav-btn");
-    if (isFavori(a.id)) {
-        modalFavBtn.classList.add("active");
-        modalFavBtn.innerHTML = "❤️ Retirer des favoris";
-    } else {
-        modalFavBtn.classList.remove("active");
-        modalFavBtn.innerHTML = "🤍 Ajouter aux favoris";
-    }
-
-    document.getElementById("detailsModal").classList.remove("hidden");
 }
 
 /*************************************************
- ❤️ CLIC FAVORI DANS MODALE
+ ❤️ FAVORI DANS MODALE
  *************************************************/
 document.getElementById("modal-fav-btn")?.addEventListener("click", () => {
     if (!currentAnnonce) return;
 
     toggleFavori(currentAnnonce);
-    syncCardFavori(currentAnnonce.id);
+    updateFavoriBadge();
 
     const btn = document.getElementById("modal-fav-btn");
-    if (isFavori(currentAnnonce.id)) {
-        btn.classList.add("active");
-        btn.innerHTML = "❤️ Retirer des favoris";
-    } else {
-        btn.classList.remove("active");
-        btn.innerHTML = "🤍 Ajouter aux favoris";
-    }
-
-    updateFavoriBadge();
+    btn.classList.toggle("active", isFavori(currentAnnonce.id));
+    btn.innerHTML = isFavori(currentAnnonce.id)
+        ? "❤️ Retirer des favoris"
+        : "🤍 Ajouter aux favoris";
 });
 
 /*************************************************
  ❌ FERMER MODALE
  *************************************************/
 document.getElementById("closeModal")?.addEventListener("click", () => {
-    document.getElementById("detailsModal").classList.add("hidden");
+    document.getElementById("detailsModal")?.classList.add("hidden");
 });
 
 /*************************************************
  🚀 INITIALISATION
  *************************************************/
-document.addEventListener("DOMContentLoaded", () => {
-    loadAnnonces("toutes");
+document.addEventListener("DOMContentLoaded", async () => {
+
+    // Sécurité : uniquement sur annonces.html
+    if (!annoncesList) return;
+
+    await loadAnnonces("toutes");
     updateFavoriBadge();
+
+    // Ouverture automatique depuis favoris
+    const selectedId = localStorage.getItem("selected_annonce_id");
+    if (selectedId) {
+        localStorage.removeItem("selected_annonce_id");
+        openDetails(Number(selectedId));
+    }
 });
