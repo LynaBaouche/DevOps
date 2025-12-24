@@ -362,3 +362,17 @@ body {
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+/* Liens du menu compte */
+.menu-item {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* Survol bleu partout */
+.menu-item:hover {
+    background: #e8f0ff;      /* bleu très clair */
+    color: #0066ff;           /* texte bleu */
+}

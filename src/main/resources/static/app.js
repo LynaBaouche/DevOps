@@ -1048,3 +1048,41 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("✅ Profil mis à jour !");
     });
 });
+
+document.addEventListener("DOMContentLoaded", async () => {
+    // On ne fait ça que sur la page d'accueil
+    const path = window.location.pathname;
+    if (!path.endsWith("index.html") && path !== "/" && path !== "/index") {
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const showProfil = params.get("profil") === "true";
+
+    if (showProfil) {
+        const user = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!user) {
+            // Si pas connecté, on renvoie vers le login
+            window.location.href = "login.html";
+            return;
+        }
+
+        currentUser = user;
+
+        const homepage = document.getElementById("homepage-content");
+        const appContainer = document.getElementById("app-container");
+
+        // Afficher la partie profil / groupes
+        if (homepage) homepage.style.display = "none";
+        if (appContainer) appContainer.style.display = "grid";
+
+        // Charger les données du profil (groupes, proches, posts, etc.)
+        await loadApplicationData();
+
+        // Puis scroller vers la colonne de gauche (Mon Profil)
+        const profilSection = document.getElementById("profil-section");
+        if (profilSection) {
+            profilSection.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+});

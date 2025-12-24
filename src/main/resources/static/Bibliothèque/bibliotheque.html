@@ -54,7 +54,13 @@
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
 
-                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
+                <a href="/index.html?profil=true"
+                   id="btn-profil"
+                   class="menu-item connected-only"
+                   style="display:none;">
+                    Profil
+                </a>
+
                 <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
                 <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
                 <a href="#" class="menu-item">Aide</a>
@@ -124,7 +130,7 @@
     <section class="cards" id="cards"></section>
 
 </main>
-
+<script src="/app.js"></script>
 <script src="bibliotheque.js"></script>
 
 </body>

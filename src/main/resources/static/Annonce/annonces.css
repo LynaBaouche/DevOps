@@ -1425,3 +1425,17 @@
     border-radius: 8px;
     white-space: nowrap;
 }
+/* Liens du menu compte */
+.menu-item {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* Survol bleu partout */
+.menu-item:hover {
+    background: #e8f0ff;      /* bleu très clair */
+    color: #0066ff;           /* texte bleu */
+}
