@@ -8,6 +8,15 @@ package com.etudlife {
 	}
 
 	package com.etudlife.model {
+		enum com.etudlife.model.NotificationType {
+			ANNONCE
+			FRIEND_ADDED
+			NEW_EVENT
+			NEW_MESSAGE
+			NEW_RECIPE
+			--
+		}
+
 		class com.etudlife.model.Lien {
 			--
 			+Lien()
@@ -206,6 +215,25 @@ package com.etudlife {
 			+setRecettesFavorites(recettesFavorites: Set<Recette>)
 		}
 
+		class com.etudlife.model.Notification {
+			--
+			+Notification()
+			+Notification(userId: Long, type: NotificationType, message: String, link: String)
+			..
+			+getCreatedAt(): LocalDateTime
+			+getId(): Long
+			+getLink(): String
+			+setLink(link: String)
+			+getMessage(): String
+			+setMessage(message: String)
+			+isRead(): boolean
+			+setRead(read: boolean)
+			+getType(): NotificationType
+			+setType(type: NotificationType)
+			+getUserId(): Long
+			+setUserId(userId: Long)
+		}
+
 	}
 
 	package com.etudlife.dto {
@@ -249,17 +277,17 @@ package com.etudlife {
 	package com.etudlife.service {
 		class com.etudlife.service.RecetteService {
 			--
-			+RecetteService(recetteRepository: RecetteRepository)
+			+RecetteService(recetteRepository: RecetteRepository, notificationService: NotificationService)
 			..
 			+getAllRecettes(): List<Recette>
 			+getMenuDeLaSemaine(): Map<String,Map<String,Recette>>
 			..
-			+save(r: Recette): Recette
+			+save(recette: Recette, auteurId: Long, auteurNom: String, prochesIds: List<Long>): Recette
 		}
 
 		class com.etudlife.service.LienService {
 			--
-			+LienService(lienRepository: LienRepository, compteRepository: CompteRepository)
+			+LienService(lienRepository: LienRepository, compteRepository: CompteRepository, notificationService: NotificationService)
 			..
 			+creerLien(idSource: Long, idCible: Long): Optional<Lien>
 			+getLiensPourCompte(idSource: Long): List<Lien>
@@ -302,9 +330,21 @@ package com.etudlife {
 
 		class com.etudlife.service.MessageService {
 			--
+			+MessageService(messageRepository: MessageRepository, notificationService: NotificationService)
+			..
 			+getLatestMessages(conversationId: Long): List<Message>
 			+getNewMessagesAfter(conversationId: Long, afterId: Long): List<Message>
 			+saveNewMessage(conversationId: Long, senderId: Long, receiverId: Long, content: String): Message
+		}
+
+		class com.etudlife.service.NotificationService {
+			--
+			+NotificationService(repo: NotificationRepository)
+			..
+			+countUnread(userId: Long): long
+			+create(userId: Long, type: NotificationType, message: String, link: String): Notification
+			+getForUser(userId: Long): List<Notification>
+			+markAsRead(id: Long)
 		}
 
 		class com.etudlife.service.MenuService {
@@ -367,7 +407,7 @@ package com.etudlife {
 	package com.etudlife.controller {
 		class com.etudlife.controller.AnnonceController {
 			--
-			+AnnonceController(service: AnnonceService)
+			+AnnonceController(service: AnnonceService, lienRepository: LienRepository, notificationService: NotificationService)
 			..
 			+create(titre: String, categorie: String, prix: String, ville: String, description: String, auteur: String, utilisateurId: Long, lien: String, image: MultipartFile): Annonce
 			+delete(id: Long)
@@ -417,6 +457,15 @@ package com.etudlife {
 			..
 			+generer(payload: Map<String,Object>): ResponseEntity<?>
 			+getMenu(userId: Long): List<EntreeMenu>
+		}
+
+		class com.etudlife.controller.NotificationController {
+			--
+			+NotificationController(service: NotificationService)
+			..
+			+getNotifications(userId: Long): List<Notification>
+			+markRead(id: Long)
+			+unreadCount(userId: Long): long
 		}
 
 		class com.etudlife.controller.EvenementController {
@@ -508,7 +557,7 @@ package com.etudlife {
 
 		interface com.etudlife.repository.LienRepository {
 			--
-			+findByCompteSource(compteSource: Compte): List<Lien>
+			+findByCompteSourceId(compteSourceId: Long): List<Lien>
 		}
 
 		interface com.etudlife.repository.EvenementRepository {
@@ -520,6 +569,12 @@ package com.etudlife {
 		interface com.etudlife.repository.PostRepository {
 			--
 			+findByGroupeIdOrderByDateCreationDesc(groupeId: Long): List<Post>
+		}
+
+		interface com.etudlife.repository.NotificationRepository {
+			--
+			+countByUserIdAndIsReadFalse(userId: Long): long
+			+findByUserIdOrderByCreatedAtDesc(userId: Long): List<Notification>
 		}
 
 		interface com.etudlife.repository.RecetteRepository {
@@ -549,16 +604,22 @@ com.etudlife.model.Groupe "*" o--o "*" com.etudlife.model.Compte
 com.etudlife.model.Groupe *--o "*" com.etudlife.model.Post
 com.etudlife.model.Post "*" o--* com.etudlife.model.Compte
 com.etudlife.model.Compte --o "*" com.etudlife.model.Recette
+com.etudlife.model.Notification --* com.etudlife.model.NotificationType
 com.etudlife.service.RecetteService --* com.etudlife.repository.RecetteRepository
+com.etudlife.service.RecetteService --* com.etudlife.service.NotificationService
 com.etudlife.service.LienService --* com.etudlife.repository.LienRepository
 com.etudlife.service.LienService --* com.etudlife.repository.CompteRepository
+com.etudlife.service.LienService --* com.etudlife.service.NotificationService
 com.etudlife.service.ConversationService --* com.etudlife.repository.MessageRepository
 com.etudlife.service.EvenementService --* com.etudlife.repository.EvenementRepository
+com.etudlife.service.EvenementService --* com.etudlife.service.NotificationService
 com.etudlife.service.EvenementService --* com.etudlife.service.LienService
 com.etudlife.service.GroupeService --* com.etudlife.repository.GroupeRepository
 com.etudlife.service.GroupeService --* com.etudlife.repository.CompteRepository
 com.etudlife.service.DocumentService --* com.etudlife.repository.DocumentRepository
 com.etudlife.service.MessageService --* com.etudlife.repository.MessageRepository
+com.etudlife.service.MessageService --* com.etudlife.service.NotificationService
+com.etudlife.service.NotificationService --* com.etudlife.repository.NotificationRepository
 com.etudlife.service.MenuService --* com.etudlife.repository.EntreeMenuRepository
 com.etudlife.service.MenuService --* com.etudlife.repository.RecetteRepository
 com.etudlife.service.MenuService --* com.etudlife.repository.CompteRepository
@@ -572,12 +633,15 @@ com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
 com.etudlife.service.ReservationService --* com.etudlife.repository.ReservationBURepository
 com.etudlife.service.ReservationService --* com.etudlife.repository.LivreRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.service.AnnonceService
+com.etudlife.controller.AnnonceController --* com.etudlife.repository.LienRepository
+com.etudlife.controller.AnnonceController --* com.etudlife.service.NotificationService
 com.etudlife.controller.ConversationController --* com.etudlife.service.ConversationService
 com.etudlife.controller.LienController --* com.etudlife.service.LienService
 com.etudlife.controller.ReservationController --* com.etudlife.service.ReservationService
 com.etudlife.controller.RecetteController --* com.etudlife.service.RecetteService
 com.etudlife.controller.MessageController --* com.etudlife.service.MessageService
 com.etudlife.controller.MenuController --* com.etudlife.service.MenuService
+com.etudlife.controller.NotificationController --* com.etudlife.service.NotificationService
 com.etudlife.controller.EvenementController --* com.etudlife.repository.EvenementRepository
 com.etudlife.controller.EvenementController --* com.etudlife.repository.CompteRepository
 com.etudlife.controller.EvenementController --* com.etudlife.service.EvenementService
