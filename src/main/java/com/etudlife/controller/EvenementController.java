@@ -70,13 +70,14 @@ public class EvenementController {
         Compte utilisateur = compteRepository.findById(userId).orElseThrow();
         evenement.setUtilisateur(utilisateur);
 
-        // Couleur par défaut si non fournie
         if (evenement.getCouleur() == null || evenement.getCouleur().isEmpty()) {
-            evenement.setCouleur("#3788d8"); // Bleu standard
+            evenement.setCouleur("#3788d8");
         }
 
-        return evenementRepository.save(evenement);
+        // ✅ Utiliser le service pour déclencher les notifications
+        return evenementService.add(evenement);
     }
+
 
     @DeleteMapping("/{id}")
     public void supprimer(@PathVariable Long id) {

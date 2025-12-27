@@ -62,15 +62,6 @@ public class RecetteService {
         // 1. Sauvegarder la recette
         Recette saved = recetteRepository.save(recette);
 
-        // 2. Créer une notification pour chaque proche
-        for (Long procheId : prochesIds) {
-            notificationService.create(
-                    procheId,
-                    NotificationType.NEW_RECIPE,
-                    auteurNom + " a ajouté une nouvelle recette",
-                    "/recettes.html"
-            );
-        }
 
         return saved;
     }

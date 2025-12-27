@@ -27,11 +27,10 @@ public class EvenementService {
 
     public Evenement add(Evenement e) {
 
-        // 🔹 code EXISTANT (inchangé)
         Evenement saved = evenementRepository.save(e);
 
-        // 🔔 AJOUT : notifications aux proches
         Long userId = e.getUtilisateur().getId();
+        String auteurNom = e.getUtilisateur().getPrenom() + " " + e.getUtilisateur().getNom();
 
         List<Long> procheIds = lienService.getProcheIds(userId);
 
@@ -39,13 +38,14 @@ public class EvenementService {
             notificationService.create(
                     procheId,
                     NotificationType.NEW_EVENT,
-                    "Un proche a ajouté un nouvel événement",
+                    auteurNom + " a ajouté un nouvel événement",
                     "/agenda.html"
             );
         }
 
         return saved;
     }
+
 
     public void delete(Long id) {
         evenementRepository.deleteById(id);
