@@ -9,16 +9,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.etudlife.model.NotificationType;
+
 
 @Service
 public class LienService {
 
     private final LienRepository lienRepository;
     private final CompteRepository compteRepository;
+    private final NotificationService notificationService;
 
-    public LienService(LienRepository lienRepository, CompteRepository compteRepository) {
+
+    public LienService(LienRepository lienRepository, CompteRepository compteRepository,NotificationService notificationService) {
         this.lienRepository = lienRepository;
         this.compteRepository = compteRepository;
+        this.notificationService = notificationService;
     }
 
     // Crée un lien entre deux comptes existants
@@ -27,17 +32,31 @@ public class LienService {
         Optional<Compte> cible = compteRepository.findById(idCible);
 
         if (source.isPresent() && cible.isPresent()) {
+
             Lien lien = new Lien(source.get(), cible.get());
-            return Optional.of(lienRepository.save(lien));
+            Lien saved = lienRepository.save(lien);
+
+            // 🔔 notification
+            notificationService.create(
+                    cible.get().getId(),
+                    NotificationType.FRIEND_ADDED,
+                    source.get().getNom() + " vous a ajouté comme proche",
+                    "/profil.html?id=" + source.get().getId()
+            );
+
+            return Optional.of(saved);
         } else {
             return Optional.empty();
         }
     }
 
+
     // Liste les proches d’un compte
     public List<Lien> getLiensPourCompte(Long idSource) {
         Optional<Compte> compte = compteRepository.findById(idSource);
-        return compte.map(lienRepository::findByCompteSource).orElse(List.of());
+        return compte
+                .map(c -> lienRepository.findByCompteSourceId(c.getId()))
+                .orElse(List.of());
     }
 
     public void supprimerLien(Long id) {

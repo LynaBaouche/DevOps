@@ -13,37 +13,58 @@
      ========================= -->
 <header class="main-header">
     <div class="header-container">
-        <!-- Logo -->
+
+        <!-- LOGO -->
         <div class="header-left">
             <div class="logo">
                 <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
-
                 <span class="logo-text"><strong>Etud</strong>Life</span>
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- NAVIGATION -->
         <nav class="header-nav">
             <a href="index.html" class="active">Accueil</a>
-            <a href="Agenda.html" id="link-agenda">Agenda</a>
-
+            <a href="Agenda.html">Agenda</a>
             <a href="upload.html">Cours</a>
             <a href="#">Transports</a>
             <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>
             <a href="#">Campus</a>
             <a href="/Recette/cuisine.html">Cuisine</a>
             <a href="/Annonce/annonces.html">Annonces</a>
-
             <a href="messages.html">Messages</a>
             <a href="proches.html">Ajouter un proche</a>
         </nav>
 
+        <!-- 🔔 + 👤 ZONE DROITE -->
+        <div class="header-right">
 
-        <!-- Icône compte -->
-        <div class="account-menu">
-            <img src="images/compte.png" class="icon-img" id="account-icon">
+            <!-- Notifications -->
+            <div class="notif-wrapper">
+                <button id="notifBtn" class="notif-btn">
+                    <img src="images/cloche-de-notification.png" alt="Notifications" width="18">
+                    <span id="notifBadge" class="notif-badge hidden"></span>
+                </button>
 
-            <!-- MENU DÉROULANT -->
+                <div id="notifDropdown" class="notif-dropdown hidden">
+                    <ul id="notifList" class="notif-list"></ul>
+                    <a class="notif-footer" href="notification.html">
+                        Voir toutes les notifications
+                    </a>
+                </div>
+            </div>
+
+            <!-- Avatar -->
+            <div class="account-menu">
+                <img src="images/compte.png" class="icon-img" id="account-icon">
+                <!-- dropdown menu inchangé -->
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- MENU DÉROULANT -->
             <div class="dropdown-menu" id="dropdown-menu">
                 <p class="menu-title">Invité</p>
                 <p class="menu-subtitle">Non connecté</p>
@@ -210,6 +231,7 @@
 </div>
 
 <script src="app.js"></script>
+<script src="notification.js"></script>
 
 
 </body>

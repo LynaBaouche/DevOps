@@ -7,24 +7,46 @@ import com.etudlife.model.Message;
 import com.etudlife.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.etudlife.model.NotificationType;
 
 @Service
 public class MessageService {
 
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
+    private final NotificationService notificationService;
 
-    // 🔑 Signature mise à jour
+    @Autowired
+    public MessageService(MessageRepository messageRepository,
+                          NotificationService notificationService) {
+        this.messageRepository = messageRepository;
+        this.notificationService = notificationService;
+    }
+
     public Message saveNewMessage(Long conversationId, Long senderId, Long receiverId, String content) {
 
         Message message = new Message();
         message.setConversationId(conversationId);
         message.setSenderId(senderId);
-        message.setReceiverId(receiverId); // 🔑 Enregistrement du destinataire
+        message.setReceiverId(receiverId);
         message.setContent(content);
 
-        return messageRepository.save(message);
+        Message saved = messageRepository.save(message);
+
+        // 🔔 notification au destinataire
+        notificationService.create(
+                receiverId,
+                NotificationType.NEW_MESSAGE,
+                "Nouveau message reçu",
+                "/messages.html?conversationId=" + conversationId
+        );
+
+        return saved;
     }
+
+
+
+
+
 
     // ... (Autres méthodes de service)
     // Méthode pour le Polling

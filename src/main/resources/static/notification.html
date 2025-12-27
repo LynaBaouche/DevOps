@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes notifications</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2 style="padding:20px;">Mes notifications</h2>
+
+<ul id="allNotifList" style="list-style:none; padding:20px;"></ul>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("utilisateur"));
+    const list = document.getElementById("allNotifList");
+
+    if (!user) {
+        list.innerHTML = "<li>Connectez-vous pour voir vos notifications.</li>";
+    } else {
+        fetch(`/api/notifications/${user.id}`)
+            .then(res => res.json())
+            .then(notifs => {
+                if (notifs.length === 0) {
+                    list.innerHTML = "<li>Aucune notification</li>";
+                    return;
+                }
+
+                notifs.forEach(n => {
+                    const li = document.createElement("li");
+                    li.style.padding = "10px 0";
+                    li.innerHTML = `
+                    ${n.isRead ? "" : "🔵 "}
+                    ${n.message}
+                    <br>
+                    <small>${new Date(n.createdAt).toLocaleString()}</small>
+                `;
+                    list.appendChild(li);
+                });
+            });
+    }
+</script>
+
+</body>
+</html>

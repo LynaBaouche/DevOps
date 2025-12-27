@@ -1,10 +1,14 @@
 package com.etudlife.controller;
 
 import com.etudlife.model.Annonce;
+import com.etudlife.model.Compte;
+import com.etudlife.model.Lien;
+import com.etudlife.model.NotificationType;
+import com.etudlife.repository.LienRepository;
 import com.etudlife.service.AnnonceService;
-import org.springframework.web.bind.annotation.*;
-
+import com.etudlife.service.NotificationService;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,9 +22,15 @@ import java.util.List;
 public class AnnonceController {
 
     private final AnnonceService service;
+    private final LienRepository lienRepository;
+    private final NotificationService notificationService;
 
-    public AnnonceController(AnnonceService service) {
+    public AnnonceController(AnnonceService service,
+                             LienRepository lienRepository,
+                             NotificationService notificationService) {
         this.service = service;
+        this.lienRepository = lienRepository;
+        this.notificationService = notificationService;
     }
 
     // 🔵 Récupérer toutes les annonces
@@ -60,7 +70,7 @@ public class AnnonceController {
         return service.save(a);
     }
 
-    // 🟢 CRÉER une annonce (multipart)
+    // 🟢 CRÉER une annonce (multipart) + notifier les proches
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Annonce create(
             @RequestParam String titre,
@@ -89,7 +99,46 @@ public class AnnonceController {
         annonce.setDatePublication(LocalDate.now().toString());
         annonce.setVues(0);
 
-        return service.save(annonce);
+        Annonce saved = service.save(annonce);
+
+// 🔔 NOTIFICATIONS POUR LES PROCHES (sécurisé)
+        if (utilisateurId != null) {
+            try {
+
+                // on récupère tous les proches de l'auteur
+
+
+                List<Lien> liens = lienRepository.findByCompteSourceId(utilisateurId);
+
+
+                String message = auteur + " a publié une nouvelle annonce.";
+                String linkNotif = "/Annonce/annonces.html"; // adapte si besoin
+
+                for (Lien lienProche : liens) {
+
+
+                    Compte proche = lienProche.getCompteCible(); // le proche
+
+
+                    if (proche != null && proche.getId() != null) {
+                        notificationService.create(
+                                proche.getId(),          // user_id du proche (ex : 13 pour dyhia)
+                                NotificationType.ANNONCE,
+                                message,
+                                linkNotif
+                        );
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la création des notifications d'annonce : " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+        return saved;
     }
 
     // 🟡 MODIFIER une annonce (multipart)

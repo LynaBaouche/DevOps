@@ -3,16 +3,19 @@ package com.etudlife.service;
 import com.etudlife.model.Recette;
 import com.etudlife.repository.RecetteRepository;
 import org.springframework.stereotype.Service;
-
+import com.etudlife.model.NotificationType;
 import java.util.*;
+
 
 @Service
 public class RecetteService {
 
     private final RecetteRepository recetteRepository;
+    private final NotificationService notificationService;
 
-    public RecetteService(RecetteRepository recetteRepository) {
+    public RecetteService(RecetteRepository recetteRepository,NotificationService notificationService) {
         this.recetteRepository = recetteRepository;
+        this.notificationService = notificationService;
     }
 
     // Récupère toutes les recettes de la base
@@ -50,8 +53,28 @@ public class RecetteService {
 
         return menuSemaine;
     }
+    public Recette save(
+            Recette recette,
+            Long auteurId,
+            String auteurNom,
+            List<Long> prochesIds
+    ) {
+        // 1. Sauvegarder la recette
+        Recette saved = recetteRepository.save(recette);
 
-    public Recette save(Recette r) {
-        return recetteRepository.save(r);
+        // 2. Créer une notification pour chaque proche
+        for (Long procheId : prochesIds) {
+            notificationService.create(
+                    procheId,
+                    NotificationType.NEW_RECIPE,
+                    auteurNom + " a ajouté une nouvelle recette",
+                    "/recettes.html"
+            );
+        }
+
+        return saved;
     }
+
+
+
 }

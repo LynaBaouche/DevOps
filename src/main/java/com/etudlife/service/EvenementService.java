@@ -1,17 +1,23 @@
 package com.etudlife.service;
 
 import com.etudlife.model.Evenement;
+import com.etudlife.model.NotificationType;
 import com.etudlife.repository.EvenementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class EvenementService {
 
-
     @Autowired
     private EvenementRepository evenementRepository;
+
+    // ✅ AJOUT (notifications)
+    @Autowired
+    private NotificationService notificationService;
+
     @Autowired
     private LienService lienService;
 
@@ -20,7 +26,25 @@ public class EvenementService {
     }
 
     public Evenement add(Evenement e) {
-        return evenementRepository.save(e);
+
+        // 🔹 code EXISTANT (inchangé)
+        Evenement saved = evenementRepository.save(e);
+
+        // 🔔 AJOUT : notifications aux proches
+        Long userId = e.getUtilisateur().getId();
+
+        List<Long> procheIds = lienService.getProcheIds(userId);
+
+        for (Long procheId : procheIds) {
+            notificationService.create(
+                    procheId,
+                    NotificationType.NEW_EVENT,
+                    "Un proche a ajouté un nouvel événement",
+                    "/agenda.html"
+            );
+        }
+
+        return saved;
     }
 
     public void delete(Long id) {
@@ -28,12 +52,11 @@ public class EvenementService {
     }
 
     public List<Evenement> getSharedAvailability(Long myUserId) {
-        // 1. Récupère les IDs des proches
-        List<Long> procheIds = lienService.getProcheIds(myUserId);
 
-        // 2. Ajoute l'ID de l'utilisateur courant à la liste des IDs à chercher
+        // 🔹 code EXISTANT (inchangé)
+        List<Long> procheIds = lienService.getProcheIds(myUserId);
         procheIds.add(myUserId);
-        // 3. Récupère TOUS les événements pour cette liste d'IDs
+
         return evenementRepository.findByUtilisateurIdIn(procheIds);
     }
 }

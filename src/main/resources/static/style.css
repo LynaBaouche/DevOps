@@ -73,10 +73,11 @@ body {
    ========================= */
 .header-nav {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;     /* ✅ INTERDIT le retour à la ligne */
     justify-content: center;
     align-items: center;
     gap: 20px;
+    white-space: nowrap;   /* ✅ sécurité en plus */
 }
 
 .header-nav a {
@@ -925,4 +926,134 @@ body {
 .menu-item:hover {
     background: #e8f0ff;      /* bleu très clair */
     color: #0066ff;           /* texte bleu */
+}
+/*icone de notiification*/
+/* === NOTIFICATIONS === */
+
+.notif-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.notif-dropdown {
+    position: absolute;
+    top: 42px;
+    right: 0;
+    width: 320px;
+
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+
+    z-index: 9999;
+}
+
+.notif-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.notif-item:hover {
+    background-color: #f5f6f8;
+}
+
+.notif-item.unread {
+    font-weight: 600;
+    background-color: #f0f5ff;
+}
+
+.hidden {
+    display: none !important;
+}
+.notif-dropdown {
+    position: absolute;
+    top: 46px;
+    right: 0;
+
+    width: 360px;          /* ⬅️ PLUS LARGE */
+    min-height: 120px;     /* ⬅️ PLUS HAUT MÊME VIDE */
+
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.18);
+
+    padding: 8px 0;        /* respiration globale */
+    z-index: 9999;
+}
+.notif-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+
+    max-height: 420px;     /* ⬅️ scroll plus bas */
+    overflow-y: auto;
+}
+.notif-item:only-child {
+    text-align: center;
+    padding: 30px 20px;
+    font-weight: 500;
+    color: #6b7280;
+}
+.notif-footer {
+    display: block;
+    padding: 14px 0;
+    text-align: center;
+    font-weight: 600;
+    color: #2563eb;
+    border-top: 1px solid #eee;
+    text-decoration: none;
+}
+
+.notif-footer:hover {
+    background-color: #f5f7fb;
+}
+/* === ICÔNE NOTIFICATION : SANS FOND BLEU === */
+.notif-btn {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Empêche le bleu au clic / focus */
+.notif-btn:focus,
+.notif-btn:active,
+.notif-btn:focus-visible {
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Effet hover léger (optionnel mais pro) */
+.notif-btn:hover {
+    background-color: #f0f2f5;   /* gris clair, pas bleu */
+}
+.notif-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: red;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 999px;
+    line-height: 1;
+}
+
+.hidden {
+    display: none !important;
 }
