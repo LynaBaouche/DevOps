@@ -102,26 +102,57 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function formatIsoTime(isoTimestamp) {
-        if (typeof isoTimestamp !== 'string' || !isoTimestamp) {
-            return "Maintenant";
-        }
+    function formatIsoTime(timestamp) {
+        if (!timestamp) return "";
+
+        let rawHour, rawMinute;
 
         try {
-            const date = new Date(isoTimestamp);
+            // =========================================================
+            // CAS 1 : C'est un NOMBRE (Aperçu / Instant)
+            // =========================================================
+            if (typeof timestamp === 'number') {
+                // Conversion en millisecondes si nécessaire
+                let ts = String(timestamp).length < 12 ? timestamp * 1000 : timestamp;
+                let date = new Date(ts);
 
-            if (isNaN(date.getTime())) {
-                throw new Error("Date invalide après parsing.");
+                // ✅ CORRECTION MAJEURE ICI :
+                // On utilise .getHours() (Heure locale du navigateur, ex: Paris)
+                // Au lieu de .getUTCHours() (Heure de Londres)
+                // Comme ça, on part de la même base que la chaîne de caractères.
+                rawHour = date.getHours();
+                rawMinute = date.getMinutes();
             }
 
-            const hours = date.getHours();
-            const minutes = String(date.getMinutes()).padStart(2, '0');
+                // =========================================================
+                // CAS 2 : C'est une CHAINE (Message / SQL)
+            // =========================================================
+            else {
+                let str = String(timestamp);
+                let timePart = "";
 
-            return `${hours}:${minutes}`;
+                if (str.includes("T")) timePart = str.split("T")[1];
+                else if (str.includes(" ")) timePart = str.split(" ")[1];
+                else timePart = str;
+
+                let parts = timePart.split(":");
+                rawHour = parseInt(parts[0], 10);
+                rawMinute = parseInt(parts[1], 10);
+            }
+
+            // =========================================================
+            // 🚨 LOGIQUE UNIFIÉE : ON AJOUTE +1 HEURE À TOUT LE MONDE
+            // =========================================================
+            if (isNaN(rawHour)) return "--:--";
+
+            // On applique le +1 uniformément
+            let finalHour = (rawHour + 1) % 24;
+
+            return `${String(finalHour).padStart(2, '0')}:${String(rawMinute).padStart(2, '0')}`;
 
         } catch (e) {
-            console.error("Erreur de formatage de date:", isoTimestamp, e.message);
-            return "Erreur Heure";
+            console.error("Erreur formatIsoTime:", e, timestamp);
+            return "--:--";
         }
     }
 
@@ -136,7 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        messages.sort((a, b) => {
+            // On remplace l'espace par un T pour être sûr que JavaScript comprenne la date
+            // peu importe le navigateur
+            const dateA = new Date(String(a.timestamp).replace(" ", "T"));
+            const dateB = new Date(String(b.timestamp).replace(" ", "T"));
+            return dateA - dateB;
+        });
 
         let messagesHTML = '';
         let lastDate = null;
@@ -181,7 +218,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const isSent = msg.senderId === CURRENT_USER_ID;
         const typeClass = isSent ? "sent" : "received";
-        const timeString = msg.timestamp ? formatIsoTime(msg.timestamp) : formatIsoTime(new Date().toISOString());
+
+        // CORRECTION ICI : Gestion de l'heure
+        let timeString;
+
+        if (msg.timestamp) {
+            // Cas 1 : Le message vient du serveur (historique ou réponse API avec timestamp)
+            // On utilise votre fonction qui nettoie le format SQL
+            timeString = formatIsoTime(msg.timestamp);
+        } else {
+            // Cas 2 : C'est un message qu'on vient juste d'envoyer (pas encore de timestamp serveur)
+            // On affiche DIRECTEMENT l'heure locale actuelle (12h00) sans passer par ISO/UTC
+            timeString = new Date().toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
         const messageHTML = `
             <div class="message ${typeClass}">
