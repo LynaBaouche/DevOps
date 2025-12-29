@@ -6,6 +6,9 @@ import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.GroupeRepository;
 import com.etudlife.model.Recette;
 import com.etudlife.repository.RecetteRepository;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -93,5 +96,26 @@ public class CompteService {
     public Set<Recette> listerFavoris(Long compteId) {
         Compte compte = lireCompteParId(compteId);
         return compte.getRecettesFavorites();
+    }
+
+    // GESTION STATUT EN LIGNE
+
+    // 1. L'utilisateur signale qu'il est actif (Ping)
+    public void updatePresence(Long userId) {
+        Compte compte = compteRepository.findById(userId).orElse(null);
+        if (compte != null) {
+            compte.setLastConnection(LocalDateTime.now());
+            compteRepository.save(compte);
+        }
+    }
+
+    // 2. Vérifier si l'utilisateur est en ligne
+    public boolean isUserOnline(Long userId) {
+        Compte compte = compteRepository.findById(userId).orElse(null);
+        if (compte == null || compte.getLastConnection() == null) {return false;}
+
+        long minutes = ChronoUnit.MINUTES.between(compte.getLastConnection(), LocalDateTime.now());
+
+        return minutes < 2;
     }
 }

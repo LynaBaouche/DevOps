@@ -380,3 +380,45 @@ body {
     background: #e8f0ff;      /* bleu très clair */
     color: #0066ff;           /* texte bleu */
 }
+
+/* =========================
+   🖱️ MENU CLIC DROIT (Custom)
+   ========================= */
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    /* On retire la bordure grise moche pour une ombre plus douce */
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    /* MÊME ARROND QUE LES MESSAGES */
+    border-radius: 12px;
+    width: 160px;
+    overflow: hidden; /* Important pour que le hover respecte l'arrondi */
+    padding: 5px 0;   /* Un peu d'espace en haut et bas */
+    font-family: 'Inter', sans-serif;
+}
+
+.context-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.context-menu li {
+    padding: 12px 15px; /* Padding confortable comme les messages */
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+/* Effet au survol */
+.context-menu li:hover {
+    background-color: #fff1f0; /* Fond rouge très pâle */
+    color: #d93025;            /* Texte rouge */
+}

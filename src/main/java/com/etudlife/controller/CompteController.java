@@ -96,4 +96,26 @@ public class CompteController {
     public ResponseEntity<Set<Recette>> listerFavoris(@PathVariable Long id) {
         return ResponseEntity.ok(compteService.listerFavoris(id));
     }
+
+    // === 1. PING (POUR DIRE "JE SUIS LÀ") ===
+    @PostMapping("/ping")
+    public ResponseEntity<Void> signalPresence(@RequestHeader("X-User-ID") Long userId) {
+        if (userId != null) {
+            compteService.updatePresence(userId);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    // === 2. VERIFIER LE STATUT D'UN AUTRE ===
+    @GetMapping("/{id}/status")
+    public ResponseEntity<Map<String, Object>> getCompteStatus(@PathVariable Long id) {
+
+        boolean isOnline = compteService.isUserOnline(id);
+
+        return ResponseEntity.ok(Map.of(
+                "id", id,
+                "online", isOnline,
+                "status", isOnline ? "ONLINE" : "OFFLINE"
+        ));
+    }
 }

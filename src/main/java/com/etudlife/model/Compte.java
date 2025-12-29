@@ -2,6 +2,8 @@ package com.etudlife.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ public class Compte {
     private String email;
 
     private String motDePasse;
+    private LocalDateTime lastConnection;
 
     @ManyToMany(mappedBy = "membres", fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"membres", "posts"})
@@ -82,7 +85,8 @@ public class Compte {
     public Set<Recette> getRecettesFavorites() {
         return recettesFavorites;
     }
-    public void setRecettesFavorites(Set<Recette> recettesFavorites) {
-        this.recettesFavorites = recettesFavorites;
-    }
+    public void setRecettesFavorites(Set<Recette> recettesFavorites) {this.recettesFavorites = recettesFavorites;}
+
+    public LocalDateTime getLastConnection() { return lastConnection;}
+    public void setLastConnection(LocalDateTime lastConnection) {this.lastConnection = lastConnection;}
 }
