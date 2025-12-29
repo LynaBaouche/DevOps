@@ -201,6 +201,8 @@ package com.etudlife {
 			+setGroupes(groupes: List<Groupe>)
 			+getId(): Long
 			+setId(id: Long)
+			+getLastConnection(): LocalDateTime
+			+setLastConnection(lastConnection: LocalDateTime)
 			+getLiens(): List<Lien>
 			+setLiens(liens: List<Lien>)
 			+getMotDePasse(): String
@@ -332,6 +334,7 @@ package com.etudlife {
 			--
 			+MessageService(messageRepository: MessageRepository, notificationService: NotificationService)
 			..
+			+deleteMessage(messageId: Long, userId: Long)
 			+getLatestMessages(conversationId: Long): List<Message>
 			+getNewMessagesAfter(conversationId: Long, afterId: Long): List<Message>
 			+saveNewMessage(conversationId: Long, senderId: Long, receiverId: Long, content: String): Message
@@ -361,12 +364,14 @@ package com.etudlife {
 			..
 			+ajouterFavori(compteId: Long, recetteId: Long)
 			+creerCompte(compte: Compte): Compte
+			+isUserOnline(userId: Long): boolean
 			+lireCompteParId(id: Long): Compte
 			+listerComptes(): List<Compte>
 			+listerFavoris(compteId: Long): Set<Recette>
 			+login(email: String, motDePasse: String): Compte
 			+retirerFavori(compteId: Long, recetteId: Long)
 			+trouverCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
+			+updatePresence(userId: Long)
 		}
 
 		class com.etudlife.service.AnnonceService {
@@ -451,6 +456,11 @@ package com.etudlife {
 			+sendMessage(conversationId: Long, request: MessageRequestDTO, authenticatedUserId: Long): ResponseEntity<Message>
 		}
 
+		class com.etudlife.controller.GlobalMessageController {
+			--
+			+deleteMessage(id: Long, userId: Long): ResponseEntity<?>
+		}
+
 		class com.etudlife.controller.MenuController {
 			--
 			+MenuController(service: MenuService)
@@ -496,9 +506,11 @@ package com.etudlife {
 			+creerCompte(compte: Compte): ResponseEntity<?>
 			+getCompteById(id: Long): Compte
 			+getCompteParNomEtPrenom(nom: String, prenom: String): List<Compte>
+			+getCompteStatus(id: Long): ResponseEntity<Map<String,Object>>
 			+listerFavoris(id: Long): ResponseEntity<Set<Recette>>
 			+login(credentials: Map<String,String>): ResponseEntity<?>
 			+retirerFavori(id: Long, recetteId: Long): ResponseEntity<Void>
+			+signalPresence(userId: Long): ResponseEntity<Void>
 		}
 
 		class com.etudlife.controller.PostController {
@@ -640,6 +652,7 @@ com.etudlife.controller.LienController --* com.etudlife.service.LienService
 com.etudlife.controller.ReservationController --* com.etudlife.service.ReservationService
 com.etudlife.controller.RecetteController --* com.etudlife.service.RecetteService
 com.etudlife.controller.MessageController --* com.etudlife.service.MessageService
+com.etudlife.controller.GlobalMessageController --* com.etudlife.service.MessageService
 com.etudlife.controller.MenuController --* com.etudlife.service.MenuService
 com.etudlife.controller.NotificationController --* com.etudlife.service.NotificationService
 com.etudlife.controller.EvenementController --* com.etudlife.repository.EvenementRepository
