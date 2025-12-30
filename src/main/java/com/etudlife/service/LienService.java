@@ -28,6 +28,15 @@ public class LienService {
 
     // Crée un lien entre deux comptes existants
     public Optional<Lien> creerLien(Long idSource, Long idCible) {
+        // 1. On empêche de s'ajouter soi-même
+        if (idSource.equals(idCible)) {
+            return Optional.empty();
+        }
+
+        // 2. ✅ ON VÉRIFIE SI LE LIEN EXISTE DÉJÀ
+        if (lienRepository.existsByCompteSourceIdAndCompteCibleId(idSource, idCible)) {
+            return Optional.empty();
+        }
         Optional<Compte> source = compteRepository.findById(idSource);
         Optional<Compte> cible = compteRepository.findById(idCible);
 

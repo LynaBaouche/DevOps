@@ -314,9 +314,7 @@ async function renderFeedPosts(groupeId) {
         console.error(" Erreur posts :", err);
     }
 }
-
-/*  RECHERCHER UN COMPTE + AJOUTER AUX PROCHES
- */
+/* RECHERCHER UN COMPTE + AJOUTER AUX PROCHES */
 document.addEventListener("DOMContentLoaded", () => {
     const formSearch = document.getElementById("form-search-compte");
     if (!formSearch) return;
@@ -331,6 +329,13 @@ document.addEventListener("DOMContentLoaded", () => {
         resultDiv.innerHTML = "<p>Recherche en cours...</p>";
 
         try {
+            // 1. D'abord, on récupère la liste de mes proches actuels pour comparer
+            const resProches = await fetch(`${API_BASE_URL}/liens/${currentUser.id}/proches`);
+            const mesProches = await resProches.json();
+            // On crée une liste simple contenant juste les IDs des amis : [1, 5, 12...]
+            const mesProchesIds = mesProches.map(lien => lien.compteCible.id);
+
+            // 2. Ensuite, on lance la recherche
             const res = await fetch(`${API_BASE_URL}/comptes/search?nom=${nom}&prenom=${prenom}`);
             const results = await res.json();
 
@@ -339,33 +344,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            resultDiv.innerHTML = results.map(user => `
-    <div class="result">
-        <div>
-            <p><strong>${user.prenom} ${user.nom}</strong></p>
-            <p>${user.email}</p>
-            <p>ID : ${user.id}</p>
-        </div>
-        <button class="btn-add-friend" data-id="${user.id}">Ajouter</button>
-    </div>
-`).join("");
+            // 3. On génère l'affichage en vérifiant chaque ID
+            resultDiv.innerHTML = results.map(user => {
 
+                // On ne s'affiche pas soi-même dans les résultats (optionnel mais mieux)
+                if (user.id === currentUser.id) return "";
+
+                // EST-CE QUE CET UTILISATEUR EST DÉJÀ MON AMI ?
+                const estDejaAmi = mesProchesIds.includes(user.id);
+
+                let boutonHtml;
+                if (estDejaAmi) {
+                    // 🔵 Bouton "Déjà ajouté" (Bleu ciel #87CEEB, désactivé)
+                    boutonHtml = `
+                        <button class="btn-already-added" disabled 
+                                style="background-color: #87CEEB; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: default;">
+                            Déjà ajouté
+                        </button>`;
+                } else {
+                    // 🟢 Bouton "Ajouter" (Standard, vert)
+                    boutonHtml = `
+                        <button class="btn-add-friend" data-id="${user.id}">
+                            Ajouter
+                        </button>`;
+                }
+
+                return `
+                    <div class="result">
+                        <div>
+                            <p><strong>${user.prenom} ${user.nom}</strong></p>
+                            <p>${user.email}</p>
+                        </div>
+                        ${boutonHtml}
+                    </div>
+                `;
+            }).join("");
+
+            // 4. On attache les événements UNIQUEMENT sur les boutons "Ajouter" (les verts)
             document.querySelectorAll(".btn-add-friend").forEach(btn => {
                 btn.addEventListener("click", async () => {
                     const cibleId = btn.dataset.id;
-
                     const resAdd = await fetch(`${API_BASE_URL}/liens?idSource=${currentUser.id}&idCible=${cibleId}`, {
                         method: "POST"
                     });
 
-                    alert("Proche ajouté !");
-                    await afficherProches();
+                    if(resAdd.ok) {
+                        alert("Proche ajouté !");
+                        // On relance la recherche pour mettre à jour le bouton en "Déjà ajouté" instantanément
+                        formSearch.dispatchEvent(new Event('submit'));
+                        await afficherProches(); // Met à jour la colonne de droite
+                    }
                 });
             });
 
-
         } catch (err) {
-            resultDiv.innerHTML = "<p style='color:red;'> Aucun compte trouvé.</p>";
+            console.error(err);
+            resultDiv.innerHTML = "<p style='color:red;'>Erreur lors de la recherche.</p>";
         }
     });
 });
