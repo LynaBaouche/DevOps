@@ -1,16 +1,16 @@
 package com.etudlife.dto;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class ConversationPreviewDTO {
     private Long conversationId;
     private String contactName;
     private Long contactId;
     private String lastMessageContent;
-    private Instant lastMessageTimestamp;
+    private LocalDateTime lastMessageTimestamp;
 
     // Constructeur pour le mapping du Repository
-    public ConversationPreviewDTO(Long conversationId, Long contactId, String contactName, String lastMessageContent, Instant lastMessageTimestamp) {
+    public ConversationPreviewDTO(Long conversationId, Long contactId, String contactName, String lastMessageContent, LocalDateTime lastMessageTimestamp) {
         this.conversationId = conversationId;
         this.contactId = contactId;
         this.contactName = contactName;
@@ -43,10 +43,10 @@ public class ConversationPreviewDTO {
     public void setLastMessageContent(String lastMessageContent) {
         this.lastMessageContent = lastMessageContent;
     }
-    public Instant getLastMessageTimestamp() {
+    public LocalDateTime getLastMessageTimestamp() {
         return lastMessageTimestamp;
     }
-    public void setLastMessageTimestamp(Instant lastMessageTimestamp) {
+    public void setLastMessageTimestamp(LocalDateTime lastMessageTimestamp) {
         this.lastMessageTimestamp = lastMessageTimestamp;
     }
 }

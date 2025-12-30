@@ -1,5 +1,6 @@
 package com.etudlife.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,8 @@ public class MessageService {
         message.setSenderId(senderId);
         message.setReceiverId(receiverId);
         message.setContent(content);
+
+        message.setTimestamp(LocalDateTime.now());
 
         Message saved = messageRepository.save(message);
 

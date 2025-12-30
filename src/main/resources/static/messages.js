@@ -111,43 +111,43 @@ document.addEventListener("DOMContentLoaded", () => {
     function formatIsoTime(timestamp) {
         if (!timestamp) return "";
 
-        let rawHour, rawMinute;
-
         try {
-            // Détection : Est-ce un Nombre (Timestamp) ou une String ?
-            const isNumeric = !isNaN(timestamp) && !String(timestamp).includes(":") && !String(timestamp).includes("-");
+            // Le timestamp arrive sous forme de string ISO : "2025-12-30T21:52:30"
+            // Ou parfois sous forme de tableau : [2025, 12, 30, 21, 52]
 
-            // CAS 1 : C'est un Timestamp (Aperçu)
-            if (typeof timestamp === 'number' || isNumeric) {
-                let ts = Number(timestamp);
-                if (String(ts).length < 12) ts = ts * 1000; // Conversion sec -> ms
+            let str = String(timestamp);
+            let timePart = "";
 
-                let date = new Date(ts);
-                // On utilise l'heure locale (le navigateur fait UTC -> France)
-                rawHour = date.getHours();
-                rawMinute = date.getMinutes();
+            // CAS 1 : C'est déjà une chaine propre (ex: "2025...T21:52...")
+            if (str.includes("T")) {
+                timePart = str.split("T")[1]; // On prend ce qu'il y a après le T
             }
-            // CAS 2 : C'est du Texte (Message)
+            // CAS 2 : Format SQL avec espace (ex: "2025... 21:52...")
+            else if (str.includes(" ")) {
+                timePart = str.split(" ")[1];
+            }
+            // CAS 3 : C'est un tableau (Parfois Spring Boot sérialise comme ça)
+            else if (Array.isArray(timestamp) && timestamp.length >= 5) {
+                // On construit "HH:MM" manuellement
+                let h = String(timestamp[3]).padStart(2, '0');
+                let m = String(timestamp[4]).padStart(2, '0');
+                return `${h}:${m}`;
+            }
+            // CAS 4 : Cas de secours, on essaie de lire directement
             else {
-                let str = String(timestamp);
-                let timePart = "";
-                if (str.includes("T")) timePart = str.split("T")[1];
-                else if (str.includes(" ")) timePart = str.split(" ")[1];
-                else timePart = str;
-
-                let parts = timePart.split(":");
-                rawHour = parseInt(parts[0], 10);
-                rawMinute = parseInt(parts[1], 10);
+                timePart = str;
             }
 
-            // UNIFORMISATION : ON AJOUTE +1 HEURE PARTOUT
-            if (isNaN(rawHour)) return "--:--";
+            // À ce stade, timePart ressemble à "21:52:30.456" ou "21:52"
+            // On coupe pour ne garder que les 5 premiers caractères "HH:mm"
+            if (timePart.includes(":")) {
+                return timePart.substring(0, 5);
+            }
 
-            let finalHour = (rawHour + 1) % 24;
-            return `${String(finalHour).padStart(2, '0')}:${String(rawMinute).padStart(2, '0')}`;
+            return "--:--";
 
         } catch (e) {
-            console.error("Erreur formatIsoTime:", e, timestamp);
+            console.error("Erreur lecture heure:", e, timestamp);
             return "--:--";
         }
     }

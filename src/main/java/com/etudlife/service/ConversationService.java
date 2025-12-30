@@ -19,14 +19,6 @@ public class ConversationService {
 
         List<ConversationPreviewProjection> projections = messageRepository.findConversationPreviewsByUserId(userId);
 
-        // Retourner les projections, car Spring est souvent capable de gérer cela
-        // si l'interface et la classe DTO correspondent.
-        // Dans ce cas, nous devons changer le Controller pour qu'il attende List<ConversationPreviewProjection>
-        // Si cela échoue, il faudra un mapping manuel ou une interface DTO à la place de la classe.
-
-        // Option la plus simple et la plus rapide :
-        // Si la liste ne contient que des projections, on renvoie la projection.
-        // Vous devez changer la signature du contrôleur pour qu'il retourne List<ConversationPreviewProjection>
         return projections.stream()
                 .map(p -> new ConversationPreviewDTO(
                         p.getConversationId(),

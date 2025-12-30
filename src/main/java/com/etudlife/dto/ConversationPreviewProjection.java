@@ -1,7 +1,7 @@
 package com.etudlife.dto;
 // Vous pouvez la mettre dans le même package que votre DTO ou dans un package 'projection'
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public interface ConversationPreviewProjection {
 
@@ -14,8 +14,7 @@ public interface ConversationPreviewProjection {
     // Doit correspondre à l'alias SQL 'lastMessageContent' (votre champ 'content')
     String getLastMessageContent();
 
-    // Doit correspondre à l'alias SQL 'lastMessageTimestamp' (votre champ 'timestamp')
-    Instant getLastMessageTimestamp();
+    LocalDateTime getLastMessageTimestamp();
 
     Long getContactId();
 

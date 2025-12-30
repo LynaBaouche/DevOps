@@ -2,6 +2,7 @@ package com.etudlife.model;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
@@ -22,11 +23,7 @@ public class Message {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private Instant timestamp;
-
-    public Message() {
-        this.timestamp = Instant.now();
-    }
+    private LocalDateTime timestamp;
 
     // --- GETTERS & SETTERS (Seuls les nouveaux et modifiés sont montrés) ---
 
@@ -54,11 +51,11 @@ public class Message {
         this.content = content;
     }
 
-    public Instant getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
