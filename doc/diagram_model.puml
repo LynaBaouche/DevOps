@@ -643,6 +643,7 @@ com.etudlife.service.PostService --* com.etudlife.repository.CompteRepository
 com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
 com.etudlife.service.ReservationService --* com.etudlife.repository.ReservationBURepository
 com.etudlife.service.ReservationService --* com.etudlife.repository.LivreRepository
+com.etudlife.controller.AnnonceController --* com.etudlife.model.Annonce
 com.etudlife.controller.AnnonceController --* com.etudlife.service.AnnonceService
 com.etudlife.controller.AnnonceController --* com.etudlife.repository.LienRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.service.NotificationService
