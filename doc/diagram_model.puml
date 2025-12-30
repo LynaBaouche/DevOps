@@ -51,8 +51,6 @@ package com.etudlife {
 
 		class com.etudlife.model.Message {
 			--
-			+Message()
-			..
 			+getContent(): String
 			+setContent(content: String)
 			+getConversationId(): Long
@@ -63,8 +61,8 @@ package com.etudlife {
 			+setReceiverId(receiverId: Long)
 			+getSenderId(): Long
 			+setSenderId(senderId: Long)
-			+getTimestamp(): Instant
-			+setTimestamp(timestamp: Instant)
+			+getTimestamp(): LocalDateTime
+			+setTimestamp(timestamp: LocalDateTime)
 		}
 
 		class com.etudlife.model.ReservationBU {
@@ -255,12 +253,12 @@ package com.etudlife {
 			+getContactName(): String
 			+getConversationId(): Long
 			+getLastMessageContent(): String
-			+getLastMessageTimestamp(): Instant
+			+getLastMessageTimestamp(): LocalDateTime
 		}
 
 		class com.etudlife.dto.ConversationPreviewDTO {
 			--
-			+ConversationPreviewDTO(conversationId: Long, contactId: Long, contactName: String, lastMessageContent: String, lastMessageTimestamp: Instant)
+			+ConversationPreviewDTO(conversationId: Long, contactId: Long, contactName: String, lastMessageContent: String, lastMessageTimestamp: LocalDateTime)
 			..
 			+getContactId(): Long
 			+setContactId(contactId: Long)
@@ -270,8 +268,8 @@ package com.etudlife {
 			+setConversationId(conversationId: Long)
 			+getLastMessageContent(): String
 			+setLastMessageContent(lastMessageContent: String)
-			+getLastMessageTimestamp(): Instant
-			+setLastMessageTimestamp(lastMessageTimestamp: Instant)
+			+getLastMessageTimestamp(): LocalDateTime
+			+setLastMessageTimestamp(lastMessageTimestamp: LocalDateTime)
 		}
 
 	}
