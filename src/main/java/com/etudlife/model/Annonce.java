@@ -16,6 +16,8 @@ public class Annonce {
     private String description;
     private String prix;
     private String categorie;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String ville;
     private String auteur;

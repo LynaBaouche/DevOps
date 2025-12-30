@@ -89,10 +89,16 @@
         <section id="agenda">
 
             <div class="agenda-header">
-                <div class="month-nav">
-                    <button id="prevMonth" class="month-btn">←</button>
-                    <h2 id="month-title">Chargement...</h2>
-                    <button id="nextMonth" class="month-btn">→</button>
+                <div class="header-left-controls">
+                    <div class="month-nav">
+                        <button id="prevMonth" class="month-btn">←</button>
+                        <h2 id="month-title">Chargement...</h2>
+                        <button id="nextMonth" class="month-btn">→</button>
+                    </div>
+                    <div class="view-switch">
+                        <button id="btnViewMonth" class="view-btn active">Mois</button>
+                        <button id="btnViewWeek" class="view-btn">Semaine</button>
+                    </div>
                 </div>
                 <button id="btnNewEvent">Nouvel événement</button>
             </div>
@@ -143,8 +149,8 @@
         </form>
     </div>
 </div>
-
 <script src="app.js"></script>
+<script src="agenda.js"></script>
 
 <!--- <script>
     document.addEventListener("DOMContentLoaded", () => {

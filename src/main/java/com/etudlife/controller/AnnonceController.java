@@ -10,7 +10,7 @@ import com.etudlife.service.NotificationService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Base64;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/annonces")
 @CrossOrigin(origins = "*")
 public class AnnonceController {
-
+    private final Annonce annonce;
     private final AnnonceService service;
     private final LienRepository lienRepository;
     private final NotificationService notificationService;
@@ -31,6 +31,7 @@ public class AnnonceController {
         this.service = service;
         this.lienRepository = lienRepository;
         this.notificationService = notificationService;
+        this.annonce = new Annonce();
     }
 
     // 🔵 Récupérer toutes les annonces
@@ -165,9 +166,10 @@ public class AnnonceController {
         a.setLien(lien);
 
         // si nouvelle image → on remplace
+        // Remplacer l'appel à saveImage par ceci :
         if (image != null && !image.isEmpty()) {
-            String fileName = saveImage(image);
-            a.setImage(fileName);
+            String base64Image = Base64.getEncoder().encodeToString(image.getBytes());
+            annonce.setImage(base64Image); // On stocke la chaîne encodée
         }
 
         return service.save(a);

@@ -33,7 +33,7 @@ public class LienService {
             return Optional.empty();
         }
 
-        // 2. ✅ ON VÉRIFIE SI LE LIEN EXISTE DÉJÀ
+        // 2. ON VÉRIFIE SI LE LIEN EXISTE DÉJÀ
         if (lienRepository.existsByCompteSourceIdAndCompteCibleId(idSource, idCible)) {
             return Optional.empty();
         }

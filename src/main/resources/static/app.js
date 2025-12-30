@@ -1,9 +1,5 @@
 const API_BASE_URL = "http://localhost:8080/api";
 let currentUser = null;
-let allEventsCache = []; // Stocke tous les événements reçus du serveur
-let selectedProchesIds = new Set(); // Stocke les IDs des proches cochés
-
-
 
 /* INITIALISATION */
 document.addEventListener("DOMContentLoaded", async () => {
@@ -114,21 +110,26 @@ async function afficherProfil() {
 /*
     CHARGEMENT DES DONNÉES
  */
-async function loadApplicationData() {
-    if (!currentUser) return;
+let isLoadingAppData = false;
 
+async function loadApplicationData() {
+    if (!currentUser || isLoadingAppData) return;
+
+    isLoadingAppData = true;
     try {
-        const allUsers = await fetchApi("/comptes");
-        currentUser = allUsers.find(u => u.id === currentUser.id);
+        const userMaj = await fetchApi(`/comptes/${currentUser.id}`);
+        currentUser = userMaj;
 
         await renderUserProfile();
-        await renderModernUserProfile();// 🆕 Nouveau profil (groupes.html)
-        await afficherProches();   //
+        await renderModernUserProfile();
+        await afficherProches();
         await renderUserGroupes();
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
     } catch (e) {
-        console.error(" Erreur chargement données :", e);
+        console.error("Erreur chargement données :", e);
+    } finally {
+        isLoadingAppData = false;
     }
 }
 /* ============================
@@ -558,202 +559,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/*
-   AGENDA — Intégré au backend EtudLife
-    */
-document.addEventListener("DOMContentLoaded", async () => {
-    // Si on est sur la page Agenda.html
-    if (window.location.pathname.endsWith("Agenda.html")) {
-        const utilisateur = JSON.parse(localStorage.getItem("utilisateur"));
-        if (!utilisateur) {
-            window.location.href = "login.html";
-            return;
-        }
-        currentUser = utilisateur;
-        initAgendaPage();
-    }
-});
-
-async function initAgendaPage() {
-    const btnLogout = document.getElementById("btnLogout");
-    if (btnLogout) btnLogout.addEventListener("click", logout);
-
-    const btnNewEvent = document.getElementById("btnNewEvent");
-    const btnCancel = document.getElementById("btnCancel");
-    const formEvent = document.getElementById("formEvent");
-
-    if (btnNewEvent) btnNewEvent.addEventListener("click", () => togglePopup(true));
-    if (btnCancel) btnCancel.addEventListener("click", () => togglePopup(false));
-    if (formEvent) formEvent.addEventListener("submit", saveEvent);
-
-    await chargerProchesSidebar();
-    await afficherAgenda();
-
-}
-/* Ouvre / ferme la popup */
-function togglePopup(show) {
-    const popup = document.getElementById("popup");
-    if (popup) popup.classList.toggle("hidden", !show);
-}
-
-/* Charge le calendrier du mois courant */
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-
-async function afficherAgenda() {
-    const grid = document.getElementById("agenda-grid");
-    if (!grid) return;
-
-    grid.innerHTML = "";
-
-    //  Noms des mois
-    const monthNames = [
-        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-    ];
-
-    // 🏷Met à jour le titre du mois
-    document.getElementById("month-title").textContent = `${monthNames[currentMonth]} ${currentYear}`;
-
-    // Récupère le premier jour du mois
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-    // Correction pour commencer le lundi (par défaut JS commence dimanche=0)
-    const startIndex = firstDay === 0 ? 6 : firstDay - 1;
-
-    // Récupère les événements depuis le backend (ou le cache)
-    const events = await fetchEvents();
 
 
-    for (let i = 0; i < startIndex; i++) {
-        const emptyDiv = document.createElement("div");
-        emptyDiv.className = "day empty";
-        grid.appendChild(emptyDiv);
-    }
-
-
-    for (let d = 1; d <= daysInMonth; d++) {
-
-        const div = document.createElement("div");
-        div.className = "day";
-        div.innerHTML = `<strong>${d}</strong>`; // Affiche le numéro du jour
-
-
-        const todayEvents = allEventsCache.filter(ev => {
-            const date = new Date(ev.dateDebut);
-            const isSameDay = date.getDate() === d && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-
-            if (!isSameDay) return false;
-
-            const isMine = ev.utilisateur.id === currentUser.id;
-            const isSelectedFriend = selectedProchesIds.has(ev.utilisateur.id);
-
-            return isMine || isSelectedFriend;
-        });
-
-        // Ajoute les événements dans la case du jour
-        todayEvents.forEach(ev => {
-            const eDiv = document.createElement("div");
-            const isMine = ev.utilisateur.id === currentUser.id;
-
-            eDiv.className = isMine ? "event event-mine" : "event event-other";
-
-            if (!isMine) {
-                eDiv.title = `Agenda de ${ev.utilisateur.prenom} ${ev.utilisateur.nom}`;
-                eDiv.textContent = "Occupé";
-            } else {
-                eDiv.textContent = ev.titre;
-            }
-
-            div.appendChild(eDiv);
-        });
-
-        // Ajoute la case complète à la grille
-        grid.appendChild(div);
-    }
-
-    renderToday(events);
-
-    // Réattache les événements aux boutons (important si le DOM a changé)
-    document.getElementById("prevMonth").onclick = () => changeMonth(-1);
-    document.getElementById("nextMonth").onclick = () => changeMonth(1);
-}
-/* Changement de mois */
-function changeMonth(offset) {
-    currentMonth += offset;
-    if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-    } else if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-    }
-    afficherAgenda();
-}
-
-/*  Récupère les événements depuis le backend */
-async function fetchEvents() {
-    try {
-        const res = await fetch(`${API_BASE_URL}/evenements/shared/${currentUser.id}`);
-        if (!res.ok) throw new Error("Erreur API événements");
-        allEventsCache = await res.json();
-        return allEventsCache;
-    } catch (err) {
-        console.error(err);
-        return [];
-    }
-}
-
-/*  Ajout d’un nouvel événement */
-async function saveEvent(e) {
-    e.preventDefault();
-
-    const event = {
-        titre: document.getElementById("titre").value,
-        description: document.getElementById("description").value,
-        dateDebut: document.getElementById("dateDebut").value,
-        dateFin: document.getElementById("dateFin").value
-    };
-
-    try {
-        const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(event)
-        });
-
-        if (!res.ok) throw new Error("Erreur création événement");
-        togglePopup(false);
-        await afficherAgenda();
-    } catch (err) {
-        alert("❌ " + err.message);
-    }
-}
-
-/* 🔹 Affiche les événements du jour */
-function renderToday(events) {
-    const today = new Date().getDate();
-    const list = document.getElementById("today-list");
-    if (!list) return;
-    list.innerHTML = "";
-
-    const todayEvents = events.filter(e => new Date(e.dateDebut).getDate() === today);
-    if (!todayEvents.length) {
-        list.innerHTML = "<li>Aucun événement prévu aujourd'hui.</li>";
-        return;
-    }
-
-    todayEvents.forEach(e => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            <strong>${e.titre}</strong><br>
-            ${new Date(e.dateDebut).toLocaleTimeString()} - 
-            ${new Date(e.dateFin).toLocaleTimeString()}
-        `;
-        list.appendChild(li);
-    });
-}
 /* INSCRIPTION (inscription.html) */
 document.addEventListener("DOMContentLoaded", () => {
     const formRegister = document.getElementById("inscreptionForm");
@@ -842,56 +649,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 /* Génère la liste des proches avec Checkbox */
-async function chargerProchesSidebar() {
-    const container = document.getElementById("proches-list-agenda");
-    if (!container) return;
 
-    try {
-        // Récupère les proches via l'API existante
-        const liens = await fetchApi(`/liens/${currentUser.id}/proches`);
-
-        if (liens.length === 0) {
-            container.innerHTML = "<li>Aucun proche ajouté.</li>";
-            return;
-        }
-
-        container.innerHTML = "";
-        liens.forEach(lien => {
-            const ami = lien.compteCible;
-            const li = document.createElement("li");
-            li.className = "proche-item";
-
-            // HTML: Checkbox + Avatar + Nom
-            li.innerHTML = `
-                <label class="friend-label">
-                    <input type="checkbox" class="friend-checkbox" value="${ami.id}">
-                    <div class="friend-info">
-                        <div class="friend-avatar">${ami.prenom.charAt(0)}${ami.nom.charAt(0)}</div>
-                        <span>${ami.prenom} ${ami.nom}</span>
-                    </div>
-                    <span class="status-dot"></span>
-                </label>
-            `;
-
-            // Événement : Quand on coche/décoche
-            const checkbox = li.querySelector("input");
-            checkbox.addEventListener("change", (e) => {
-                if (e.target.checked) {
-                    selectedProchesIds.add(ami.id);
-                } else {
-                    selectedProchesIds.delete(ami.id);
-                }
-                // On rafraîchit l'agenda sans recharger la page
-                afficherAgenda();
-            });
-
-            container.appendChild(li);
-        });
-
-    } catch (err) {
-        console.error("Erreur chargement proches agenda", err);
-    }
-}
 /* ======================================================
    👥 PAGE Proches - Initialisation spécifique
    ====================================================== */

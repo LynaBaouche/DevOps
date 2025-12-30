@@ -29,7 +29,7 @@ public class Compte {
     private String motDePasse;
     private LocalDateTime lastConnection;
 
-    @ManyToMany(mappedBy = "membres", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "membres", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"membres", "posts"})
     private List<Groupe> groupes = new ArrayList<>();
 

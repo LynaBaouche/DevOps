@@ -99,6 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
        🔄 AUTO
        ====================== */
     loadUnreadCount();
-    setInterval(loadUnreadCount, 30000);
+    setInterval(loadUnreadCount, 40000);
 
 });

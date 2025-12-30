@@ -56,8 +56,55 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.header-left-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.view-switch {
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    gap: 5px;
+}
+.view-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
+.view-btn.active {
+    background: white;
+    color: #1e66ff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.view-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.5);
+}
+/* Quand on est en mode semaine, on garde la grille mais on change l'aspect */
+.agenda-grid-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.agenda-grid-week .day {
+    min-height: 400px; /* Les cases sont beaucoup plus hautes en vue semaine */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 /* Navigation mois */
 .month-nav {
     display: flex;
