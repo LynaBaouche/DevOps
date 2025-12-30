@@ -16,6 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".menu-title").textContent = user.prenom + " " + user.nom;
         document.querySelector(".menu-subtitle").textContent = user.email;
 
+        fetch('/api/comptes/ping', {
+            method: 'POST',
+            headers: { 'X-User-ID': user.id }
+        }).catch(e => console.error("Erreur mise à jour présence init", e));
+
         // ----- ⚡ BOUTON PROFIL -----
         const btnProfil = document.getElementById("btn-profil");
         btnProfil.addEventListener("click", async () => {

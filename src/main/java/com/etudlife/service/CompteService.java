@@ -57,6 +57,9 @@ public class CompteService {
             throw new IllegalArgumentException("Mot de passe incorrect.");
         }
 
+        compte.setLastConnection(LocalDateTime.now());
+        compteRepository.save(compte);
+
         return compte;
     }
 
