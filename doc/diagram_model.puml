@@ -569,6 +569,7 @@ package com.etudlife {
 
 		interface com.etudlife.repository.LienRepository {
 			--
+			+existsByCompteSourceIdAndCompteCibleId(sourceId: Long, cibleId: Long): boolean
 			+findByCompteSourceId(compteSourceId: Long): List<Lien>
 		}
 
