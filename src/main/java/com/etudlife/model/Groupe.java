@@ -15,7 +15,7 @@ public class Groupe {
 
     private String nom;
     private String description;
-
+    private String categorie;
     // ✅ Relation ManyToMany corrigée
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -34,9 +34,10 @@ public class Groupe {
     // === Constructeurs ===
     public Groupe() {}
 
-    public Groupe(String nom, String description) {
+    public Groupe(String nom, String description, String categorie) {
         this.nom = nom;
         this.description = description;
+        this.categorie= categorie;
     }
 
     // === Méthode utilitaire ===
@@ -55,7 +56,8 @@ public class Groupe {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
+    public String getCategorie() { return categorie; }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
     public List<Compte> getMembres() { return membres; }
     public void setMembres(List<Compte> membres) { this.membres = membres; }
 

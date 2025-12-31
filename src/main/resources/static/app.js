@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const user = JSON.parse(localStorage.getItem("utilisateur"));
     if (user) {
         currentUser = user;
-        // NE PAS appeler afficherProfil() ici !
+
     }
 
 
@@ -124,6 +124,7 @@ async function loadApplicationData() {
         await renderModernUserProfile();
         await afficherProches();
         await renderUserGroupes();
+        await chargerRecommandations();
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
     } catch (e) {
@@ -260,28 +261,128 @@ async function changerGroupeActif(groupeId, element) {
         selectPost.value = groupeId;
     }
 }
+/*Recommendations de groupes*/
 
-/*
-    TOUS LES GROUPES
- */
-async function renderAllGroupesList() {
-    const select = document.getElementById("select-all-groupes");
-    if (!select) return;
+async function chargerRecommandations() {
+    const container = document.getElementById("reco-grid");
+    const section = document.getElementById("recommandations-section");
+    if (!container || !currentUser) return;
 
     try {
-        const allGroupes = await fetchApi("/groupes");
-        const myIds = currentUser.groupes.map(g => g.id);
-        const autres = allGroupes.filter(g => !myIds.includes(g.id));
+        const groupesReco = await fetchApi(`/groupes/recommandations/${currentUser.id}`);
 
-        if (!autres.length) {
-            select.innerHTML = "<option>Aucun groupe disponible</option>";
-            return;
+        if (groupesReco.length > 0) {
+            section.style.display = "block"; // On affiche la section seulement s'il y a des résultats
+
+            container.innerHTML = groupesReco.map(g => `
+                <div class="group-card reco-card">
+                    <div class="card-badge">🎯 ${g.categorie}</div>
+                    <h3>${g.nom}</h3>
+                    <p>${g.description}</p>
+                    <button class="btn-join" onclick="rejoindreGroupe(${g.id})">Rejoindre</button>
+                </div>
+            `).join("");
+        }
+    } catch (e) {
+        console.error("Erreur reco", e);
+    }
+}
+/* ======================================================
+   🤝 ACTION : REJOINDRE UN GROUPE (Global)
+   ====================================================== */
+async function rejoindreGroupe(groupeId) {
+    if (!currentUser) {
+        alert("⚠️ Vous devez être connecté pour rejoindre un groupe.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/groupes/${groupeId}/ajouter/${currentUser.id}`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            alert("✅ Groupe rejoint avec succès !");
+            // On recharge les données pour mettre à jour les listes "Mes Groupes" et "Recommandations"
+            await loadApplicationData();
+        } else {
+            const text = await res.text();
+            alert("❌ Erreur : " + text);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("❌ Erreur réseau lors de la tentative de rejoindre le groupe.");
+    }
+}
+
+/* ======================================================
+   🌍 CHARGER TOUS LES GROUPES (AVEC FILTRE)
+   ====================================================== */
+let allGroupsCache = []; // Pour filtrer sans refaire de requête
+
+async function renderAllGroupesList() {
+    const container = document.getElementById("all-groups-grid");
+    const filterSelect = document.getElementById("category-filter");
+
+    if (!container) return;
+
+    try {
+        // 1. Récupérer tous les groupes
+        const allGroupes = await fetchApi("/groupes");
+
+        // 2. Filtrer pour ne garder que ceux que je n'ai PAS encore rejoints
+        const myGroupIds = currentUser.groupes.map(g => g.id);
+        allGroupsCache = allGroupes.filter(g => !myGroupIds.includes(g.id));
+
+        // 3. Initialiser le menu déroulant des catégories (une seule fois)
+        if (filterSelect && filterSelect.options.length <= 1) {
+            // Récupère les catégories uniques présentes dans les données
+            const categories = [...new Set(allGroupsCache.map(g => g.categorie).filter(c => c))];
+
+            categories.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                filterSelect.appendChild(opt);
+            });
+
+            // Ajout de l'événement de changement
+            filterSelect.addEventListener("change", () => {
+                filterAndDisplayGroups(filterSelect.value, container);
+            });
         }
 
-        select.innerHTML = autres.map(g => `<option value="${g.id}">${g.nom}</option>`).join("");
+        // 4. Affichage initial (Tout afficher)
+        filterAndDisplayGroups("all", container);
+
     } catch (err) {
         console.error("⚠️ Erreur groupes :", err);
+        container.innerHTML = "<p>Impossible de charger les groupes.</p>";
     }
+}
+
+/* Fonction interne pour afficher selon le filtre */
+function filterAndDisplayGroups(category, container) {
+    // Filtrage
+    const filtered = category === "all"
+        ? allGroupsCache
+        : allGroupsCache.filter(g => g.categorie === category);
+
+    // Affichage vide
+    if (filtered.length === 0) {
+        container.innerHTML = "<p>Aucun groupe disponible dans cette catégorie.</p>";
+        return;
+    }
+
+    // Génération des cartes
+    container.innerHTML = filtered.map(g => `
+        <div class="group-card">
+            <div class="card-badge">${g.categorie || 'Général'}</div>
+            <h3>${g.nom}</h3>
+            <p>${g.description}</p>
+            <button class="btn-join" onclick="rejoindreGroupe(${g.id})">Rejoindre</button>
+        </div>
+    `).join("");
 }
 
 /*  FIL D'ACTUALITÉ
@@ -640,8 +741,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            alert("🎉 Inscription réussie ! Vous pouvez maintenant vous connecter.");
-            window.location.href = "login.html";
+            const createdUser = await res.json();
+            localStorage.setItem("tempUserId", createdUser.id);
+
+            alert("🎉 Compte créé ! Dites-nous ce que vous aimez.");
+            window.location.href = "hobbies.html";
 
         } catch (err) {
             alert("Erreur lors de l'inscription : " + err.message);

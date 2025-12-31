@@ -29,6 +29,10 @@ public class Compte {
     private String motDePasse;
     private LocalDateTime lastConnection;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "compte_hobbies", joinColumns = @JoinColumn(name = "compte_id"))
+    @Column(name = "hobby")
+    private Set<String> hobbies = new HashSet<>();
     @ManyToMany(mappedBy = "membres", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"membres", "posts"})
     private List<Groupe> groupes = new ArrayList<>();
@@ -72,6 +76,9 @@ public class Compte {
 
     public String getMotDePasse() { return motDePasse; }
     public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+
+    public Set<String> getHobbies() { return hobbies; }
+    public void setHobbies(Set<String> hobbies) { this.hobbies = hobbies; }
 
     public List<Groupe> getGroupes() { return groupes; }
     public void setGroupes(List<Groupe> groupes) { this.groupes = groupes; }

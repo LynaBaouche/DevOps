@@ -9,6 +9,7 @@ import com.etudlife.model.Recette;
 import java.util.Set;
 import java.util.List;
 import java.util.Map;
+import com.etudlife.repository.CompteRepository;
 
 @RestController
 @RequestMapping("/api/comptes")
@@ -16,8 +17,9 @@ import java.util.Map;
 public class CompteController {
 
     private final CompteService compteService;
-
-    public CompteController(CompteService compteService) {
+    private final CompteRepository compteRepository;
+    public CompteController(CompteService compteService, CompteRepository compteRepository) {
+        this.compteRepository = compteRepository;
         this.compteService = compteService;
     }
 
@@ -59,7 +61,16 @@ public class CompteController {
                     .body("Aucun compte trouvé avec cet email.");
         }
     }
+    // ===  Mettre à jour les hobbies ===
+    @PutMapping("/{id}/hobbies")
+    public ResponseEntity<?> updateHobbies(@PathVariable Long id, @RequestBody Set<String> hobbies) {
+        Compte compte = compteService.lireCompteParId(id);
+        if (compte == null) return ResponseEntity.notFound().build();
 
+        compte.setHobbies(hobbies);
+        compteRepository.save(compte);
+        return ResponseEntity.ok().build();
+    }
     // === LISTER LES COMPTES ===
     @GetMapping
     public List<Compte> getAllComptes() {

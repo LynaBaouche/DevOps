@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vos centres d'intérêt | EtudLife</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ✨ STYLE SPÉCIFIQUE TYPE SPOTIFY */
+        body { background-color: #121212; color: white; font-family: 'Segoe UI', sans-serif; }
+        .hobbies-container { max-width: 900px; margin: 50px auto; text-align: center; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        p { color: #b3b3b3; margin-bottom: 40px; }
+
+        .grid-hobbies {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .hobby-card {
+            background-color: #282828;
+            border-radius: 10px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        /* Couleurs dynamiques */
+        .hobby-card:nth-child(4n+1) { background: #E91E63; } /* Rose */
+        .hobby-card:nth-child(4n+2) { background: #2196F3; } /* Bleu */
+        .hobby-card:nth-child(4n+3) { background: #FF9800; } /* Orange */
+        .hobby-card:nth-child(4n+4) { background: #4CAF50; } /* Vert */
+
+        .hobby-card:hover { transform: scale(1.05); }
+
+        /* État sélectionné */
+        .hobby-card.selected {
+            border-color: white;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+        .hobby-card.selected::after {
+            content: "✅";
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .btn-finish {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            opacity: 0.5;
+            pointer-events: none; /* Désactivé par défaut */
+            transition: opacity 0.3s;
+        }
+        .btn-finish.active { opacity: 1; pointer-events: auto; }
+    </style>
+</head>
+<body>
+
+<div class="hobbies-container">
+    <h1>Qu'est-ce qui vous passionne ?</h1>
+    <p>Sélectionnez au moins 3 intérêts pour personnaliser votre expérience.</p>
+
+    <div class="grid-hobbies" id="grid">
+    </div>
+
+    <button id="btn-terminer" class="btn-finish">Terminer</button>
+</div>
+
+<script>
+    const API_BASE_URL = "http://localhost:8080/api";
+    // Liste des hobbies possibles (à aligner avec vos catégories de groupes)
+    const hobbiesList = [
+        "Musique", "Sport", "Informatique", "Cuisine",
+        "Lecture", "Voyage", "Cinéma", "Jeux Vidéo",
+        "Jeux","Education","Photographie","Mode",
+        "Art", "Écologie", "Danse", "Théâtre"
+    ];
+
+    const selectedHobbies = new Set();
+    const btnTerminer = document.getElementById("btn-terminer");
+
+    // 1. Génération de la grille
+    const grid = document.getElementById("grid");
+    hobbiesList.forEach(hobby => {
+        const card = document.createElement("div");
+        card.className = "hobby-card";
+        card.textContent = hobby;
+
+        card.addEventListener("click", () => toggleSelection(card, hobby));
+        grid.appendChild(card);
+    });
+
+    // 2. Gestion de la sélection
+    function toggleSelection(card, hobby) {
+        if (selectedHobbies.has(hobby)) {
+            selectedHobbies.delete(hobby);
+            card.classList.remove("selected");
+        } else {
+            selectedHobbies.add(hobby);
+            card.classList.add("selected");
+        }
+        updateButton();
+    }
+
+    function updateButton() {
+        if (selectedHobbies.size >= 3) {
+            btnTerminer.classList.add("active");
+            btnTerminer.textContent = `Continuer (${selectedHobbies.size})`;
+        } else {
+            btnTerminer.classList.remove("active");
+            btnTerminer.textContent = "Terminer";
+        }
+    }
+
+    // 3. Envoi au Backend
+    btnTerminer.addEventListener("click", async () => {
+        // On récupère l'ID de l'utilisateur qui vient de s'inscrire (stocké dans localStorage par inscription.js)
+        // ATTENTION : Il faudra modifier inscription.js pour stocker l'ID avant de rediriger ici
+        const userId = localStorage.getItem("tempUserId");
+
+        if (!userId) {
+            alert("Erreur : Utilisateur non identifié. Veuillez vous reconnecter.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/comptes/${userId}/hobbies`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(Array.from(selectedHobbies))
+            });
+
+            if (res.ok) {
+                // Nettoyage et redirection vers login
+                localStorage.removeItem("tempUserId");
+                window.location.href = "login.html";
+            } else {
+                alert("Erreur lors de la sauvegarde.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Erreur réseau");
+        }
+    });
+</script>
+
+</body>
+</html>

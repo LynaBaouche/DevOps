@@ -19,12 +19,12 @@ Le projet **EtudLife** a pour vocation de centraliser les outils essentiels à l
 
 ### 1.2 Équipe & Contributeurs
 
-| Membre | Rôle | GitHub                          |
-| :--- | :--- |:--------------------------------|
-| **Lyna Baouche** | Développeuse Fullstack / DevOps | https://github.com/LynaBaouche  |
-| **Alicya-Pearl Marras** | Développeuse Fullstack / DevOps | https://github.com/alicyap      |
-| **Kenza Menad** | Développeuse Fullstack / DevOps | https://github.com/kenza-menad  |
-| **Dyhia Sellah** | Développeuse Fullstack / DevOps | https://github.com/DyhiaSellah1 |
+| Membre | Rôle                                | GitHub                          |
+| :--- |:------------------------------------|:--------------------------------|
+| **Lyna Baouche** | Développeuse Fullstack / DevOps     | https://github.com/LynaBaouche  |
+| **Alicya-Pearl Marras** | Développeuse Fullstack / DevOps     | https://github.com/alicyap      |
+| **Kenza Menad** | Développeuse Fullstack / DevOps     | https://github.com/kenza-menad  |
+| **Dyhia Sellah** | Développeuse Fullstack / DevOps     | https://github.com/DyhiaSellah1 |
 
 ### 1.3 Gestion de Projet & DevOps
 

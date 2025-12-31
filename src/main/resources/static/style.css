@@ -1057,3 +1057,126 @@ body {
 .hidden {
     display: none !important;
 }
+/* =========================
+   👥 GROUPES & RECOMMANDATIONS
+   ========================= */
+
+/* Grille horizontale (Recommandations) */
+.group-grid-horizontal {
+    display: flex;
+    gap: 15px;
+    flex-wrap : wrap;
+    overflow-x: visible;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Scrollbar personnalisée pour la grille horizontale */
+.group-grid-horizontal::-webkit-scrollbar {
+    height: 0;
+}
+.group-grid-horizontal::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* Grille classique (Tous les groupes) */
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+/* Carte de Groupe */
+.group-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.2s;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+}
+
+.group-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Badge de catégorie (ex: Sport, Musique) */
+.card-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    align-self: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Style spécifique pour les recommandations */
+.reco-card {
+    border: 2px solid #8b5cf6; /* Bordure violette pour distinguer */
+    background: #fbf8ff;
+    min-width: 220px; /* Largeur fixe pour le scroll horizontal */
+}
+
+.reco-card .card-badge {
+    background: #8b5cf6;
+    color: white;
+}
+
+.group-card h3 {
+    font-size: 1.1rem;
+    margin: 5px 0;
+    color: #333;
+}
+
+.group-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limite à 3 lignes */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Bouton Rejoindre */
+.btn-join {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-join:hover {
+    background: #1d4ed8;
+}
+
+/* Titres de section */
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+    color: #1e293b;
+    font-size: 1.4rem;
+}
+
+.subtitle-reco {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    display: block;
+}
