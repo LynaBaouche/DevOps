@@ -50,10 +50,9 @@ jobs:
       - name: Generate PDF Documentation
         run: |
           echo "body { font-family: 'Helvetica', 'Arial', 'Noto Color Emoji', sans-serif; }" > style.css
-         
+   
           md-to-pdf doc/documentation.md --stylesheet style.css --launch-options '{"args": ["--no-sandbox"]}'
-          
-          mv doc/documentation.pdf Documentation_EtudLife.pdfno-sandbox"]}'
+       
           mv doc/documentation.pdf Documentation_EtudLife.pdf
 
       - name: Create Release
