@@ -91,8 +91,10 @@ package com.etudlife {
 		class com.etudlife.model.Groupe {
 			--
 			+Groupe()
-			+Groupe(nom: String, description: String)
+			+Groupe(nom: String, description: String, categorie: String)
 			..
+			+getCategorie(): String
+			+setCategorie(categorie: String)
 			+getDescription(): String
 			+setDescription(description: String)
 			+getId(): Long
@@ -197,6 +199,8 @@ package com.etudlife {
 			+setEmail(email: String)
 			+getGroupes(): List<Groupe>
 			+setGroupes(groupes: List<Groupe>)
+			+getHobbies(): Set<String>
+			+setHobbies(hobbies: Set<String>)
 			+getId(): Long
 			+setId(id: Long)
 			+getLastConnection(): LocalDateTime
@@ -315,7 +319,8 @@ package com.etudlife {
 			+getAllGroupes(): List<Groupe>
 			..
 			+ajouterMembre(groupeId: Long, compteId: Long): Optional<Groupe>
-			+creerGroupe(nom: String, description: String): Groupe
+			+creerGroupe(nom: String, description: String, categorie: String): Groupe
+			+getRecommandations(userId: Long): List<Groupe>
 		}
 
 		class com.etudlife.service.DocumentService {
@@ -492,11 +497,12 @@ package com.etudlife {
 			..
 			+ajouterMembre(groupeId: Long, compteId: Long): Groupe
 			+creerGroupe(groupe: Groupe): Groupe
+			+getRecommandations(userId: Long): List<Groupe>
 		}
 
 		class com.etudlife.controller.CompteController {
 			--
-			+CompteController(compteService: CompteService)
+			+CompteController(compteService: CompteService, compteRepository: CompteRepository)
 			..
 			+getAllComptes(): List<Compte>
 			..
@@ -509,6 +515,7 @@ package com.etudlife {
 			+login(credentials: Map<String,String>): ResponseEntity<?>
 			+retirerFavori(id: Long, recetteId: Long): ResponseEntity<Void>
 			+signalPresence(userId: Long): ResponseEntity<Void>
+			+updateHobbies(id: Long, hobbies: Set<String>): ResponseEntity<?>
 		}
 
 		class com.etudlife.controller.PostController {
@@ -661,6 +668,7 @@ com.etudlife.controller.EvenementController --* com.etudlife.service.EvenementSe
 com.etudlife.controller.EvenementController --* com.etudlife.service.LienService
 com.etudlife.controller.GroupeController --* com.etudlife.service.GroupeService
 com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
+com.etudlife.controller.CompteController --* com.etudlife.repository.CompteRepository
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
 com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
 
