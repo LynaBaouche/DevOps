@@ -30,25 +30,30 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew bootJar
-      # 1. On installe Node.js (nécessaire pour l'outil de conversion)
+      # 1. On installe Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 2. On installe les polices pour que les émojis s'affichent sur le serveur Linux
+      # 2. On installe les polices Emoji sur le serveur Linux
       - name: Install Fonts (Emojis fix)
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-noto-color-emoji fonts-liberation
 
-      # 3. On installe l'outil de conversion "md-to-pdf"
+      # 3. On installe l'outil de conversion
       - name: Install md-to-pdf
         run: npm install -g md-to-pdf
 
+      # 4. Génération PDF avec CSS forcé pour les émojis
       - name: Generate PDF Documentation
         run: |
-          md-to-pdf doc/documentation.md --launch-options '{"args": ["--no-sandbox"]}'
+          echo "body { font-family: 'Helvetica', 'Arial', 'Noto Color Emoji', sans-serif; }" > style.css
+         
+          md-to-pdf doc/documentation.md --stylesheet style.css --launch-options '{"args": ["--no-sandbox"]}'
+          
+          mv doc/documentation.pdf Documentation_EtudLife.pdfno-sandbox"]}'
           mv doc/documentation.pdf Documentation_EtudLife.pdf
 
       - name: Create Release
