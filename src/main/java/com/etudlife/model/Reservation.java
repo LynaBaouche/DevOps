@@ -1,64 +1,32 @@
 package com.etudlife.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "reservation")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Reservation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long bookId;
-    private Long userId;
-    private String type; // "domicile" ou "sur place"
-    private int duree;   // 7 jours, 14 jours etc.
+
+    @Column(name = "id_user")
+    private Long idUser;
+
+    @Column(name = "id_livre")
+    private Long idLivre;
+
+    @Column(name = "date_reservation")
+    private LocalDate dateReservation;
+
+    @Column(name = "date_recuperation")
     private LocalDate dateRecuperation;
-    private String commentaire;
 
-
-    // --------- GETTERS / SETTERS ----------
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getDuree() {
-        return duree;
-    }
-
-    public void setDuree(int duree) {
-        this.duree = duree;
-    }
-
-    public String getCommentaire() {
-        return commentaire;
-    }
-
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
+    @Column(name = "emprunt_domicile")
+    private boolean empruntDomicile;
 }

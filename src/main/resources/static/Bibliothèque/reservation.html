@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mes Réservations – BU</title>
+    <title>Réservations – BU</title>
     <link rel="stylesheet" href="bu.css">
 </head>
 
@@ -17,7 +17,14 @@
 
         <ul class="nav-links">
             <li><a href="/">Accueil</a></li>
-            <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
+            <li><a href="/static/Agenda.html">Agenda</a></li>
+            <li><a href="/Cours.html">Cours</a></li>
+            <li><a href="transports.html">Transports</a></li>
+            <li><a href="/static/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
+            <li><a href="/Campus.html">Campus</a></li>
+            <li><a href="/Restaurant.html">Restaurant</a></li>
+            <li><a href="/static//Annonce/annonces.html">Annonces</a></li>
+            <li><a href="/static/messages.html">Messages</a></li>
         </ul>
 
         <div class="profile"><img src="../images/compte.png"></div>
@@ -37,40 +44,87 @@
 
     <h1 class="page-title">Mes réservations</h1>
 
-    <section class="reservations-list">
-
-        <article class="reservation-card">
-            <img src="cover_4.png" class="cover">
-            <div>
-                <h3>Base de Données Relationnelles</h3>
-                <p class="author">Elmasri</p>
-                <div class="book-meta">Réservé le 01/12/2024</div>
-            </div>
-            <button class="btn-cancel">Annuler</button>
-        </article>
-
-        <article class="reservation-card">
-            <img src="cover_2.png" class="cover">
-            <div>
-                <h3>Mathématiques pour l'Informatique</h3>
-                <p class="author">Rosen</p>
-                <div class="book-meta">Réservé le 25/11/2024</div>
-            </div>
-            <button class="btn-cancel">Annuler</button>
-        </article>
-
-    </section>
+    <!-- Conteneur où JS va injecter les réservations -->
+    <section id="reservationsList" class="reservations-list"></section>
 
 </main>
-<script>
-    document.querySelectorAll(".btn-cancel").forEach(btn => {
-    btn.addEventListener("click", () => {
-        if (confirm("Voulez-vous vraiment annuler cette réservation ?")) {
-            btn.closest(".reservation-card").remove();
-        }
-    });
-});
 
+<script>
+    const userId = 1;
+
+    async function loadReservations() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/reservation/user/${userId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status} - ${await res.text()}`);
+
+        const reservations = await res.json();
+
+        const withBooks = await Promise.all(
+          reservations.map(async (r) => {
+            let livre = null;
+            try {
+              const lr = await fetch(`http://localhost:8080/api/livre_bu/${r.idLivre}`);
+              if (lr.ok) livre = await lr.json();
+            } catch (_) {}
+            return { ...r, livre };
+          })
+        );
+
+        renderReservations(withBooks);
+      } catch (e) {
+        console.error("Erreur chargement réservations :", e);
+      }
+    }
+
+    function renderReservations(reservations) {
+      const container = document.getElementById("reservationContainer");
+      container.innerHTML = "";
+
+      if (!reservations || reservations.length === 0) {
+        container.innerHTML = "<p>Aucune réservation pour le moment.</p>";
+        return;
+      }
+
+      reservations.forEach(r => {
+        const card = document.createElement("article");
+        card.className = "book-card";
+
+        const titre = r.livre?.titre ?? `Livre #${r.idLivre}`;
+        const auteur = r.livre?.auteur ?? "";
+
+        card.innerHTML = `
+          <div class="book-header">
+            <img src="cover_${r.idLivre}.png" class="book-cover">
+            <div>
+              <div class="book-title">${titre}</div>
+              <div class="book-author">${auteur}</div>
+              <span class="badge badge-available">
+                ${r.empruntDomicile ? "Emprunt à domicile" : "Consultation sur place"}
+              </span>
+            </div>
+          </div>
+          <div class="book-footer">
+            <span>
+              Réservé le : ${r.dateReservation ?? ""}<br>
+              Récupération : ${r.dateRecuperation ?? ""}
+            </span>
+            <button class="btn-danger" onclick="annulerReservation(${r.id})">Annuler</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    async function annulerReservation(id) {
+      if (!confirm("Annuler cette réservation ?")) return;
+      await fetch(`http://localhost:8080/api/reservation/${id}`, { method: "DELETE" });
+      loadReservations();
+    }
+
+    loadReservations();
 </script>
+
+
 </body>
 </html>

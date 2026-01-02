@@ -1,9 +1,12 @@
 package com.etudlife.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "livre_bu")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Livre {
 
     @Id
@@ -12,14 +15,17 @@ public class Livre {
 
     private String titre;
     private String auteur;
+
+    @Column(name = "dispo")
+    private boolean disponible;
+
     private String section;
-    private String annee;
-    private String pages;
+    private int annee;
+
+    private String pages;   // était int → maintenant correct
+
     private String isbn;
-    private Boolean dispo;
 
-    public boolean getDispo() {return  dispo;}
-
-    public void setDispo(boolean dispo) {this.dispo = dispo;
+    public boolean getDisponible() {return this.disponible ;
     }
 }
