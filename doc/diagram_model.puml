@@ -150,24 +150,11 @@ package com.etudlife {
 
 		class com.etudlife.model.Reservation {
 			--
-			+getBookId(): Long
-			+setBookId(bookId: Long)
-			+getCommentaire(): String
-			+setCommentaire(commentaire: String)
-			+getDuree(): int
-			+setDuree(duree: int)
-			+getId(): Long
-			+setId(id: Long)
-			+getType(): String
-			+setType(type: String)
-			+getUserId(): Long
-			+setUserId(userId: Long)
 		}
 
 		class com.etudlife.model.Livre {
 			--
-			+getDispo(): boolean
-			+setDispo(dispo: boolean)
+			+getDisponible(): boolean
 		}
 
 		class com.etudlife.model.Document {
@@ -397,9 +384,10 @@ package com.etudlife {
 			+getPostsParGroupe(groupeId: Long): List<Post>
 		}
 
-		class com.etudlife.service.ReservationService {
+		class com.etudlife.service.BibliothequeService {
 			--
-			+reserver(r: ReservationBU): ReservationBU
+			+getReservationsUser(userId: Long): List<Reservation>
+			+reserver(userId: Long, livreId: Long, dateRecup: LocalDate, domicile: boolean): Reservation
 		}
 
 	}
@@ -442,8 +430,8 @@ package com.etudlife {
 
 		class com.etudlife.controller.ReservationController {
 			--
-			+getReservationsUser(idUser: Long): List<ReservationBU>
-			+reserver(reservation: ReservationBU): ResponseEntity<?>
+			+getByUser(userId: Long): List<Reservation>
+			+reserver(userId: Long, livreId: Long, dateRecuperation: String, domicile: boolean): Reservation
 		}
 
 		class com.etudlife.controller.RecetteController {
@@ -518,6 +506,19 @@ package com.etudlife {
 			+updateHobbies(id: Long, hobbies: Set<String>): ResponseEntity<?>
 		}
 
+		class com.etudlife.controller.LivreController {
+			--
+			+LivreController(livreRepository: LivreRepository)
+			..
+			+getAllLivres(): List<Livre>
+			+getLivresDisponibles(): List<Livre>
+		}
+
+		class com.etudlife.controller.BibliothequeController {
+			--
+			+reserver(userId: Long, livreId: Long, dateRecuperation: String, domicile: boolean): Reservation
+		}
+
 		class com.etudlife.controller.PostController {
 			--
 			+PostController(postService: PostService)
@@ -550,11 +551,6 @@ package com.etudlife {
 			+findByNomAndUploaderId(nom: String, uploaderId: Long): Optional<Document>
 		}
 
-		interface com.etudlife.repository.ReservationBURepository {
-			--
-			+findByIdUser(idUser: Long): List<ReservationBU>
-		}
-
 		interface com.etudlife.repository.CompteRepository {
 			--
 			+findAllByNomIgnoreCaseAndPrenomIgnoreCase(nom: String, prenom: String): List<Compte>
@@ -576,6 +572,11 @@ package com.etudlife {
 			--
 			+existsByCompteSourceIdAndCompteCibleId(sourceId: Long, cibleId: Long): boolean
 			+findByCompteSourceId(compteSourceId: Long): List<Lien>
+		}
+
+		interface com.etudlife.repository.ReservationRepository {
+			--
+			+findByIdUser(idUser: Long): List<Reservation>
 		}
 
 		interface com.etudlife.repository.EvenementRepository {
@@ -602,6 +603,7 @@ package com.etudlife {
 
 		interface com.etudlife.repository.LivreRepository {
 			--
+			+findByDisponibleTrue(): List<Livre>
 		}
 
 		interface com.etudlife.repository.AnnonceRepository {
@@ -648,15 +650,14 @@ com.etudlife.service.AnnonceService --* com.etudlife.repository.AnnonceRepositor
 com.etudlife.service.PostService --* com.etudlife.repository.PostRepository
 com.etudlife.service.PostService --* com.etudlife.repository.CompteRepository
 com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
-com.etudlife.service.ReservationService --* com.etudlife.repository.ReservationBURepository
-com.etudlife.service.ReservationService --* com.etudlife.repository.LivreRepository
+com.etudlife.service.BibliothequeService --* com.etudlife.repository.ReservationRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.model.Annonce
 com.etudlife.controller.AnnonceController --* com.etudlife.service.AnnonceService
 com.etudlife.controller.AnnonceController --* com.etudlife.repository.LienRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.service.NotificationService
 com.etudlife.controller.ConversationController --* com.etudlife.service.ConversationService
 com.etudlife.controller.LienController --* com.etudlife.service.LienService
-com.etudlife.controller.ReservationController --* com.etudlife.service.ReservationService
+com.etudlife.controller.ReservationController --* com.etudlife.service.BibliothequeService
 com.etudlife.controller.RecetteController --* com.etudlife.service.RecetteService
 com.etudlife.controller.MessageController --* com.etudlife.service.MessageService
 com.etudlife.controller.GlobalMessageController --* com.etudlife.service.MessageService
@@ -669,6 +670,8 @@ com.etudlife.controller.EvenementController --* com.etudlife.service.LienService
 com.etudlife.controller.GroupeController --* com.etudlife.service.GroupeService
 com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
 com.etudlife.controller.CompteController --* com.etudlife.repository.CompteRepository
+com.etudlife.controller.LivreController --* com.etudlife.repository.LivreRepository
+com.etudlife.controller.BibliothequeController --* com.etudlife.service.BibliothequeService
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
 com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
 
