@@ -288,6 +288,7 @@ package com.etudlife {
 
 		class com.etudlife.service.ConversationService {
 			--
+			+getOrInitConversationId(user1: Long, user2: Long): Long
 			+getPreviewsByUserId(userId: Long): List<ConversationPreviewDTO>
 		}
 
@@ -417,6 +418,7 @@ package com.etudlife {
 		class com.etudlife.controller.ConversationController {
 			--
 			+getConversationPreviews(authenticatedUserId: Long): ResponseEntity<List<ConversationPreviewDTO>>
+			+initConversation(authenticatedUserId: Long, contactId: Long): ResponseEntity<Long>
 		}
 
 		class com.etudlife.controller.LienController {
@@ -564,6 +566,7 @@ package com.etudlife {
 		interface com.etudlife.repository.MessageRepository {
 			--
 			+findByConversationIdAndIdGreaterThanOrderByTimestampAsc(conversationId: Long, afterId: Long): List<Message>
+			+findConversationIdByParticipants(user1: Long, user2: Long): Long
 			+findConversationPreviewsByUserId(userId: Long): List<ConversationPreviewProjection>
 			+findTop50ByConversationIdOrderByTimestampDesc(id: Long): List<Message>
 		}
