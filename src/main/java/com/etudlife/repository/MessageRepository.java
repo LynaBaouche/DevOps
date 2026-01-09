@@ -65,4 +65,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             nativeQuery = true
     )
     List<ConversationPreviewProjection> findConversationPreviewsByUserId(@Param("userId") Long userId);
+
+    // 3. Vérifier s'il existe déjà une conversation entre deux users et récupérer l'ID
+    @Query(value = "SELECT conversation_id FROM messages " +
+            "WHERE (sender_id = :user1 AND receiver_id = :user2) " +
+            "OR (sender_id = :user2 AND receiver_id = :user1) " +
+            "LIMIT 1", nativeQuery = true)
+    Long findConversationIdByParticipants(@Param("user1") Long user1, @Param("user2") Long user2);
 }

@@ -4,10 +4,7 @@ import com.etudlife.dto.ConversationPreviewDTO;
 import com.etudlife.service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader; // 👈 Importation clé
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +24,14 @@ public class ConversationController {
         List<ConversationPreviewDTO> previews = conversationService.getPreviewsByUserId(authenticatedUserId);
 
         return ResponseEntity.ok(previews);
+    }
+
+    @GetMapping("/init/{contactId}")
+    public ResponseEntity<Long> initConversation(
+            @RequestHeader(value = "X-User-ID") Long authenticatedUserId,
+            @PathVariable Long contactId
+    ) {
+        Long conversationId = conversationService.getOrInitConversationId(authenticatedUserId, contactId);
+        return ResponseEntity.ok(conversationId);
     }
 }

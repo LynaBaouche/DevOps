@@ -29,4 +29,17 @@ public class ConversationService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public Long getOrInitConversationId(Long user1, Long user2) {
+        // 1. Chercher si une conversation existe déjà
+        Long existingId = messageRepository.findConversationIdByParticipants(user1, user2);
+
+        if (existingId != null) {
+            return existingId;
+        } else {
+            // 2. Sinon, on génère un nouvel ID unique
+            // (Utiliser System.currentTimeMillis est une façon simple de générer un ID unique)
+            return System.currentTimeMillis();
+        }
+    }
 }

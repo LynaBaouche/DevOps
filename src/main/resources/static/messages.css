@@ -240,20 +240,88 @@ body {
   flex-direction: column;
 }
 
-.search {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+/*.search {*/
+/*  padding: 10px;*/
+/*  border-bottom: 1px solid #eee;*/
+/*}*/
+
+/*.search input {*/
+/*  width: 94%;*/
+/*  padding: 8px;*/
+/*  border: 1px solid #ccc;*/
+/*  border-radius: 6px;*/
+/*}*/
+
+/* =========================================================
+   APERCU CONV
+   ========================================================= */
+
+/* 1. L'élément LI (La ligne entière) */
+#conversationList li {
+    display: flex;
+    align-items: center; /* Centre verticalement l'avatar et le bloc texte */
+    padding: 10px;
+    height: 60px;        /* Hauteur fixe pour être stable */
+    box-sizing: border-box; /* Important pour inclure le padding dans les 60px */
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.search input {
-  width: 94%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+/* 2. Le Bloc Texte (Div au milieu) */
+#conversationList li > div {
+    display: flex;
+    flex-direction: column;  /* Empilement vertical */
+    justify-content: center; /* Centre le paquet au milieu de la hauteur */
+    flex: 1;                 /* Prend toute la largeur dispo */
+    min-width: 0;            /* Permet aux ... de marcher */
+    margin: 0 10px;
+
+    /* ⚠️ ON TUE LES ESPACES PARASITES ICI */
+    line-height: normal;     /* Reset de la hauteur de ligne */
 }
 
-.heure span {
-    padding-left: 10px;
+/* 3. Le Nom (Strong) */
+#conversationList li strong {
+    display: block;
+
+    /* ⚠️ C'EST ICI QUE SE JOUE LA SUPPRESSION DE L'ESPACE */
+    margin-bottom: 2px !important; /* Force un tout petit espace sous le nom */
+    margin-top: 0 !important;
+    padding: 0 !important;
+
+    font-size: 0.95rem;
+    line-height: 1.2;        /* Hauteur de ligne serrée */
+
+    /* Troncature (...) */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4. Le Message (Small) */
+#conversationList li small {
+    display: block;
+
+    /* ⚠️ ZERO MARGE */
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.2;
+
+    /* Troncature (...) */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 5. L'heure (à droite) */
+#conversationList .heure {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    white-space: nowrap;
 }
 
 #conversationList {
@@ -421,4 +489,42 @@ body {
 .context-menu li:hover {
     background-color: #fff1f0; /* Fond rouge très pâle */
     color: #d93025;            /* Texte rouge */
+}
+
+/* =========================
+   ➕ BOUTON NOUVEAU MESSAGE
+   ========================= */
+.new-conv-action {
+    padding: 10px 15px; /* Un peu d'espace autour */
+    border-bottom: 1px solid #eee; /* Séparation avec la liste */
+    background: #fff;
+}
+
+.btn-new-conv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%; /* Prend toute la largeur */
+    padding: 10px 0;
+    background-color: #f1f1ff; /* Fond violet très clair */
+    color: #4a00e0;            /* Texte violet */
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    border: 1px dashed #4a00e0; /* Bordure en pointillés stylée */
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    box-sizing: border-box; /* Important pour ne pas dépasser */
+}
+
+.btn-new-conv:hover {
+    background-color: #4a00e0;
+    color: white;
+    border-style: solid; /* La bordure devient pleine au survol */
+}
+
+.btn-new-conv span {
+    font-size: 1.2rem;
+    line-height: 1;
 }

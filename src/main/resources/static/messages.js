@@ -349,69 +349,128 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================================
-    // 1.1 AFFICHAGE APERÇUS
+    // 0. AFFICHAGE LISTE (Modifié pour gérer le clic "Nouveau")
     // =========================================================
     function displayConversations(convs) {
         if (convs.length === 0) {
-            conversationList.innerHTML = `<li>Vous n'avez aucune conversation.</li>`;
+            conversationList.innerHTML = `<li>Ajoutez des proches pour discuter !</li>`;
             return;
         }
 
-        const uniqueConversations = [];
-        const seenIds = new Set();
-
-        convs.forEach(conv => {
-            if (!seenIds.has(conv.conversationId)) {
-                seenIds.add(conv.conversationId);
-                uniqueConversations.push(conv);
-            }
+        // On trie : d'abord les vraies convs par date, puis les nouvelles
+        convs.sort((a, b) => {
+            if (!a.lastMessageTimestamp) return -1; // Les nouvelles en haut (ou en bas selon pref)
+            if (!b.lastMessageTimestamp) return 1;
+            // Tri décroissant sur le String ISO
+            return b.lastMessageTimestamp.localeCompare(a.lastMessageTimestamp);
         });
 
-        conversationList.innerHTML = uniqueConversations.map(conv => {
-            const lastTimeFormatted = formatIsoTime(conv.lastMessageTimestamp);
-            const previewContent = conv.lastMessageContent ?
-                (conv.lastMessageContent.length > 30 ? conv.lastMessageContent.substring(0, 30) + '...' : conv.lastMessageContent) :
-                "Nouvelle conversation";
-            const contactIdForClick = conv.contactId || 'null';
+        conversationList.innerHTML = convs.map(conv => {
+            const isNew = conv.conversationId === "new";
+            const timeDisplay = isNew ? "" : formatIsoTime(conv.lastMessageTimestamp);
+
+            // On passe 'new' ou l'ID réel dans le onclick
+            // Attention aux guillemets pour les strings dans le HTML
+            const convIdParam = isNew ? "'new'" : conv.conversationId;
 
             return `
                 <li class="conversation-item" 
                     data-id="${conv.conversationId}" 
-                    onclick="window.openConversation(${conv.conversationId}, '${conv.contactName}', ${contactIdForClick})"> 
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.contactName ? conv.contactName.split(' ')[0] : 'default'}" />
+                    onclick="window.initAndOpenChat(${convIdParam}, ${conv.contactId}, '${conv.contactName.replace(/'/g, "\\'")}')"> 
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.contactName.split(' ')[0]}" />
                   <div>
-                    <strong>${conv.contactName || 'Utilisateur inconnu'}</strong><br>
-                    <small>${previewContent}</small>
+                    <strong>${conv.contactName}</strong>
+                    <small>${conv.lastMessageContent}</small>
                   </div>
-                  <span class="heure">${lastTimeFormatted}</span>
+                  <span class="heure">${timeDisplay}</span>
                 </li>
             `;
         }).join("");
     }
 
     // =========================================================
-    // 1. CHARGEMENT CONVERSATIONS
+    // 1. CHARGEMENT CONVERSATIONS + PROCHES (FUSION)
     // =========================================================
-    function loadConversations() {
+    async function loadConversations() {
         if (!CURRENT_USER_ID) return;
 
-        fetch(`/api/conversations`, {
-            method: 'GET',
-            headers: { 'X-User-ID': CURRENT_USER_ID }
-        })
-            .then(response => {
-                if (!response.ok) throw new Error("Erreur chargement");
-                return response.json();
-            })
-            .then(data => {
-                conversationsData = data;
-                displayConversations(conversationsData);
-            })
-            .catch(error => console.error(error));
+        try {
+            // 1. Récupérer les conversations existantes (Historique)
+            const resConvs = await fetch(`/api/conversations`, {
+                headers: { 'X-User-ID': CURRENT_USER_ID }
+            });
+            const existingConversations = await resConvs.json();
+
+            // 2. Récupérer la liste des proches (Amis)
+            const resProches = await fetch(`/api/liens/${CURRENT_USER_ID}/proches`);
+            const liensProches = await resProches.json();
+
+            // 3. FUSIONNER LES DEUX LISTES
+            // On crée une Map pour accès rapide aux convs existantes par ID de contact
+            const convMap = new Map();
+            existingConversations.forEach(c => convMap.set(c.contactId, c));
+
+            const finalList = [...existingConversations];
+
+            // Pour chaque proche, s'il n'est PAS dans les conversations, on l'ajoute
+            liensProches.forEach(lien => {
+                // Dans un lien, la cible est l'ami (si je suis la source)
+                const ami = lien.compteCible;
+
+                if (!convMap.has(ami.id)) {
+                    // Création d'une "fausse" conversation pour l'affichage
+                    finalList.push({
+                        conversationId: "new", // Marqueur spécial
+                        contactId: ami.id,
+                        contactName: ami.prenom + " " + ami.nom,
+                        lastMessageContent: "Nouvelle discussion",
+                        lastMessageTimestamp: null // Pas de date
+                    });
+                }
+            });
+
+            conversationsData = finalList;
+            displayConversations(conversationsData);
+
+        } catch (error) {
+            console.error("Erreur chargement global:", error);
+        }
     }
 
+
     // =========================================================
-    // 2. OUVERTURE CONVERSATION
+    // 2. INITIALISER ET OUVRIR (Nouvelle logique Clic)
+    // =========================================================
+    window.initAndOpenChat = async function(convIdOrTag, contactId, contactName) {
+
+        let finalConversationId = convIdOrTag;
+
+        // Si c'est une nouvelle conversation, on demande un ID au serveur
+        if (convIdOrTag === "new") {
+            try {
+                chatHeaderStatut.textContent = "Initialisation...";
+                const res = await fetch(`/api/conversations/init/${contactId}`, {
+                    headers: { 'X-User-ID': CURRENT_USER_ID }
+                });
+                finalConversationId = await res.json(); // Le serveur renvoie un Long (ID)
+
+                // On met à jour l'ID dans la liste locale pour ne plus refaire l'init
+                const item = conversationsData.find(c => c.contactId === contactId);
+                if(item) item.conversationId = finalConversationId;
+
+            } catch (e) {
+                console.error("Erreur init conv:", e);
+                alert("Impossible de créer la conversation");
+                return;
+            }
+        }
+
+        // Une fois qu'on a le vrai ID, on ouvre normalement
+        openConversation(finalConversationId, contactName, contactId);
+    };
+
+    // =========================================================
+    // 3. OUVERTURE CONVERSATION
     // =========================================================
     window.openConversation = function (conversationId, conversationNom, contactId) {
         if (!CURRENT_USER_ID) {
@@ -462,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // =========================================================
-    // 4. ENVOI MESSAGE
+    // 5. ENVOI MESSAGE
     // =========================================================
 
     messageInput.addEventListener("keyup", function(event) {
