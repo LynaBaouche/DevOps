@@ -261,30 +261,100 @@ async function changerGroupeActif(groupeId, element) {
         selectPost.value = groupeId;
     }
 }
+/* ==========================================
+   🔄 GESTION DES ONGLETS (VUES)
+   ========================================== */
+function switchGroupView(viewName) {
+    const viewReco = document.getElementById("view-recommandations");
+    const viewAll = document.getElementById("view-all-groups");
+    const tabReco = document.getElementById("tab-reco");
+    const tabAll = document.getElementById("tab-all");
+
+    if (viewName === 'reco') {
+        // Afficher Recommandations
+        if(viewReco) viewReco.style.display = "block";
+        if(viewAll) viewAll.style.display = "none";
+
+        // Gérer la classe 'active'
+        if(tabReco) tabReco.classList.add("active");
+        if(tabAll) tabAll.classList.remove("active");
+    } else {
+        // Afficher Tous les groupes
+        if(viewReco) viewReco.style.display = "none";
+        if(viewAll) viewAll.style.display = "block";
+
+        if(tabReco) tabReco.classList.remove("active");
+        if(tabAll) tabAll.classList.add("active");
+
+        // Optimisation : Si la grille "Tous les groupes" est vide, on la charge maintenant
+        const grid = document.getElementById("all-groups-grid");
+        if(grid && grid.innerHTML.trim() === "") {
+            renderAllGroupesList();
+        }
+    }
+}
 /*Recommendations de groupes*/
 
+/* ==========================================
+   ✨ CHARGER RECOMMANDATIONS (Par Catégorie + Limité à 3)
+   ========================================== */
 async function chargerRecommandations() {
-    const container = document.getElementById("reco-grid");
-    const section = document.getElementById("recommandations-section");
+    const container = document.getElementById("reco-container");
+    const noRecoMsg = document.getElementById("no-reco-msg");
+
     if (!container || !currentUser) return;
 
     try {
         const groupesReco = await fetchApi(`/groupes/recommandations/${currentUser.id}`);
 
-        if (groupesReco.length > 0) {
-            section.style.display = "block"; // On affiche la section seulement s'il y a des résultats
-
-            container.innerHTML = groupesReco.map(g => `
-                <div class="group-card reco-card">
-                    <div class="card-badge">🎯 ${g.categorie}</div>
-                    <h3>${g.nom}</h3>
-                    <p>${g.description}</p>
-                    <button class="btn-join" onclick="rejoindreGroupe(${g.id})">Rejoindre</button>
-                </div>
-            `).join("");
+        if (!groupesReco || groupesReco.length === 0) {
+            if(noRecoMsg) noRecoMsg.style.display = "block";
+            return;
         }
+
+        // 1. Grouper les résultats par catégorie
+        const groupesParCat = {};
+        groupesReco.forEach(g => {
+            const cat = g.categorie || "Autres";
+            if (!groupesParCat[cat]) {
+                groupesParCat[cat] = [];
+            }
+            groupesParCat[cat].push(g);
+        });
+
+        // 2. Générer le HTML
+        let htmlContent = "";
+
+        for (const [categorie, groupes] of Object.entries(groupesParCat)) {
+            // ⚠️ RÈGLE MÉTIER : On ne garde que les 3 premiers
+            const top3Groupes = groupes.slice(0, 3);
+
+            htmlContent += `
+                <div class="category-block">
+                    <div class="category-header">
+                        <strong>Vous aimez ${categorie} ?</strong> 
+                        <span style="font-size:0.9em; color:#666; font-weight:normal;">Ces groupes pourraient vous plaire :</span>
+                    </div>
+                    
+                    <div class="reco-grid-row">
+                        ${top3Groupes.map(g => `
+                            <div class="group-card reco-card">
+                                <div class="card-badge">${g.categorie}</div>
+                                <h4>${g.nom}</h4>
+                                <p>${g.description}</p>
+                                <button class="btn-join" onclick="rejoindreGroupe(${g.id})">Rejoindre</button>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = htmlContent;
+
     } catch (e) {
         console.error("Erreur reco", e);
+        if(noRecoMsg) noRecoMsg.style.display = "block";
     }
 }
 /* ======================================================
@@ -416,7 +486,7 @@ async function renderFeedPosts(groupeId) {
         console.error(" Erreur posts :", err);
     }
 }
-/* RECHERCHER UN COMPTE + AJOUTER AUX PROCHES */
+/* RECHERCHER PROCHES */
 document.addEventListener("DOMContentLoaded", () => {
     const formSearch = document.getElementById("form-search-compte");
     if (!formSearch) return;

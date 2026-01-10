@@ -112,21 +112,32 @@
         <div id="user-groupes" class="card">
         </div>
 
-        <div id="recommandations-section" style="display:none; margin-top: 30px;">
-            <h3 class="section-title">✨ Recommandé pour vous</h3>
-            <span class="subtitle-reco">Basé sur vos centres d'intérêt</span>
-            <div id="reco-grid" class="group-grid-horizontal"></div>
+        <div class="tabs-container" style="margin-top: 20px;">
+            <button id="tab-reco" class="tab-btn active" onclick="switchGroupView('reco')">
+                ✨ Recommandés pour vous
+            </button>
+            <button id="tab-all" class="tab-btn" onclick="switchGroupView('all')">
+                🌍 Explorer tous les groupes
+            </button>
         </div>
 
-        <div id="all-groups-section" style="margin-top: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 class="section-title" style="margin:0;">🌍 Explorer tous les groupes</h3>
+        <div id="view-recommandations" class="view-section">
+            <div id="reco-container">
+            </div>
 
-                <select id="category-filter" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; max-width: 200px;">
+            <div id="no-reco-msg" style="display:none; text-align:center; padding:20px; color:#666;">
+                <p>Pas encore de recommandations ? Complétez vos hobbies dans votre profil !</p>
+                <button class="btn-join" style="width:auto;" onclick="switchGroupView('all')">Voir tout le catalogue</button>
+            </div>
+        </div>
+
+        <div id="view-all-groups" class="view-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; margin-top: 20px;">
+                <h3 class="section-title" style="margin:0;">Catalogue complet</h3>
+                <select id="category-filter" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
                     <option value="all">Toutes les catégories</option>
                 </select>
             </div>
-
             <div id="all-groups-grid" class="group-grid">
             </div>
         </div>
@@ -135,6 +146,7 @@
             <h3>Fil d'actualité</h3>
             <div id="feed-posts" class="card"></div>
         </div>
+
     </section>
 
     <aside class="col-right">
