@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EtudLife - Ressources partagées</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="header.css">
 
     <style>
         .documents-liste {
@@ -199,186 +200,11 @@
     text-decoration: none;
 }
 
-
-        .main-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .main-header .header-container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        /* Logo */
-        .main-header .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .main-header .logo-icon {
-            width: 36px;
-            height: 36px;
-        }
-
-        .main-header .logo-text {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2563eb;
-        }
-
-        /* Navigation */
-        .main-header .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .main-header .header-nav a {
-            margin: 0;
-            text-decoration: none;
-            color: #374151;
-            font-weight: 500;
-            font-size: 0.95rem;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .main-header .header-nav a:hover {
-            background: #eef2ff;
-            color: #1e66ff;
-        }
-
-        .main-header .header-nav a.active {
-            background: #e0e7ff;
-            color: #1e66ff;
-            font-weight: 600;
-        }
-
-        /* Compte */
-        .main-header .account-menu {
-            position: relative;
-        }
-
-        .main-header .icon-img {
-            width: 34px;
-            height: 34px;
-            cursor: pointer;
-        }
-
-        /* Dropdown */
-        .main-header .dropdown-menu {
-            position: absolute;
-            top: 45px;
-            right: 0;
-            width: 220px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            padding: 10px;
-            display: none;
-        }
-
-        .main-header .account-menu:hover .dropdown-menu {
-            display: block;
-        }
-
-        .main-header .menu-title {
-            font-weight: 600;
-            color: #111827;
-            margin: 5px 0 0;
-        }
-
-        .main-header .menu-subtitle {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        .main-header .menu-item {
-            display: block;
-            padding: 8px 10px;
-            border-radius: 6px;
-            color: #374151;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .main-header .menu-item:hover {
-            background: #eef2ff;
-            color: #1e66ff;
-        }
-
-
     </style>
 </head>
 <script src="app.js"></script>
 <body>
-
-
-<!-- =========================
-     🔷 HEADER MODERNE ETUDLIFE
-     ========================= -->
-<header class="main-header">
-    <div class="header-container">
-        <!-- Logo -->
-        <div class="header-left">
-            <div class="logo">
-                <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
-
-                <span class="logo-text"><strong>Etud</strong>Life</span>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="header-nav">
-            <a href="index.html" >Accueil</a>
-            <a href="Agenda.html" id="link-agenda">Agenda</a>
-
-            <a href="#"class="active">Cours</a>
-            <a href="#">Transports</a>
-            <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>
-            <a href="#">Campus</a>
-            <a href="/Recette/cuisine.html">Cuisine</a>
-            <a href="/Annonce/annonces.html">Annonces</a>
-
-            <a href="messages.html">Messages</a>
-            <a href="proches.html">Ajouter un proche</a>
-        </nav>
-
-
-        <!-- Icône compte -->
-        <div class="account-menu">
-            <img src="images/compte.png" class="icon-img" id="account-icon">
-
-            <!-- MENU DÉROULANT -->
-            <div class="dropdown-menu" id="dropdown-menu">
-                <p class="menu-title">Invité</p>
-                <p class="menu-subtitle">Non connecté</p>
-
-                <a id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
-
-                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
-                <a href="inscription.html" class="menu-item disconnected-only">Créer un compte</a>
-                <a href="#" class="menu-item">Aide</a>
-
-                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
-            </div>
-
-        </div>
-
-    </div>
-</header>
-
+<script src="header.js"></script>
 
 <div class="container">
     <div class="page-header">

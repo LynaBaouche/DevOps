@@ -18,62 +18,13 @@
 
     <!-- CSS spécifique de l'agenda -->
     <link rel="stylesheet" href="Agenda.css">
+    <link rel="stylesheet" href="header.css">
 
     <link rel="icon" href="logo.png">
 </head>
 <body>
 
-<!-- 🔷 HEADER MODERNE (identique à la page d’accueil) -->
-<header class="main-header">
-    <div class="header-container">
-        <div class="header-left">
-            <div class="logo">
-                <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
-                <span class="logo-text"><strong>Etud</strong>Life</span>
-            </div>
-        </div>
-        <!-- Navigation -->
-        <nav class="header-nav">
-            <a href="index.html">Accueil</a>
-            <a href="Agenda.html" id="link-agenda">Agenda</a>
-            <a href="upload.html">Cours</a>
-            <a href="#">Transports</a>
-            <a href="#">Bibliothèque</a>
-            <a href="#">Campus</a>
-            <a href="#">Cuisine</a>
-            <a href="/Annonce/annonces.html" id="link-annonce">Annonces</a>
-            <a href="messages.html">Messages</a>
-            <a href="proches.html">Ajouter un proche</a>
-        </nav>
-
-        <!-- Icône compte + menu déroulant (même que index.html) -->
-        <div class="account-menu">
-            <img src="images/compte.png" class="icon-img" id="account-icon">
-
-            <!-- MENU DÉROULANT -->
-            <div class="dropdown-menu" id="dropdown-menu">
-                <p class="menu-title">Invité</p>
-                <p class="menu-subtitle">Non connecté</p>
-
-                <a href="index.html?profil=true" class="menu-item connected-only" id="btn-profil">
-                    Profil
-                </a>
-
-
-
-                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
-                <a href="inscription.html" class="menu-item disconnected-only">Créer un compte</a>
-
-                <a href="#" class="menu-item">Aide</a>
-
-                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
-            </div>
-
-        </div>
-
-    </div>
-</header>
-
+<script src="header.js"></script>
 
 <!-- 🔷 CONTENU -->
 <main class="agenda-container">

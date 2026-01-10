@@ -1,54 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-    const user = JSON.parse(localStorage.getItem("utilisateur"));
-    const connectedItems = document.querySelectorAll(".connected-only");
-    const disconnectedItems = document.querySelectorAll(".disconnected-only");
-
-    const homepage = document.getElementById("homepage-content");
-    const appContainer = document.getElementById("app-container");
-
-    if (user) {
-        // Afficher le menu connecté
-        connectedItems.forEach(el => el.style.display = "block");
-        disconnectedItems.forEach(el => el.style.display = "none");
-
-        // Afficher nom + email
-        document.querySelector(".menu-title").textContent = user.prenom + " " + user.nom;
-        document.querySelector(".menu-subtitle").textContent = user.email;
-
-        fetch('/api/comptes/ping', {
-            method: 'POST',
-            headers: { 'X-User-ID': user.id }
-        }).catch(e => console.error("Erreur mise à jour présence init", e));
-
-        // ----- ⚡ BOUTON PROFIL -----
-        const btnProfil = document.getElementById("btn-profil");
-        btnProfil.addEventListener("click", async () => {
-
-            homepage.style.display = "none";     // cacher accueil
-            appContainer.style.display = "grid"; // montrer profil
-
-            currentUser = user;
-            // Assure-toi que la fonction afficherProfil() est définie ailleurs ou importée
-            if (typeof afficherProfil === "function") {
-                await afficherProfil();
-            }
-        });
-
-        // ----- ❌ Déconnexion -----
-        document.getElementById("logout-btn").addEventListener("click", () => {
-            localStorage.removeItem("utilisateur");
-            window.location.href = "index.html";
-        });
-
-    } else {
-        // Afficher mode non connecté
-        connectedItems.forEach(el => el.style.display = "none");
-        disconnectedItems.forEach(el => el.style.display = "block");
-    }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
     const conversationList = document.getElementById("conversationList");
     const messagesContainer = document.getElementById("messagesContainer");
     const chatHeaderNom = document.querySelector(".contact-nom");
@@ -60,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const contextMenu = document.getElementById("customContextMenu");
     const btnDeleteMessage = document.getElementById("btnDeleteMessage");
     let messageIdToDelete = null;
+
+    const mainContainer = document.querySelector('.messagerie');
+    const btnBack = document.getElementById('btnBackToConv');
 
     // =========================================================
     // 🔑 GESTION DE L'UTILISATEUR ACTUEL
@@ -252,6 +205,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================================
     // 3. AFFICHAGE DES MESSAGES
     // =========================================================
+
+
+    // =========================================================
+    // 🔙 GESTION DU BOUTON RETOUR (MOBILE)
+    // =========================================================
+    if (btnBack) {
+        btnBack.addEventListener('click', () => {
+            // On retire la classe qui affiche le chat
+            mainContainer.classList.remove('mobile-active');
+
+            // Optionnel : On désactive la sélection visuelle dans la liste
+            document.querySelectorAll('.conversation-item').forEach(li => li.classList.remove('active'));
+
+            // On arrête le polling pour économiser la batterie
+            if (statusInterval) clearInterval(statusInterval);
+        });
+    }
+
     function displayMessages(messages) {
         messagesContainer.innerHTML = ''; // Reset
 
@@ -476,6 +447,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!CURRENT_USER_ID) {
             alert("Veuillez vous connecter.");
             return;
+        }
+
+        if (mainContainer) {
+            mainContainer.classList.add('mobile-active');
         }
 
         activeConversationId = conversationId;

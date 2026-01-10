@@ -25,153 +25,153 @@ body {
 /* =========================
    🔷 HEADER MODERNE ETUDLIFE (avec images)
    ========================= */
-.main-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    font-family: "Poppins", sans-serif;
-}
+/*.main-header {*/
+/*    background: #ffffff;*/
+/*    border-bottom: 1px solid #e5e7eb;*/
+/*    position: sticky;*/
+/*    top: 0;*/
+/*    z-index: 1000;*/
+/*    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);*/
+/*    font-family: "Poppins", sans-serif;*/
+/*}*/
 
-/* Structure principale */
-.header-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0.6rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+/*!* Structure principale *!*/
+/*.header-container {*/
+/*    max-width: 1400px;*/
+/*    margin: 0 auto;*/
+/*    padding: 0.6rem 1.5rem;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-between;*/
+/*}*/
 
-/* =========================
-   🎓 LOGO GAUCHE
-   ========================= */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-}
-.logo-icon {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-}
-.logo-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #0f172a;
-}
-.logo-text strong {
-    color: #0066ff;
-}
+/*!* =========================*/
+/*   🎓 LOGO GAUCHE*/
+/*   ========================= *!*/
+/*.logo {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 8px;*/
+/*    text-decoration: none;*/
+/*}*/
+/*.logo-icon {*/
+/*    width: 34px;*/
+/*    height: 34px;*/
+/*    object-fit: contain;*/
+/*}*/
+/*.logo-text {*/
+/*    font-size: 1.3rem;*/
+/*    font-weight: 600;*/
+/*    color: #0f172a;*/
+/*}*/
+/*.logo-text strong {*/
+/*    color: #0066ff;*/
+/*}*/
 
-/* =========================
-   🧭 NAVIGATION CENTRALE
-   ========================= */
-.header-nav {
-    display: flex;
-    flex-wrap: nowrap;     /* ✅ INTERDIT le retour à la ligne */
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    white-space: nowrap;   /* ✅ sécurité en plus */
-}
+/*!* =========================*/
+/*   🧭 NAVIGATION CENTRALE*/
+/*   ========================= *!*/
+/*.header-nav {*/
+/*    display: flex;*/
+/*    flex-wrap: nowrap;     !* ✅ INTERDIT le retour à la ligne *!*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    gap: 20px;*/
+/*    white-space: nowrap;   !* ✅ sécurité en plus *!*/
+/*}*/
 
-.header-nav a {
-    text-decoration: none;
-    color: #0f172a;
-    font-weight: 500;
-    font-size: 0.95rem;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: all 0.25s ease;
-}
+/*.header-nav a {*/
+/*    text-decoration: none;*/
+/*    color: #0f172a;*/
+/*    font-weight: 500;*/
+/*    font-size: 0.95rem;*/
+/*    padding: 8px 12px;*/
+/*    border-radius: 8px;*/
+/*    transition: all 0.25s ease;*/
+/*}*/
 
-.header-nav a:hover {
-    background: #e8f0ff;
-    color: #0066ff;
-}
+/*.header-nav a:hover {*/
+/*    background: #e8f0ff;*/
+/*    color: #0066ff;*/
+/*}*/
 
-.header-nav a.active {
-    background: #e8f0ff;
-    color: #0066ff;
-    font-weight: 600;
-}
+/*.header-nav a.active {*/
+/*    background: #e8f0ff;*/
+/*    color: #0066ff;*/
+/*    font-weight: 600;*/
+/*}*/
 
-/* =========================
-   👤 SECTION DROITE (profil + logout)
-   ========================= */
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+/*!* =========================*/
+/*   👤 SECTION DROITE (profil + logout)*/
+/*   ========================= *!*/
+/*.header-right {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 10px;*/
+/*}*/
 
-.icon-btn {
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
+/*.icon-btn {*/
+/*    background: transparent;*/
+/*    border: none;*/
+/*    border-radius: 50%;*/
+/*    width: 38px;*/
+/*    height: 38px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    cursor: pointer;*/
+/*    transition: all 0.25s ease;*/
+/*}*/
 
-.icon-btn:hover {
-    background: #e8f0ff;
-}
+/*.icon-btn:hover {*/
+/*    background: #e8f0ff;*/
+/*}*/
 
-/* Image profil */
+/*!* Image profil *!*/
 
-.icon-btn {
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    padding: 0; /* ✅ empêche le débordement */
-}
+/*.icon-btn {*/
+/*    background: transparent;*/
+/*    border: none;*/
+/*    border-radius: 50%;*/
+/*    width: 44px;*/
+/*    height: 44px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    cursor: pointer;*/
+/*    transition: all 0.25s ease;*/
+/*    padding: 0; !* ✅ empêche le débordement *!*/
+/*}*/
 
-/* Survol : effet halo bleu autour de l’image */
-.icon-btn:hover {
-    background: rgba(0, 102, 255, 0.1);
-}
+/*!* Survol : effet halo bleu autour de l’image *!*/
+/*.icon-btn:hover {*/
+/*    background: rgba(0, 102, 255, 0.1);*/
+/*}*/
 
-/* Image profil */
-.icon-img {
-    width: 40px;   /* taille plus proche du bouton */
-    height: 40px;
-    object-fit: cover;
-    border-radius: 50%;
-    transition: transform 0.25s ease;
-}
+/*!* Image profil *!*/
+/*.icon-img {*/
+/*    width: 40px;   !* taille plus proche du bouton *!*/
+/*    height: 40px;*/
+/*    object-fit: cover;*/
+/*    border-radius: 50%;*/
+/*    transition: transform 0.25s ease;*/
+/*}*/
 
-/* Légère animation au survol */
-.icon-btn:hover .icon-img {
-    transform: scale(1.03);
-}
+/*!* Légère animation au survol *!*/
+/*.icon-btn:hover .icon-img {*/
+/*    transform: scale(1.03);*/
+/*}*/
 
-/* Bouton déconnexion (rouge) */
-.icon-btn.logout {
-    background: #fff;
-    border: 1px solid #d93025;
-    color: #d93025;
-    font-size: 1.1rem;
-}
-.icon-btn.logout:hover {
-    background: #fee2e2;
-}
+/*!* Bouton déconnexion (rouge) *!*/
+/*.icon-btn.logout {*/
+/*    background: #fff;*/
+/*    border: 1px solid #d93025;*/
+/*    color: #d93025;*/
+/*    font-size: 1.1rem;*/
+/*}*/
+/*.icon-btn.logout:hover {*/
+/*    background: #fee2e2;*/
+/*}*/
 
 
 /* =========================

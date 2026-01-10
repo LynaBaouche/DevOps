@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         const user = JSON.parse(localStorage.getItem("utilisateur"));
         if (!user) {
@@ -11,59 +11,61 @@
     </script>
     <meta charset="UTF-8">
     <title>Messagerie Privée – EtudLife</title>
+    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="messages.css">
 </head>
 <body>
 
-<header class="main-header">
-    <div class="header-container">
-        <div class="header-left">
-            <div class="logo">
-                <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
+<script src="header.js"></script>
+<!--<header class="main-header">-->
+<!--    <div class="header-container">-->
+<!--        <div class="header-left">-->
+<!--            <div class="logo">-->
+<!--                <img src="images/etudlife.png" alt="Logo EtudLife" class="logo-icon">-->
 
-                <span class="logo-text"><strong>Etud</strong>Life</span>
-            </div>
-        </div>
+<!--                <span class="logo-text"><strong>Etud</strong>Life</span>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <nav class="header-nav">
-            <a href="index.html">Accueil</a>
-            <a href="Agenda.html" id="link-agenda">Agenda</a>
+<!--        <nav class="header-nav">-->
+<!--            <a href="index.html">Accueil</a>-->
+<!--            <a href="Agenda.html" id="link-agenda">Agenda</a>-->
 
-            <a href="upload.html">Cours</a>
-            <a href="#">Transports</a>
-            <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>
-            <a href="#">Campus</a>
-            <a href="/Recette/cuisine.html">Cuisine</a>
-            <a href="/Annonce/annonces.html">Annonces</a>
-            <a href="messages.html" class="active">Messages</a>
-            <a href="proches.html">Ajouter un proche</a>
-        </nav>
+<!--            <a href="upload.html">Cours</a>-->
+<!--            <a href="#">Transports</a>-->
+<!--            <a href="/Bibliothèque/bibliotheque.html">Bibliothèque</a>-->
+<!--            <a href="#">Campus</a>-->
+<!--            <a href="/Recette/cuisine.html">Cuisine</a>-->
+<!--            <a href="/Annonce/annonces.html">Annonces</a>-->
+<!--            <a href="messages.html" class="active">Messages</a>-->
+<!--            <a href="proches.html">Ajouter un proche</a>-->
+<!--        </nav>-->
 
 
-        <!-- Icône compte -->
-        <div class="account-menu">
-            <img src="images/compte.png" class="icon-img" id="account-icon">
+<!--        &lt;!&ndash; Icône compte &ndash;&gt;-->
+<!--        <div class="account-menu">-->
+<!--            <img src="images/compte.png" class="icon-img" id="account-icon">-->
 
-            <!-- MENU DÉROULANT -->
-            <div class="dropdown-menu" id="dropdown-menu">
-                <p class="menu-title">Invité</p>
-                <p class="menu-subtitle">Non connecté</p>
+<!--            &lt;!&ndash; MENU DÉROULANT &ndash;&gt;-->
+<!--            <div class="dropdown-menu" id="dropdown-menu">-->
+<!--                <p class="menu-title">Invité</p>-->
+<!--                <p class="menu-subtitle">Non connecté</p>-->
 
-                <a href="index.html?profil=true" class="menu-item connected-only" id="btn-profil">
-                    Profil
-                </a>
+<!--                <a href="index.html?profil=true" class="menu-item connected-only" id="btn-profil">-->
+<!--                    Profil-->
+<!--                </a>-->
 
-                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>
-                <a href="inscription.html" class="menu-item disconnected-only">Créer un compte</a>
-                <a href="#" class="menu-item">Aide</a>
+<!--                <a href="login.html" class="menu-item disconnected-only">Se connecter</a>-->
+<!--                <a href="inscription.html" class="menu-item disconnected-only">Créer un compte</a>-->
+<!--                <a href="#" class="menu-item">Aide</a>-->
 
-                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
-            </div>
+<!--                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>-->
+<!--            </div>-->
 
-        </div>
+<!--        </div>-->
 
-    </div>
-</header>
+<!--    </div>-->
+<!--</header>-->
 
 <main class="messagerie">
     <section class="conversations">
@@ -84,6 +86,12 @@
 
     <section class="chat">
         <div class="chat-header" id="chatHeader">
+            <button id="btnBackToConv" class="btn-back" style="display: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
             <span class="contact-nom">Sélectionnez une conversation</span>
             <small id="contactStatut"></small>
         </div>
@@ -100,36 +108,36 @@
 </main>
 
 <script src="messages.js"></script>
-<script>
-    const icon = document.getElementById("account-icon");
-    const menu = document.getElementById("dropdown-menu");
+<!--<script>-->
+<!--    const icon = document.getElementById("account-icon");-->
+<!--    const menu = document.getElementById("dropdown-menu");-->
 
-    icon.addEventListener("click", () => {
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-    });
+<!--    icon.addEventListener("click", () => {-->
+<!--        menu.style.display = menu.style.display === "block" ? "none" : "block";-->
+<!--    });-->
 
-    // Fermer quand on clique ailleurs
-    document.addEventListener("click", (e) => {
-        if (!icon.contains(e.target) && !menu.contains(e.target)) {
-            menu.style.display = "none";
-        }
-    });
-</script>
+<!--    // Fermer quand on clique ailleurs-->
+<!--    document.addEventListener("click", (e) => {-->
+<!--        if (!icon.contains(e.target) && !menu.contains(e.target)) {-->
+<!--            menu.style.display = "none";-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const menuTitle = document.querySelector(".menu-title");
-        const menuSubtitle = document.querySelector(".menu-subtitle");
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", () => {-->
+<!--        const menuTitle = document.querySelector(".menu-title");-->
+<!--        const menuSubtitle = document.querySelector(".menu-subtitle");-->
 
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
+<!--        const user = JSON.parse(localStorage.getItem("utilisateur"));-->
 
-        if (user) {
-            // Mise à jour nom + email dans le menu
-            menuTitle.textContent = user.prenom + " " + user.nom;
-            menuSubtitle.textContent = user.email;
-        }
-    });
-</script>
+<!--        if (user) {-->
+<!--            // Mise à jour nom + email dans le menu-->
+<!--            menuTitle.textContent = user.prenom + " " + user.nom;-->
+<!--            menuSubtitle.textContent = user.email;-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
 
 <div id="customContextMenu" class="context-menu" style="display: none;">
     <ul>

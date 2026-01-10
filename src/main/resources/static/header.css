@@ -1,0 +1,278 @@
+/* ============================================================
+   🔷 HEADER.CSS - Styles globaux (Corrigé)
+   ============================================================ */
+
+/* --- 1. BARRE PRINCIPALE --- */
+.main-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-family: "Poppins", sans-serif;
+    width: 100%;
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.6rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* --- 2. LOGO --- */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+.logo-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.logo-text strong {
+    color: #0066ff;
+}
+
+/* --- 3. NAVIGATION CENTRALE --- */
+.header-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    white-space: nowrap;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.header-nav a:hover {
+    background: #e8f0ff;
+    color: #0066ff;
+}
+
+.header-nav a.active {
+    background: #e8f0ff;
+    color: #0066ff;
+    font-weight: 600;
+}
+
+/* --- 4. SECTION DROITE (Conteneur global) --- */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 👈 Augmenté pour éviter le chevauchement global */
+}
+
+/* --- 5. STYLE COMMUN AUX BOUTONS RONDS (Notif & Profil) --- */
+/* On applique un style de base pour qu'ils aient la même taille */
+.icon-btn,
+.notif-btn,
+#account-icon {
+    width: 42px;         /* Taille fixe */
+    height: 42px;        /* Taille fixe */
+    border-radius: 50%;  /* Rond parfait */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid transparent; /* Bordure invisible par défaut */
+    transition: all 0.2s ease;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Effet au survol commun */
+.icon-btn:hover,
+.notif-btn:hover,
+#account-icon:hover {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+    transform: scale(1.05);
+}
+
+/* --- 6. NOTIFICATIONS SPÉCIFIQUE --- */
+.notif-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Pas de marge ici car géré par le gap du parent .header-right */
+}
+
+/* L'image de la cloche */
+.notif-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* Le Badge Rouge */
+.notif-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 10;
+}
+
+/* Le Dropdown des notifications */
+.notif-dropdown {
+    display: none; /* JS gère l'affichage */
+    position: absolute;
+    top: 55px;
+    right: -60px; /* Décalé pour être centré sous la zone droite */
+    width: 300px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+.notif-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f8fafc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #334155;
+}
+
+.notif-item:hover {
+    background-color: #f8fafc;
+}
+
+.notif-item.unread {
+    background-color: #eff6ff;
+    border-left: 3px solid #0066ff;
+}
+
+.notif-footer {
+    display: block;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #0066ff;
+    text-decoration: none;
+    background: #f8fafc;
+    font-size: 0.9rem;
+}
+
+/* --- 7. MENU PROFIL SPÉCIFIQUE --- */
+.account-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Image de profil */
+#account-icon {
+    object-fit: cover;
+    border: 1px solid #e2e8f0; /* Petite bordure grise pour bien délimiter */
+    padding: 2px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 55px;
+    width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    z-index: 2000;
+    border: 1px solid #f1f5f9;
+}
+
+.menu-title {
+    font-weight: 700;
+    padding: 10px 20px 2px;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.menu-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    padding: 0 20px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.menu-item {
+    display: block;
+    padding: 10px 20px;
+    color: #334155;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background: #f8fafc;
+    color: #0066ff;
+}
+
+/* Rend le curseur cliquable pour l'icône de compte et le menu */
+#account-icon,
+#dropdown-menu li,
+#logout-btn,
+#btn-logout {
+    cursor: pointer;
+}
+
+/* Optionnel : petit effet gris au survol du bouton déconnexion */
+#logout-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* Utilitaire */
+.hidden { display: none !important; }
+
+/* --- 8. RESPONSIVE --- */
+@media (max-width: 900px) {
+    .header-nav { display: none; }
+    .header-container { justify-content: space-between; }
+    .notif-dropdown { right: -10px; width: 280px; }
+}
