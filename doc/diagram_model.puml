@@ -182,6 +182,10 @@ package com.etudlife {
 			+Compte()
 			+Compte(prenom: String, nom: String, email: String, motDePasse: String)
 			..
+			+getAdresse(): String
+			+setAdresse(adresse: String)
+			+getBiographie(): String
+			+setBiographie(biographie: String)
 			+getEmail(): String
 			+setEmail(email: String)
 			+getGroupes(): List<Groupe>
@@ -204,6 +208,8 @@ package com.etudlife {
 			+setPrenom(prenom: String)
 			+getRecettesFavorites(): Set<Recette>
 			+setRecettesFavorites(recettesFavorites: Set<Recette>)
+			+getTelephone(): String
+			+setTelephone(telephone: String)
 		}
 
 		class com.etudlife.model.Notification {
@@ -506,6 +512,7 @@ package com.etudlife {
 			+retirerFavori(id: Long, recetteId: Long): ResponseEntity<Void>
 			+signalPresence(userId: Long): ResponseEntity<Void>
 			+updateHobbies(id: Long, hobbies: Set<String>): ResponseEntity<?>
+			+updateProfil(id: Long, payload: Compte): ResponseEntity<?>
 		}
 
 		class com.etudlife.controller.LivreController {
