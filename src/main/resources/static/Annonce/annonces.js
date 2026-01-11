@@ -133,10 +133,14 @@ function displayAnnonces(list) {
         return;
     }
 
-    annoncesList.innerHTML = list.map(a => `
+    annoncesList.innerHTML = list.map(a => {
+        const imgSrc = a.image ? `/uploads/${a.image}` : "/images/default.jpg";
+        const prixAffiche = a.prix && a.prix.includes("€") ? a.prix : (a.prix ? a.prix + " €" : "");
+
+        return `
         <div class="card-pro">
             <div class="card-img-wrapper">
-                <img src="/images/${a.image || "default.jpg"}" class="card-img">
+                <img src="${imgSrc}" class="card-img" alt="Image annonce">
                 <span class="cat-badge">${a.categorie}</span>
             </div>
 
@@ -145,7 +149,7 @@ function displayAnnonces(list) {
                 <p>${a.description.substring(0, 100)}...</p>
 
                 <div class="price-date">
-                    <span class="price">${a.prix.includes("€") ? a.prix : a.prix + " €"}</span>
+                    <span class="price">${prixAffiche}</span>
                     <span class="date">${a.datePublication}</span>
                 </div>
 
@@ -165,7 +169,8 @@ function displayAnnonces(list) {
                 </div>
             </div>
         </div>
-    `).join("");
+    `;
+    }).join("");
 }
 
 /*************************************************
@@ -226,7 +231,9 @@ async function openDetails(id) {
             markAsSeen(a.id);
         }
 
-        document.getElementById("modal-img").src  = `/images/${a.image || "default.jpg"}`;
+        const imgSrc = a.image ? `/uploads/${a.image}` : "/images/default.jpg";
+
+        document.getElementById("modal-img").src  = imgSrc;
         document.getElementById("modal-title").textContent = a.titre;
         document.getElementById("modal-desc").textContent  = a.description;
         document.getElementById("modal-prix").textContent  = a.prix;
@@ -235,7 +242,6 @@ async function openDetails(id) {
         document.getElementById("modal-date").textContent   = a.datePublication;
         document.getElementById("modal-cat").textContent    = a.categorie;
 
-        // 🔗 ICI : afficher le lien externe s'il existe
         const linkContainer = document.getElementById("modal-link");
         if (a.lien) {
             const safeUrl = a.lien.trim();
@@ -260,7 +266,6 @@ async function openDetails(id) {
         console.error("❌ Erreur détails annonce", err);
     }
 }
-
 
 /*************************************************
  ❤️ FAVORI DANS MODALE
@@ -289,14 +294,11 @@ document.getElementById("closeModal")?.addEventListener("click", () => {
  🚀 INITIALISATION
  *************************************************/
 document.addEventListener("DOMContentLoaded", async () => {
-
-    // Sécurité : uniquement sur annonces.html
     if (!annoncesList) return;
 
     await loadAnnonces("toutes");
     updateFavoriBadge();
 
-    // Ouverture automatique depuis favoris
     const selectedId = localStorage.getItem("selected_annonce_id");
     if (selectedId) {
         localStorage.removeItem("selected_annonce_id");
