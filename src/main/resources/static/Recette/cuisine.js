@@ -64,7 +64,9 @@ function genererAffichageSemaine(menuSemaine) {
 function createRecipeCard(recette, moment, jourSemaine) {
     const card = document.createElement("div");
     card.className = "recipe-card";
-
+    const imagePath = recette.image
+        ? `/images/recettes/${recette.image}`
+        : `/images/defaut_recette.png`;
     // Mapping catégorie -> Style
     let tagIcon = "🍽️";
     let tagClass = "";
@@ -75,14 +77,22 @@ function createRecipeCard(recette, moment, jourSemaine) {
     else if (recette.categorie === "dessert") { tagIcon = "🍰 Dessert"; tagClass = "dessert"; }
 
     card.innerHTML = `
-        <span class="meal-type">${moment}</span>
-        <div class="tags-row">
-            <span class="tag ${tagClass}">${tagIcon}</span>
+        <div class="recipe-img-container" style="height: 120px; overflow: hidden; border-radius: 12px 12px 0 0;">
+            <img src="${imagePath}" alt="${recette.titre}" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-        <div class="recipe-title">${recette.titre}</div>
-        <div class="card-footer">
-            <span class="price-tag">${recette.prixEstime} €</span>
-            <span>⏱️ ${recette.tempsPreparation}</span>
+        
+        <div class="recipe-content" style="padding: 10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span class="meal-type">${moment}</span>
+                <span class="tag ${tagClass}" style="font-size:0.8em;">${tagIcon}</span>
+            </div>
+            
+            <div class="recipe-title" style="font-weight:bold; margin-bottom:5px;">${recette.titre}</div>
+            
+            <div class="card-footer" style="display:flex; justify-content:space-between; font-size:0.9em; color:#666;">
+                <span class="price-tag" style="font-weight:bold; color:#2563eb;">${recette.prixEstime} €</span>
+                <span>⏱️ ${recette.tempsPreparation}</span>
+            </div>
         </div>
     `;
 

@@ -18,7 +18,7 @@ public class Recette {
     private Double prixEstime;
     private String tempsPreparation;
     private String categorie; // "fish", "meat", "vege", "dessert"
-
+    private String image;
     @ElementCollection
     @CollectionTable(name = "recette_ingredients", joinColumns = @JoinColumn(name = "recette_id"))
     @Column(name = "ingredient")
@@ -34,6 +34,7 @@ public class Recette {
         this.tempsPreparation = tempsPreparation;
         this.categorie = categorie;
         this.ingredients = ingredients;
+        this.image = image;
     }
 
     // Getters & Setters
@@ -51,4 +52,6 @@ public class Recette {
     public void setCategorie(String categorie) { this.categorie = categorie; }
     public List<String> getIngredients() { return ingredients; }
     public void setIngredients(List<String> ingredients) { this.ingredients = ingredients; }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 }
