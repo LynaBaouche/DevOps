@@ -130,7 +130,7 @@ package com.etudlife {
 		class com.etudlife.model.Recette {
 			--
 			+Recette()
-			+Recette(titre: String, description: String, prixEstime: Double, tempsPreparation: String, categorie: String, ingredients: List<String>)
+			+Recette(titre: String, description: String, prixEstime: Double, tempsPreparation: String, categorie: String, ingredients: List<String>, image: String)
 			..
 			+getCategorie(): String
 			+setCategorie(categorie: String)
