@@ -138,6 +138,8 @@ package com.etudlife {
 			+setDescription(description: String)
 			+getId(): Long
 			+setId(id: Long)
+			+getImage(): String
+			+setImage(image: String)
 			+getIngredients(): List<String>
 			+setIngredients(ingredients: List<String>)
 			+getPrixEstime(): Double
