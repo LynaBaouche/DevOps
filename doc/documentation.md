@@ -84,14 +84,39 @@ L'application repose sur une architecture **REST API** robuste développée avec
 **Qualité & Tests :**
 * **API Testing :** Une collection **Postman** complète a été intégrée pour valider les endpoints de l'API REST et assurer la non-régression.
 
-### 3.2 Modélisation (UML)
+### 3.2 Modélisation (UML) & Structure des Données
 
-La modélisation du projet est réalisée via **PlantUML**. Le diagramme est généré et mis à jour automatiquement par le pipeline CI/CD.
+La modélisation s'articule autour de l'entité centrale **`Compte`**, qui représente l'étudiant et interagit avec les différents modules de l'application.
 
-* **Relations Clés :**
-    * `Compte` <-> `Groupe` (Relation Many-to-Many).
-    * `Compte` <-> `Recette` (Favoris).
-    * `Compte` <-> `Lien` (Système de "Proches").
+#### 1. Cœur du système : Utilisateur (`Compte`)
+L'entité `Compte` centralise les informations personnelles (Email, Bio, Hobbies) et sert de pivot pour toutes les relations :
+* **Authentification :** Stocke l'email (identifiant unique) et le mot de passe hashé.
+* **Hobbies :** Une collection simple (`ElementCollection`) stocke les centres d'intérêt (ex: "Musique", "Sport") utilisés par l'algorithme de recommandation.
+
+#### 2. Module Communautaire (`Groupe` & `Post`)
+Ce module gère les interactions de groupe.
+* **Relation `Compte` - `Groupe` (Many-to-Many) :** Un étudiant peut rejoindre plusieurs groupes, et un groupe contient plusieurs membres. Cette relation est gérée par la table de jointure `groupe_membres`.
+* **Entité `Post` :** Représente une publication. Elle fait le lien (Many-to-One) entre :
+    * Un **Auteur** (`Compte`) : Qui a écrit le message.
+    * Un **Groupe** (`Groupe`) : Où le message est publié.
+
+#### 3. Module Réseau Social (`Lien`)
+Le système de "Proches" n'est pas une simple liste, mais une entité dédiée pour permettre plus de flexibilité.
+* **Entité `Lien` :** Elle matérialise une relation orientée entre deux comptes :
+    * `compteSource` : Celui qui ajoute.
+    * `compteCible` : Celui qui est ajouté.
+* Cette structure permet de gérer la date de création du lien (`dateCreation`) et facilite les requêtes asymétriques.
+
+#### 4. Module Organisation & Vie Quotidienne
+* **Agenda (`Evenement`) :**
+    * Relation **One-to-Many** avec `Compte`. Chaque événement (Titre, Date début/fin, Couleur) appartient à un utilisateur spécifique.
+    * Les événements des "Proches" sont récupérés via des requêtes croisées, sans lien direct en base de données.
+* **Cuisine (`Recette`) :**
+    * Les recettes sont des entités indépendantes (catalogue global).
+    * Relation **Many-to-Many** (`favoris_recettes`) : Permet aux utilisateurs de se constituer une liste de recettes favorites personnelles.
+
+#### 5. Système de Notification
+* **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
 
 ![Diagramme de Classe](diagram_model.png)
 
@@ -103,36 +128,150 @@ La modélisation du projet est réalisée via **PlantUML**. Le diagramme est gé
 * Connexion avec gestion de session locale.
 
 ### 4.2 Communauté : Groupes & Recommandations Intelligentes
-L'expérience communautaire a été enrichie par un algorithme de matching.
-* **Algorithme de Recommandation (Smart Matching) :**
-    * Le système analyse les hobbies de l'utilisateur et les croise avec les catégories des groupes.
-    * **Résultat :** Une section *"✨ Recommandé pour vous"* affiche les groupes les plus pertinents en tête de page.
-    * *Règle métier :* Les groupes déjà rejoints sont automatiquement exclus des suggestions.
-* **Exploration & Filtrage Dynamique :**
-    * Section *"🌍 Explorer tous les groupes"* avec un **filtre par catégorie** (liste déroulante) qui met à jour la grille instantanément sans rechargement.
-* **Interaction :** Bouton "Rejoindre" avec feedback immédiat et accès au fil d'actualité du groupe.
-* **Fil d'actualité :** Publication et consultation de posts au sein des groupes rejoints.
+Cette fonctionnalité repose sur une logique de filtrage côté serveur pour proposer du contenu pertinent sans surcharger la base de données par des requêtes complexes.
+
+* **Règles Métiers :**
+    * **Correspondance Hobbies :** Un groupe n'est recommandé que si sa catégorie correspond à l'un des "Hobbies" définis par l'utilisateur.
+    * **Exclusion des Adhésions :** Un utilisateur ne doit jamais se voir recommander un groupe dont il est déjà membre.
+    * **Lazy Loading :** Le chargement des listes de membres est optimisé pour éviter les boucles récursives JSON.
+
+* **Classes Impliquées :**
+    * `GroupeService` (Logique métier)
+    * `GroupeRepository` (Accès données)
+    * `Compte` (Entité utilisateur contenant le `Set<String> hobbies`)
+    * `Groupe` (Entité contenant la catégorie et la liste des membres)
+* **Algorithme & Logique Backend :**
+  Le backend implémente un algorithme de filtrage via l'API **Java Stream** dans `GroupeService`. Il récupère tous les groupes et applique un pipeline de filtres pour exclure les groupes déjà rejoints et ne garder que ceux correspondant aux centres d'intérêt.
+
+    ```java
+    // Extrait de GroupeService.java
+    public List<Groupe> getRecommandations(Long userId) {
+        Compte user = compteRepository.findById(userId).orElseThrow();
+        Set<String> userHobbies = user.getHobbies();
+        List<Groupe> allGroupes = groupeRepository.findAll();
+
+        return allGroupes.stream()
+                // 1. Filtrer : On garde seulement si la catégorie correspond aux hobbies
+                .filter(g -> g.getCategorie() != null && userHobbies.contains(g.getCategorie()))
+                // 2. Filtrer : On exclut les groupes où je suis déjà membre
+                .filter(g -> g.getMembres().stream().noneMatch(m -> m.getId().equals(userId)))
+                .collect(Collectors.toList());
+    }
+    ```
 
 ### 4.3 Réseau Social : Proches
-* **Recherche Avancée :** Moteur de recherche d'étudiants par Nom/Prénom connectée à l'API.
-* **Gestion des Liens :**
-    * Indicateur visuel dynamique : Le bouton d'ajout se désactive si l'étudiant est déjà dans la liste d'amis.
-    * Mise à jour en temps réel de la barre latérale "Mes Proches".
-* **Interaction :** Base pour le partage d'agenda et la messagerie.
+La gestion des proches utilise une entité de liaison dédiée pour gérer la relation asymétrique ou symétrique entre deux comptes.
+
+* **Règles Métiers :**
+    * **Interdiction d'auto-ajout :** Un utilisateur ne peut pas s'ajouter lui-même en proche.
+    * **Unicité du lien :** Le système empêche la création de doublons si une relation existe déjà.
+    * **Notification :** L'ajout d'un proche déclenche automatiquement une notification.
+
+* **Classes Impliquées :**
+    * `LienService` (Gestion de la création et suppression)
+    * `Lien` (Entité de jointure `Compte` source -> `Compte` cible)
+    * `CompteService` (Pour la recherche utilisateur)
+    * `NotificationService` (Trigger événementiel)
+* **Algorithme & Logique Backend :**
+  * **Création :** La méthode `creerLien` effectue d'abord une validation via `existsByCompteSourceIdAndCompteCibleId`. Si valide, l'entité `Lien` est persistée et le service appelle `notificationService.create`.
+  * **Recherche :** Utilisation des **JPA Query Methods** optimisées : `findAllByNomIgnoreCaseAndPrenomIgnoreCase` dans le `CompteRepository` pour garantir la performance de la barre de recherche.
+
+    ```java
+    // Extrait de LienService.java
+    public Optional<Lien> creerLien(Long idSource, Long idCible) {
+        // 1. Règle métier : On empêche de s'ajouter soi-même
+        if (idSource.equals(idCible)) return Optional.empty();
+
+        // 2. Règle métier : Vérification d'unicité
+        if (lienRepository.existsByCompteSourceIdAndCompteCibleId(idSource, idCible)) {
+            return Optional.empty();
+        }
+
+        // Création et Notification
+        Lien lien = new Lien(source.get(), cible.get());
+        Lien saved = lienRepository.save(lien);
+
+        notificationService.create(
+                cible.get().getId(),
+                NotificationType.FRIEND_ADDED,
+                source.get().getNom() + " vous a ajouté comme proche",
+                "/proches.html#mes-proches"
+        );
+        return Optional.of(saved);
+    }
+    ```
 
 ### 4.4 Organisation : Agenda Partagé
-* **Vues Multiples :**
-    * Vue Mensuelle pour une vue d'ensemble.
-    * **Vue Hebdomadaire** détaillée pour la gestion fine du temps.
-* **Fonctionnalités Collaboratives :**
-    * Ajout d'événements personnels.
-    * **Vue "Proches" :** Possibilité de visualiser l'agenda et les disponibilités de ses proches (superposition de calendriers).
+L'agenda repose sur une agrégation dynamique des événements de l'utilisateur et de ses proches.
+
+* **Règles Métiers :**
+    * **Visibilité Partagée :** La vue "Proches" doit afficher les événements de l'utilisateur connecté **ET** ceux de ses proches.
+    * **Agrégation SQL :** Utilisation d'une clause `IN` pour récupérer tous les événements en une seule requête performante.
+* **Classes Impliquées :**
+    * `EvenementService`
+    * `EvenementRepository`
+    * `LienService` (Pour récupérer les IDs des amis)
+* **Algorithme & Logique Backend :**
+  **Agrégation (Vue Proches) :** La méthode `getSharedAvailability(Long myUserId)` fonctionne en deux temps :
+  1.  Appel de `lienService.getProcheIds(myUserId)` pour obtenir une liste d'IDs (ex: `[ID_Ami1, ID_Ami2]`).
+  2.  Ajout de l'ID de l'utilisateur courant à cette liste.
+  3.  Exécution d'une requête JPA avec clause `IN` : `findByUtilisateurIdIn(List<Long> ids)` qui récupère en une seule requête SQL tous les événements concernés.
+    ```java
+    // Extrait de EvenementService.java
+    public List<Evenement> getSharedAvailability(Long myUserId) {
+        // 1. Récupérer les IDs des amis via le LienService
+        List<Long> procheIds = lienService.getProcheIds(myUserId);
+        
+        // 2. Ajouter mon propre ID à la liste
+        procheIds.add(myUserId);
+
+        // 3. Requête optimisée (SELECT * FROM Event WHERE user_id IN (...))
+        return evenementRepository.findByUtilisateurIdIn(procheIds);
+    }
+    ```
 
 ### 4.5 Vie Quotidienne : Cuisine
-* **Module Recettes :** Consultation de fiches recettes adaptées aux étudiants, avec des recettes détaillées et variées, selon le budget, le régime alimentaire et le temps de préparation des différents plats.
-* **Gestion des favoris :** l'utilisateur a la possibilité de mettre en favori une recette.
-* **Interaction Agenda :** Possibilité d'ajouter des recettes à l'agenda (ex : planification des repas).
+Le module cuisine combine une génération procédurale de menus et une gestion de favoris.
 
+* **Règles Métiers :**
+    * **Génération Aléatoire (Menu Semaine) :** Le système génère une combinaison unique de recettes pour chaque demande, couvrant 7 jours (Midi et Soir).
+    * **Rotation :** Si le nombre de recettes en base est insuffisant pour couvrir 14 repas (7 jours x 2), l'algorithme doit boucler sur les recettes existantes pour remplir la grille.
+    * **Favoris Persistants :** Les recettes favorites sont liées au compte utilisateur via une relation Many-to-Many.
+
+* **Classes Impliquées :**
+    * `RecetteService` (Logique de génération)
+    * `CompteService` (Gestion des favoris)
+    * `Recette` (Entité métier avec ingrédients et catégories)
+
+* **Algorithme & Logique Backend :**
+* **Algorithme & Logique Backend :**
+    * **Génération du Menu :** La méthode `getMenuDeLaSemaine` récupère toutes les recettes, utilise `Collections.shuffle(all)` pour mélanger la liste aléatoirement, puis itère sur un tableau de jours (`Lundi`...`Dimanche`). Elle remplit une `Map` imbriquée (`Jour` -> `Midi/Soir`) en utilisant un index qui se réinitialise à 0 si la fin de la liste est atteinte.
+    * **Favoris :** Les méthodes `ajouterFavori` et `retirerFavori` manipulent directement la collection `Set<Recette> recettesFavorites` de l'entité `Compte`, assurant qu'une recette ne peut pas être en favori deux fois (propriété du `Set`).
+    ```java
+    // Extrait de RecetteService.java
+    public Map<String, Map<String, Recette>> getMenuDeLaSemaine() {
+        List<Recette> all = recetteRepository.findAll();
+        Collections.shuffle(all); // Mélange aléatoire pour varier les menus
+
+        Map<String, Map<String, Recette>> menuSemaine = new LinkedHashMap<>();
+        String[] jours = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+        int index = 0;
+
+        for (String jour : jours) {
+            Map<String, Recette> repasJour = new HashMap<>();
+
+            // Distribution Midi / Soir avec boucle (index reset)
+            if (index < all.size()) repasJour.put("midi", all.get(index++));
+            else index = 0; 
+
+            if (index < all.size()) repasJour.put("soir", all.get(index++));
+            else index = 0;
+
+            menuSemaine.put(jour, repasJour);
+        }
+        return menuSemaine;
+    }
+    ```
 ### 4.6 Ressources: Partage de Documents
 * Upload et gestion de fichiers (PDF, DOCX).
 
