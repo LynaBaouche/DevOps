@@ -99,8 +99,23 @@ La modélisation du projet est réalisée via **PlantUML**. Le diagramme est gé
 
 ## 4. Fonctionnalités Détaillées (User Guide)
 ### 4.1 Authentification & Sécurité
-* Inscription avec validation de l'email universitaire.
-* Connexion avec gestion de session locale.
+L’authentification est un prérequis indispensable pour accéder à la plateforme **EtudLife**.
+Sans compte utilisateur valide et session active, l’accès aux fonctionnalités principales de l’application est strictement restreint.
+#### Inscription
+- Création de compte via une adresse email universitaire valide(@parisnanterre.fr).
+- Vérification des champs obligatoires (nom, prénom, email, mot de passe).
+- Contrôle de l’unicité de l’adresse email en base de données.
+- Hashage sécurisé du mot de passe avant stockage.
+
+#### Connexion
+- Authentification par email et mot de passe.
+- Vérification sécurisée des identifiants côté backend.
+- Redirection automatique vers l’interface principale après connexion réussie.
+
+#### Sécurisation des mots de passe
+- Les mots de passe ne sont **jamais stockés en clair**.
+- Utilisation de l’algorithme de hashage **BCrypt**, conforme aux bonnes pratiques de sécurité.
+- Protection contre l’accès non autorisé aux comptes utilisateurs.
 
 ### 4.2 Communauté : Groupes & Recommandations Intelligentes
 L'expérience communautaire a été enrichie par un algorithme de matching.
@@ -135,21 +150,56 @@ L'expérience communautaire a été enrichie par un algorithme de matching.
 
 ### 4.6 Ressources: Partage de Documents
 * Upload et gestion de fichiers (PDF, DOCX).
+* 
+### 4.7 Petites Annonces
+#### Consultation et recherche des annonces
+- Accès à l’ensemble des annonces publiées par les étudiants.
+- Barre de recherche permettant de filtrer les annonces par :Titre, description et catégorie :Logement, cours particuliers, emplois, services ,objets.
+- Affichage dynamique du nombre d’annonces par catégorie.
+- Présentation des annonces sous forme de cartes avec :image, titre, prix, localisation, date de publication.
+#### Création d’une annonce
+- Tout utilisateur authentifié peut créer une annonce.
+- #### Gestion des annonces personnelles
+- Chaque utilisateur dispose d’une page **“Mes annonces”** regroupant les annonces qu’il a créées.
+- Pour ses propres annonces, l’utilisateur peut :
+    - **Modifier** une annonce existante, **Supprimer** une annonce
+- Les modifications sont mises à jour en temps réel dans la liste des annonces.
+#### Système de favoris
+- Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
 
----
+### 4.8 Système de Notifications
+#### Indicateur de notifications
+- Une icône de notification est accessible depuis la barre de navigation.
+- Lorsqu’une ou plusieurs notifications sont reçues, un **badge rouge** s’affiche sur l’icône avec le **nombre de notifications non consultées**.
+#### Types de notifications
+Un utilisateur reçoit une notification dans les cas suivants :
+- Lorsqu’un étudiant l’ajoute comme **proche**.
+- Lorsqu’un de ses proches :
+    - publie une **nouvelle annonce**.
+    - ajoute un **nouvel événement** dans son agenda.
+- Lors de la réception d’un **nouveau message**.
+#### Page “Mes notifications”
+- La page **Mes notifications** regroupe l’ensemble des notifications de l’utilisateur.
+
 ## 5. Matrice de Responsabilités & Réalisations
-| Fonctionnalité | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
-|--------------|:------------:|:-------------------:|:-----------:|:------------:|
-| Architecture Backend | ✅ | ⬜ | ⬜ | ⬜ |
-| Gestion des Releases & CI/CD | ✅ | ⬜ | ⬜ | ⬜ |
-| Documentation & UML | ✅ | ⬜ | ⬜ | ⬜ |
-| Organisation & Pilotage Agile | ✅ | ⬜ | ⬜ | ⬜ |
-| Agenda (Mensuel / Hebdo / Proches) | ✅ | ⬜ | ⬜ | ⬜ |
-| Proches | ✅ | ⬜ | ⬜ | ⬜ |
-| Groupes & Publications | ✅ | ⬜ | ⬜ | ⬜ |
-| Recettes | ✅ | ⬜ | ⬜ | ⬜ |
-| Recommandation intelligente de groupes | ✅ | ⬜ | ⬜ | ⬜ |
-| Tests Postman | ✅ | ✅| ✅ | ✅ |
+| Fonctionnalité                                          | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
+|---------------------------------------------------------|:------------:|:-------------------:|:-----------:|:------------:|
+| Architecture Backend                                    | ✅ | ⬜ | ✅ | ⬜ |
+| Gestion des Releases & CI/CD                            | ✅ | ⬜ | ⬜ | ⬜ |
+| Documentation & UML                                     | ✅ | ⬜ | ✅ | ⬜ |
+| Organisation & Pilotage Agile                           | ✅ | ⬜ | ✅ | ⬜ |
+| Agenda (Mensuel / Hebdo / Proches)                      | ✅ | ⬜ | ✅ | ⬜ |
+| Proches                                                 | ✅ | ⬜ | ⬜ | ⬜ |
+| Groupes & Publications                                  | ✅ | ⬜ | ⬜ | ⬜ |
+| Recettes                                                | ✅ | ⬜ | ⬜ | ⬜ |
+| Système de notifications                                | ⬜  | ⬜ | ✅ | ⬜ |
+| Annonces                                                | ⬜  | ⬜ | ✅ | ⬜ |
+| Favoris annonce                                         | ⬜  | ⬜ | ✅ | ⬜ |
+| Compte Utilisateur : Inscription, Connexion et Sécurité |⬜|⬜|✅|⬜|
+| Modification du profil                                  |⬜|⬜|✅|⬜|
+| Recommandation intelligente de groupes                  | ✅ | ⬜ | ⬜ | ⬜ |
+| Tests Postman                                           | ✅ | ✅| ✅ | ✅ |
+
 ## 6. Guide d'Installation & Déploiement
 
 ### Prérequis
