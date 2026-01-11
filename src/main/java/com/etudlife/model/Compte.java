@@ -21,6 +21,34 @@ public class Compte {
 
     private String nom;
     private String prenom;
+    private String telephone;
+    private String adresse;
+    private String biographie;
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    public String getBiographie() {
+        return biographie;
+    }
+
+    public void setBiographie(String biographie) {
+        this.biographie = biographie;
+    }
+
 
     // ✅ nouveaux champs nécessaires pour login
     @Column(unique = true)

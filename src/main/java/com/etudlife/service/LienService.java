@@ -50,7 +50,7 @@ public class LienService {
                     cible.get().getId(),
                     NotificationType.FRIEND_ADDED,
                     source.get().getNom() + " vous a ajouté comme proche",
-                    "/profil.html?id=" + source.get().getId()
+                    "/proches.html#mes-proches"
             );
 
             return Optional.of(saved);

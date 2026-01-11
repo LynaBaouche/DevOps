@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ======================
        🔔 TOGGLE DROPDOWN
        ====================== */
+    if (!notifBtn || !notifDropdown || !notifList || !notifBadge) return;
+
     notifBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         isOpen = !isOpen;
@@ -43,13 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const count = await res.json();
 
         if (count > 0) {
-            notifBadge.textContent = count > 9 ? "9+" : count; // 3, 4, 5...
+            notifBadge.textContent = count > 9 ? "9+" : count;
             notifBadge.classList.remove("hidden");
         } else {
             notifBadge.classList.add("hidden");
         }
     }
-
 
     /* ======================
        📥 CONTENU DROPDOWN
@@ -72,7 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         notifs.forEach(n => {
             const li = document.createElement("li");
-            li.className = "notif-item" + (n.isRead ? "" : " unread");
+
+            // n.read == true  → pas de classe "unread" → fond gris
+            // n.read == false → classe "unread"       → fond bleu
+            li.className = "notif-item" + (n.read ? "" : " unread");
 
             li.innerHTML = `
                 <div>${n.message}</div>
@@ -80,13 +84,22 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             li.addEventListener("click", async () => {
-                if (!n.isRead) {
+                // 1. Marquer comme lue côté backend
+                if (!n.read) {
                     await fetch(`/api/notifications/${n.id}/read`, { method: "PUT" });
+                    n.read = true;
                 }
-                if (n.link) window.location.href = n.link;
 
-                await loadNotifications();
+                // 2. Mettre à jour le style immédiatement (devient grise)
+                li.classList.remove("unread");
+
+                // 3. Mettre à jour le badge
                 await loadUnreadCount();
+
+                // 4. Redirection éventuelle
+                if (n.link) {
+                    window.location.href = n.link;
+                }
             });
 
             notifList.appendChild(li);
@@ -100,5 +113,4 @@ document.addEventListener("DOMContentLoaded", () => {
        ====================== */
     loadUnreadCount();
     setInterval(loadUnreadCount, 40000);
-
 });

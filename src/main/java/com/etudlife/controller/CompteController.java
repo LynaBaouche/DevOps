@@ -1,15 +1,17 @@
 package com.etudlife.controller;
 
 import com.etudlife.model.Compte;
+import com.etudlife.model.Recette;
+import com.etudlife.repository.CompteRepository;
 import com.etudlife.service.CompteService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.etudlife.model.Recette;
-import java.util.Set;
+
 import java.util.List;
 import java.util.Map;
-import com.etudlife.repository.CompteRepository;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/comptes")
@@ -18,7 +20,9 @@ public class CompteController {
 
     private final CompteService compteService;
     private final CompteRepository compteRepository;
-    public CompteController(CompteService compteService, CompteRepository compteRepository) {
+
+    public CompteController(CompteService compteService,
+                            CompteRepository compteRepository) {
         this.compteRepository = compteRepository;
         this.compteService = compteService;
     }
@@ -61,9 +65,11 @@ public class CompteController {
                     .body("Aucun compte trouvé avec cet email.");
         }
     }
-    // ===  Mettre à jour les hobbies ===
+
+    // === Mettre à jour les hobbies ===
     @PutMapping("/{id}/hobbies")
-    public ResponseEntity<?> updateHobbies(@PathVariable Long id, @RequestBody Set<String> hobbies) {
+    public ResponseEntity<?> updateHobbies(@PathVariable Long id,
+                                           @RequestBody Set<String> hobbies) {
         Compte compte = compteService.lireCompteParId(id);
         if (compte == null) return ResponseEntity.notFound().build();
 
@@ -71,6 +77,7 @@ public class CompteController {
         compteRepository.save(compte);
         return ResponseEntity.ok().build();
     }
+
     // === LISTER LES COMPTES ===
     @GetMapping
     public List<Compte> getAllComptes() {
@@ -91,14 +98,18 @@ public class CompteController {
     public Compte getCompteById(@PathVariable Long id) {
         return compteService.lireCompteParId(id);
     }
+
+    // === FAVORIS RECETTES ===
     @PostMapping("/{id}/favoris/{recetteId}")
-    public ResponseEntity<Void> ajouterFavori(@PathVariable Long id, @PathVariable Long recetteId) {
+    public ResponseEntity<Void> ajouterFavori(@PathVariable Long id,
+                                              @PathVariable Long recetteId) {
         compteService.ajouterFavori(id, recetteId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/favoris/{recetteId}")
-    public ResponseEntity<Void> retirerFavori(@PathVariable Long id, @PathVariable Long recetteId) {
+    public ResponseEntity<Void> retirerFavori(@PathVariable Long id,
+                                              @PathVariable Long recetteId) {
         compteService.retirerFavori(id, recetteId);
         return ResponseEntity.ok().build();
     }
@@ -128,5 +139,32 @@ public class CompteController {
                 "online", isOnline,
                 "status", isOnline ? "ONLINE" : "OFFLINE"
         ));
+    }
+
+    // === MISE À JOUR DU PROFIL ===
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProfil(@PathVariable Long id,
+                                          @RequestBody Compte payload) {
+        try {
+            Compte compte = compteService.lireCompteParId(id);
+
+            // Mettre à jour uniquement les champs modifiables
+            compte.setPrenom(payload.getPrenom());
+            compte.setNom(payload.getNom());
+            compte.setEmail(payload.getEmail());
+            compte.setTelephone(payload.getTelephone());
+            compte.setAdresse(payload.getAdresse());
+            compte.setBiographie(payload.getBiographie());
+
+            Compte saved = compteRepository.save(compte);
+            return ResponseEntity.ok(saved);
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Compte introuvable");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur serveur : " + e.getMessage());
+        }
     }
 }
