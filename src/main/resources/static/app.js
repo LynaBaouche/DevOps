@@ -983,7 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("editProfileForm");
     if (!form) return;
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const fullName = document.getElementById("editNom").value.trim();
@@ -992,32 +992,64 @@ document.addEventListener("DOMContentLoaded", () => {
         const adresse = document.getElementById("editAdresse").value.trim();
         const bio = document.getElementById("editBio").value.trim();
 
+        // 🔐 VALIDATIONS
+        // 1) Email parisnanterre
+        if (!email.endsWith("@parisnanterre.fr")) {
+            alert("L’adresse email doit être une adresse @parisnanterre.fr");
+            return;
+        }
+
+        // 2) Téléphone : exactement 10 chiffres
+        const phoneDigits = telephone.replace(/\D/g, ""); // enlève espaces, tirets…
+        if (phoneDigits.length !== 10) {
+            alert("Le numéro de téléphone doit contenir exactement 10 chiffres.");
+            return;
+        }
+
         // Séparer prénom / nom
         const parts = fullName.split(" ");
         const prenom = parts.shift();
         const nom = parts.join(" ");
 
-        // 🔁 Mise à jour utilisateur
-        currentUser.prenom = prenom;
-        currentUser.nom = nom;
-        currentUser.email = email;
-        currentUser.telephone = telephone;
-        currentUser.adresse = adresse;
-        currentUser.biographie = bio;
+        // Payload envoyé au backend
+        const payload = {
+            prenom,
+            nom,
+            email,
+            telephone: phoneDigits,
+            adresse,
+            biographie: bio
+        };
 
-        // 💾 Sauvegarde locale
-        localStorage.setItem("utilisateur", JSON.stringify(currentUser));
+        try {
+            const res = await fetch(`${API_BASE_URL}/comptes/${currentUser.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
 
-        // 🔄 Rafraîchir l’affichage
-        renderModernUserProfile();
-        renderUserProfile();
+            if (!res.ok) {
+                alert("Erreur lors de la sauvegarde du profil");
+                return;
+            }
 
-        // ❌ Fermer la popup
-        closeEditProfile();
+            // ✅ Réponse backend → on met à jour currentUser + localStorage
+            const userMaj = await res.json();
+            currentUser = userMaj;
+            localStorage.setItem("utilisateur", JSON.stringify(currentUser));
 
-        alert("✅ Profil mis à jour !");
+            // 🔄 Recharge l’affichage (profil, groupes, etc.)
+            await loadApplicationData();
+
+            closeEditProfile();
+            alert("✅ Profil mis à jour !");
+        } catch (err) {
+            alert("Erreur réseau : " + err.message);
+        }
     });
 });
+
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     // On ne fait ça que sur la page d'accueil

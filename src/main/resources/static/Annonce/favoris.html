@@ -61,6 +61,15 @@
     }
 
     /* ============================
+       🖼 IMAGE BASE64
+    ============================ */
+    function getImageSrc(a) {
+        return a.image
+            ? `data:image/jpeg;base64,${a.image}`
+            : "/images/default.jpg";
+    }
+
+    /* ============================
        ❤️ CHARGEMENT DES FAVORIS
     ============================ */
     const favContainer = document.getElementById("favoris-list");
@@ -86,7 +95,7 @@
         <div class="card-pro">
 
             <div class="card-img-wrapper">
-                <img src="/images/${a.image || "default.jpg"}" class="card-img">
+                <img src="${getImageSrc(a)}" class="card-img" alt="Image annonce">
                 <span class="cat-badge">${a.categorie}</span>
             </div>
 
