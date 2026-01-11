@@ -27,7 +27,7 @@ public class Recette {
     // Constructeurs
     public Recette() {}
 
-    public Recette(String titre, String description, Double prixEstime, String tempsPreparation, String categorie, List<String> ingredients) {
+    public Recette(String titre, String description, Double prixEstime, String tempsPreparation, String categorie, List<String> ingredients, String image) {
         this.titre = titre;
         this.description = description;
         this.prixEstime = prixEstime;
