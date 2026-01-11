@@ -399,14 +399,6 @@ package com.etudlife {
 
 	}
 
-	package com.etudlife.config {
-		class com.etudlife.config.WebConfig {
-			--
-			+addResourceHandlers(registry: ResourceHandlerRegistry)
-		}
-
-	}
-
 	package com.etudlife.controller {
 		class com.etudlife.controller.AnnonceController {
 			--
@@ -661,7 +653,6 @@ com.etudlife.service.PostService --* com.etudlife.repository.PostRepository
 com.etudlife.service.PostService --* com.etudlife.repository.CompteRepository
 com.etudlife.service.PostService --* com.etudlife.repository.GroupeRepository
 com.etudlife.service.BibliothequeService --* com.etudlife.repository.ReservationRepository
-com.etudlife.controller.AnnonceController --* com.etudlife.model.Annonce
 com.etudlife.controller.AnnonceController --* com.etudlife.service.AnnonceService
 com.etudlife.controller.AnnonceController --* com.etudlife.repository.LienRepository
 com.etudlife.controller.AnnonceController --* com.etudlife.service.NotificationService
