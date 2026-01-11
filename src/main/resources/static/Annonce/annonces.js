@@ -77,6 +77,16 @@ function markAsSeen(id) {
 }
 
 /*************************************************
+ 🖼️ IMAGE (base64 ou défaut)
+ *************************************************/
+function getImageSrc(a) {
+    if (a.image) {
+        return `data:image/jpeg;base64,${a.image}`;
+    }
+    return "/images/default.jpg";
+}
+
+/*************************************************
  🔗 CONSTANTES DOM (SÉCURISÉES)
  *************************************************/
 const API_URL = "/api/annonces";
@@ -134,8 +144,10 @@ function displayAnnonces(list) {
     }
 
     annoncesList.innerHTML = list.map(a => {
-        const imgSrc = a.image ? `/uploads/${a.image}` : "/images/default.jpg";
-        const prixAffiche = a.prix && a.prix.includes("€") ? a.prix : (a.prix ? a.prix + " €" : "");
+        const imgSrc = getImageSrc(a);
+        const prixAffiche = a.prix && a.prix.includes("€")
+            ? a.prix
+            : (a.prix ? a.prix + " €" : "");
 
         return `
         <div class="card-pro">
@@ -231,7 +243,7 @@ async function openDetails(id) {
             markAsSeen(a.id);
         }
 
-        const imgSrc = a.image ? `/uploads/${a.image}` : "/images/default.jpg";
+        const imgSrc = getImageSrc(a);
 
         document.getElementById("modal-img").src  = imgSrc;
         document.getElementById("modal-title").textContent = a.titre;

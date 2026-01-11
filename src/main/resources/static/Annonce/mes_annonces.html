@@ -7,25 +7,33 @@
     <!-- CSS global -->
     <link rel="stylesheet" href="/Annonce/annonces.css">
 
-    <!-- Script JS -->
+    <!-- Script JS global annonces (cartes + modale) -->
     <script defer src="/Annonce/annonces.js"></script>
 
     <!-- Sécurité connexion -->
     <script>
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
-        if (!user) {
+        const userCheck = JSON.parse(localStorage.getItem("utilisateur"));
+        if (!userCheck) {
             alert("⚠️ Vous devez vous connecter pour accéder à vos annonces.");
             window.location.href = "/login.html";
         }
     </script>
+
     <script>
+        // =========================================================
+        // 🖼 IMAGE BASE64 (même logique que annonces.js)
+        // =========================================================
+        function getImageSrc(a) {
+            return a.image
+                ? `data:image/jpeg;base64,${a.image}`
+                : "/images/default.jpg";
+        }
+
         // =========================================================
         // 🟧 CHARGEMENT DES ANNONCES DE L’UTILISATEUR
         // =========================================================
-
         document.addEventListener("DOMContentLoaded", () => {
 
-            // On vérifie qu'on est sur la bonne page
             if (!window.location.href.includes("mes_annonces.html")) return;
 
             const user = JSON.parse(localStorage.getItem("utilisateur"));
@@ -34,31 +42,30 @@
             loadMesAnnonces(user.id);
         });
 
-        // Charger les annonces de l'utilisateur
         async function loadMesAnnonces(userId) {
 
             const res = await fetch(`/api/annonces/utilisateur/${userId}`);
             const mesAnnonces = await res.json();
 
-            // ==== Mise à jour stats ====
+            // Stats
             document.getElementById("stat-publiees").textContent = mesAnnonces.length;
-            document.getElementById("stat-vues").textContent = mesAnnonces.reduce((t, a) => t + a.vues, 0);
+            document.getElementById("stat-vues").textContent =
+                mesAnnonces.reduce((t, a) => t + a.vues, 0);
 
-            // ==== Affichage des cartes ====
+            // Cartes
             const container = document.getElementById("mes-annonces-list");
 
             container.innerHTML = mesAnnonces.map(a => `
         <div class="card-pro">
 
             <div class="card-img-wrapper">
-                <img src="/images/${a.image}" class="card-img">
+                <img src="${getImageSrc(a)}" class="card-img" alt="Image annonce">
                 <span class="cat-badge">${a.categorie}</span>
             </div>
 
             <div class="card-body">
                 <h3>${a.titre}</h3>
                 <p>${a.description.substring(0, 100)}...</p>
-
 
                 <div class="price-date">
                     <span class="price">${a.prix} €</span>
@@ -101,43 +108,36 @@
                         favoris = [];
                     }
 
-                    // On retire l’annonce supprimée des favoris
                     favoris = favoris.filter(f => f.id !== id);
                     localStorage.setItem(key, JSON.stringify(favoris));
                 }
 
-                // Recharge "Mes annonces"
                 loadMesAnnonces(user.id);
             } else {
                 alert("❌ Erreur lors de la suppression.");
             }
         }
+    </script>
 
-
-
-
+    <script>
         // =========================================================
         // 🔵 MODAL : OUVRIR / FERMER LA CRÉATION D'ANNONCE
         // =========================================================
-
         document.addEventListener("DOMContentLoaded", () => {
 
             const openBtn = document.getElementById("btn-create-annonce");
-
             const modal = document.getElementById("create-modal");
             const closeBtn = document.getElementById("close-create-modal");
             const cancelBtn = document.getElementById("cancel-create-modal");
 
             if (!modal) return;
 
-            // Ouvrir
             if (openBtn) {
                 openBtn.addEventListener("click", () => {
                     modal.classList.remove("hidden");
                 });
             }
 
-            // Fermer
             if (closeBtn) {
                 closeBtn.addEventListener("click", () => {
                     modal.classList.add("hidden");
@@ -150,13 +150,12 @@
                 });
             }
         });
-
     </script>
+
     <script>
         // =========================================================
         // 🚀 CRÉATION D’UNE ANNONCE (POST)
         // =========================================================
-
         document.addEventListener("DOMContentLoaded", () => {
 
             const form = document.getElementById("form-create-annonce");
@@ -187,10 +186,8 @@
                 fd.append("description", document.getElementById("description").value);
                 fd.append("auteur", user.prenom + " " + user.nom);
                 fd.append("utilisateurId", user.id);
-                fd.append("lien", document.getElementById("lien").value); // ✅
-                fd.append("image", document.getElementById("image").files[0]); // ✅
-
-
+                fd.append("lien", document.getElementById("lien").value);
+                fd.append("image", document.getElementById("image").files[0]);
 
                 const res = await fetch("/api/annonces", {
                     method: "POST",
@@ -207,87 +204,77 @@
             });
         });
     </script>
+
     <script>
-    /* ======================================================
-    🟢 GESTION DU MENU DÉROULANT (HEADER) - PAGE ANNONCES
-    ====================================================== */
-    document.addEventListener("DOMContentLoaded", () => {
+        /* ======================================================
+        🟢 GESTION DU MENU DÉROULANT (HEADER)
+        ====================================================== */
+        document.addEventListener("DOMContentLoaded", () => {
 
-    const accountIcon = document.getElementById("account-icon");
-    const dropdownMenu = document.getElementById("dropdown-menu");
+            const accountIcon = document.getElementById("account-icon");
+            const dropdownMenu = document.getElementById("dropdown-menu");
 
-    // 1️⃣ Ouvrir / fermer le menu utilisateur
-    if (accountIcon && dropdownMenu) {
-    accountIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    dropdownMenu.style.display =
-    dropdownMenu.style.display === "block" ? "none" : "block";
-    });
+            if (accountIcon && dropdownMenu) {
+                accountIcon.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.style.display =
+                        dropdownMenu.style.display === "block" ? "none" : "block";
+                });
 
-    // Fermer si on clique ailleurs
-    document.addEventListener("click", (e) => {
-    if (!accountIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
-    dropdownMenu.style.display = "none";
-    }
-    });
-    }
+                document.addEventListener("click", (e) => {
+                    if (!accountIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.style.display = "none";
+                    }
+                });
+            }
 
-    // 2️⃣ Récupération utilisateur
-    const user = JSON.parse(localStorage.getItem("utilisateur"));
-    const connectedItems = document.querySelectorAll(".connected-only");
-    const disconnectedItems = document.querySelectorAll(".disconnected-only");
-    const menuTitle = document.querySelector(".menu-title");
-    const menuSubtitle = document.querySelector(".menu-subtitle");
+            const user = JSON.parse(localStorage.getItem("utilisateur"));
+            const connectedItems = document.querySelectorAll(".connected-only");
+            const disconnectedItems = document.querySelectorAll(".disconnected-only");
+            const menuTitle = document.querySelector(".menu-title");
+            const menuSubtitle = document.querySelector(".menu-subtitle");
 
-    if (user) {
-    // Mode connecté
-    connectedItems.forEach(el => el.style.display = "block");
-    disconnectedItems.forEach(el => el.style.display = "none");
+            if (user) {
+                connectedItems.forEach(el => el.style.display = "block");
+                disconnectedItems.forEach(el => el.style.display = "none");
 
-    menuTitle.textContent = `${user.prenom} ${user.nom}`;
-    menuSubtitle.textContent = user.email;
+                menuTitle.textContent = `${user.prenom} ${user.nom}`;
+                menuSubtitle.textContent = user.email;
 
-    // Bouton PROFIL → retourne à l’accueil avec option profil
-    const btnProfil = document.getElementById("btn-profil");
-    if (btnProfil) {
-    btnProfil.addEventListener("click", () => {
-    window.location.href = "/index.html?profil=true";
-    });
-    }
+                const btnProfil = document.getElementById("btn-profil");
+                if (btnProfil) {
+                    btnProfil.addEventListener("click", () => {
+                        window.location.href = "/index.html?profil=true";
+                    });
+                }
 
-    } else {
-    // Mode invité
-    connectedItems.forEach(el => el.style.display = "none");
-    disconnectedItems.forEach(el => el.style.display = "block");
+            } else {
+                connectedItems.forEach(el => el.style.display = "none");
+                disconnectedItems.forEach(el => el.style.display = "block");
 
-    menuTitle.textContent = "Invité";
-    menuSubtitle.textContent = "Non connecté";
-    }
+                menuTitle.textContent = "Invité";
+                menuSubtitle.textContent = "Non connecté";
+            }
 
-    // 3️⃣ Gestion du bouton Déconnexion
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) {
-    const newLogoutBtn = logoutBtn.cloneNode(true);
-    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+            const logoutBtn = document.getElementById("logout-btn");
+            if (logoutBtn) {
+                const newLogoutBtn = logoutBtn.cloneNode(true);
+                logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
 
-    newLogoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("utilisateur");
-    window.location.href = "/index.html";
-    });
-    }
-    });
+                newLogoutBtn.addEventListener("click", () => {
+                    localStorage.removeItem("utilisateur");
+                    window.location.href = "/index.html";
+                });
+            }
+        });
     </script>
 </head>
 
 <body class="page-annonces">
 
-<!-- ===========================
-     🔷 HEADER MODERNE
-=========================== -->
 <header class="main-header">
     <div class="header-container">
 
-        <!-- Logo -->
         <div class="header-left">
             <div class="logo">
                 <img src="/images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
@@ -295,7 +282,6 @@
             </div>
         </div>
 
-        <!-- Menu -->
         <nav class="header-nav">
             <a href="/index.html">Accueil</a>
             <a href="/Agenda.html">Agenda</a>
@@ -309,7 +295,6 @@
             <a href="/proches.html">Ajouter un proche</a>
         </nav>
 
-        <!-- Profil utilisateur -->
         <div class="account-menu">
             <img src="/images/compte.png" class="icon-img" id="account-icon">
 
@@ -328,18 +313,12 @@
     </div>
 </header>
 
-
-<!-- ===========================
-     ⭐ CONTENU PRINCIPAL
-=========================== -->
 <section class="mes-annonces-container">
 
-    <!-- Bouton retour -->
     <button class="btn-blue" onclick="window.location.href='/Annonce/annonces.html'" style="margin-bottom:20px;">
         ← Retour aux annonces
     </button>
 
-    <!-- HEADER PAGE -->
     <div class="mes-annonces-header">
         <div>
             <h1>Mes Annonces</h1>
@@ -351,10 +330,7 @@
         </button>
     </div>
 
-
-    <!-- STATISTIQUES -->
     <div class="stats-mes-annonces">
-
         <div class="stat-box">
             <div class="stat-icon blue">📄</div>
             <div>
@@ -370,20 +346,12 @@
                 <p>Vues totales</p>
             </div>
         </div>
-
-
-
     </div>
 
-    <!-- LISTE DES ANNONCES PUBLIÉES -->
     <div id="mes-annonces-list" class="annonces-grid"></div>
 
 </section>
 
-
-<!-- ===========================
-     🟦 MODAL CRÉATION ANNONCE
-=========================== -->
 <div id="create-modal" class="modal hidden">
     <div class="modal-overlay"></div>
 
@@ -421,25 +389,15 @@
                 </div>
             </div>
 
-
             <label>Description *</label>
             <textarea id="description" placeholder="Décrivez votre annonce en détail…" maxlength="500"
                       required></textarea>
 
             <label>Lien vers l’annonce (optionnel)</label>
-            <input
-                    type="url"
-                    id="lien"
-                    placeholder="https://exemple.com/annonce"
-            >
-
+            <input type="url" id="lien" placeholder="https://exemple.com/annonce">
 
             <label>Photo de l’annonce *</label>
             <input type="file" id="image" accept="image/*" required>
-
-
-
-
 
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" id="cancel-create-modal">Annuler</button>
