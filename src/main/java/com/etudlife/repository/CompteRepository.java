@@ -8,6 +8,6 @@ import java.util.List;
 public interface CompteRepository extends JpaRepository<Compte, Long> {
     List<Compte> findAllByNomIgnoreCaseAndPrenomIgnoreCase(String nom, String prenom);
 
-    Optional<Compte> findByEmail(String email); // <-- ajoute ceci
+    Optional<Compte> findByEmail(String email);
 }
 

@@ -56,7 +56,15 @@
 - Voir le dossier `/docs` pour les diagrammes UML (PlantUML).
 
 ---
+## 🧭 Gestion de Projet & Suivi
 
+-  **Jira** – Suivi des user stories, bugs et fonctionnalités :  
+  👉 https://parisnanterre-team-wshw03hs.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiNjNhZGVjOGIxZDg2NDAxZDhiZmE4MmVjYTg0ZTZkN2QiLCJwIjoiaiJ9
+
+-  **Trello** – Organisation du backlog technique et avancement des tâches :  
+  👉 https://trello.com/invite/b/68d39c8e25748077fb2e8548/ATTI78b9a72841f7dc1aa5888ffb692fb1a5E4D07A23/projet-devops
+
+---
 ## ⚙️ Prérequis
 
 | Outil | Version minimale | Description |
