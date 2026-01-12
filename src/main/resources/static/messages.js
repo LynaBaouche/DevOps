@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const mainContainer = document.querySelector('.messagerie');
     const btnBack = document.getElementById('btnBackToConv');
 
+    if(messageForm) messageForm.style.display = "none";
+
     // =========================================================
     // 🔑 GESTION DE L'UTILISATEUR ACTUEL
     // =========================================================
@@ -217,6 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Optionnel : On désactive la sélection visuelle dans la liste
             document.querySelectorAll('.conversation-item').forEach(li => li.classList.remove('active'));
+
+            const messageForm = document.getElementById("messageForm");
+            if (messageForm) messageForm.style.display = "none";
 
             // On arrête le polling pour économiser la batterie
             if (statusInterval) clearInterval(statusInterval);
@@ -449,6 +454,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const form = document.getElementById("messageForm");
+        if (form) form.style.display = "flex";
+
         if (mainContainer) {
             mainContainer.classList.add('mobile-active');
         }
@@ -493,6 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 chatHeaderStatut.textContent = "Erreur";
                 messagesContainer.innerHTML = `<p class="placeholder error">Erreur chargement.</p>`;
             });
+
     };
 
     // =========================================================
