@@ -13,6 +13,7 @@
     - [📘 Sommaire](#-sommaire)
     - [🌍 Aperçu](#-aperçu)
     - [🏗️ Architecture](#️-architecture)
+    - [🧭 Gestion de Projet & Suivi](...)
     - [⚙️ Prérequis](#️-prérequis)
     - [🧩 Installation et configuration](#-installation-et-configuration)
         - [1️⃣ Cloner le projet](#1️⃣-cloner-le-projet)
