@@ -4,31 +4,31 @@
     <meta charset="UTF-8">
     <title>Mes Emprunts – BU</title>
     <link rel="stylesheet" href="bu.css">
+    <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="subheader.css">
 </head>
 
 <body>
 
-<header>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <img src="../images/etudlife.png">
-            <span>EtudLife</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
-        </ul>
-        <div class="profile"><img src="../images/compte.png"></div>
-    </nav>
+<script src="../header.js"></script>
 
-    <nav class="bu-submenu">
-        <a href="catalogue.html">Catalogue</a>
-        <a href="emprunts.html" class="active">Mes Emprunts</a>
-        <a href="reservation.html">Réservations</a>
-        <a href="places.html">Réserver une Place</a>
-        <a href="services.html">Services</a>
-    </nav>
-</header>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector('.main-header');
+        //sous-header spécifique à la bibliothèque
+        const subMenuHTML = `
+                <nav class="bu-submenu">
+                    <a href="catalogue.html">Catalogue</a>
+                    <a href="emprunts.html" class="active">Mes Emprunts</a>
+                    <a href="reservation.html">Réservations</a>
+                    <a href="places.html">Réserver une Place</a>
+                    <a href="services.html">Services</a>
+                </nav>
+            `;
+
+        header.insertAdjacentHTML('beforeend', subMenuHTML);
+    });
+</script>
 
 
 <main class="page">

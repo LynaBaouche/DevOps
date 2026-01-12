@@ -1,0 +1,49 @@
+/* =========================================
+   📚 STYLE DU SOUS-HEADER (BIBLIOTHÈQUE)
+   ========================================= */
+
+/* Le conteneur principal du sous-menu */
+.bu-submenu {
+    background: #ffffff;
+    padding: 18px 60px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 35px;
+    font-size: 15px;
+
+    /* Sécurités pour l'intégration */
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center; /* Centre les liens horizontalement */
+}
+
+/* Les liens (boutons) du menu */
+.bu-submenu a {
+    text-decoration: none;
+    color: #4b5563; /* Gris foncé */
+    padding-bottom: 6px; /* Espace entre le texte et la barre bleue */
+    transition: color 0.2s ease;
+}
+
+/* Style du lien actif (Page en cours) */
+.bu-submenu a.active {
+    color: #1d4ed8;                   /* Texte Bleu */
+    font-weight: 600;                 /* Gras */
+    border-bottom: 3px solid #1d4ed8; /* La fameuse barre bleue épaisse */
+}
+
+/* Au survol de la souris */
+.bu-submenu a:hover {
+    color: #1d4ed8;
+}
+
+/* --- Responsive (Mobile) --- */
+@media (max-width: 768px) {
+    .bu-submenu {
+        padding: 15px 20px; /* Moins de marge sur mobile */
+        gap: 20px;          /* Liens plus rapprochés */
+        overflow-x: auto;   /* Permet de scroller si ça dépasse */
+        justify-content: flex-start; /* Aligne à gauche pour le scroll */
+        white-space: nowrap;
+    }
+}
