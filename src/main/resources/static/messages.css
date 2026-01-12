@@ -374,4 +374,13 @@ body {
         align-items: center;
         justify-content: space-between;
     }
+
+    #messageForm {
+        display: none!important;
+    }
+
+    /* On le réaffichera via JS quand une conversation sera active */
+    .chat-active #messageForm {
+        display: flex;
+    }
 }

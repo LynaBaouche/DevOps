@@ -27,7 +27,9 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
     implementation 'org.springframework.security:spring-security-crypto'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 classDiagram {
