@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+/*document.addEventListener("DOMContentLoaded", () => {
 
     const user = JSON.parse(localStorage.getItem("utilisateur"));
 
@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let isOpen = false;
 
-    /* ======================
-       🔔 TOGGLE DROPDOWN
-       ====================== */
+     // ======================
+     //  🔔 TOGGLE DROPDOWN
+     //  ======================
     if (!notifBtn || !notifDropdown || !notifList || !notifBadge) return;
 
     notifBtn.addEventListener("click", async (e) => {
@@ -32,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     notifDropdown.addEventListener("click", e => e.stopPropagation());
 
-    /* ======================
-       🔴 BADGE
-       ====================== */
+
     async function loadUnreadCount() {
         if (!user) {
             notifBadge.classList.add("hidden");
@@ -52,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    /* ======================
-       📥 CONTENU DROPDOWN
-       ====================== */
     async function loadNotifications() {
         notifList.innerHTML = "";
 
@@ -108,9 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
         await loadUnreadCount();
     }
 
-    /* ======================
-       🔄 AUTO
-       ====================== */
     loadUnreadCount();
     setInterval(loadUnreadCount, 40000);
-});
+});*/

@@ -1,0 +1,171 @@
+.documents-liste {
+    margin-top: 15px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    height: 100%;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f7f8fc;
+    margin: 0;
+}
+
+.btn-primary {
+    background: #1e66ff;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 30px auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    font-size: 1.8rem;
+    color: #111827;
+    margin: 0;
+}
+
+/* Section formats */
+.formats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.format-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    flex: 1 1 150px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+.format-card:hover {
+    transform: translateY(-3px);
+}
+
+.format-card span {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Liste */
+.document-list {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.doc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 0;
+}
+
+.doc-item:last-child {
+    border-bottom: none;
+}
+
+.doc-meta {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.doc-meta strong {
+    color: #111827;
+}
+
+.doc-actions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #1e66ff;
+    font-size: 1.1rem;
+    margin-left: 8px;
+}
+
+/* Upload modal */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+}
+
+.modal-content input, .modal-content button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.modal-content button {
+    background: #1e66ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+}
+
+.documents-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.doc-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn-download {
+    display: inline-block;
+    margin-top: 10px;
+    background: #1e66ff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
