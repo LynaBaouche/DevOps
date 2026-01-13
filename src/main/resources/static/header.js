@@ -8,60 +8,72 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ============================================================
     // 2. INJECTION DU HEADER (AVEC LE SOUS-TITRE EMAIL RESTAURÉ)
     // ============================================================
+
     if (!document.querySelector(".main-header")) {
         const headerHTML = `
-        <header class="main-header">
-            <div class="header-container">
-                <div class="header-left">
-                    <a href="${basePath}index.html" class="logo">
-                        <img src="${basePath}images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
-                        <span class="logo-text"><strong>Etud</strong>Life</span>
-                    </a>
+    <header class="main-header">
+        <div class="header-container">
+            
+            <div class="header-left">
+                <button id="mobile-menu-btn" class="hamburger-btn">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <a href="${basePath}index.html" class="logo">
+                    <img src="${basePath}images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
+                    <span class="logo-text"><strong>Etud</strong>Life</span>
+                </a>
+            </div>
+
+            <nav class="header-nav" id="header-nav">
+                <div class="mobile-nav-header">
+                    <span class="mobile-nav-title">Menu</span>
+                    <button id="close-menu-btn">&times;</button>
                 </div>
-                <nav class="header-nav">
-                    <a href="${basePath}index.html">Accueil</a>
-                    <a href="${basePath}Agenda.html">Agenda</a>
-                    <a href="${basePath}upload.html">Cours</a>
-                    <a href="#">Transports</a>
-                    <a href="${basePath}Bibliothèque/bibliotheque.html">Bibliothèque</a>
-                    <a href="${basePath}campus.html">Campus</a>
-                    <a href="${basePath}Recette/cuisine.html">Cuisine</a>
-                    <a href="${basePath}Annonce/annonces.html">Annonces</a>
-                    <a href="${basePath}messages.html">Messages</a>
-                    <a href="${basePath}proches.html">Ajouter un proche</a>
-                </nav>
-                <div class="header-right">
-                    <div class="notif-wrapper">
-                        <button id="notifBtn" class="notif-btn">
-                            <img src="${basePath}images/cloche-de-notification.png" alt="Notifications">
-                            <span id="notifBadge" class="notif-badge hidden">0</span>
-                        </button>
-                        <div id="notifDropdown" class="notif-dropdown hidden">
-                            <ul id="notifList" class="notif-list">
-                                <li class="notif-item" style="text-align:center; color:#888;">Chargement...</li>
-                            </ul>
-                            <a class="notif-footer" href="${basePath}notification.html">Voir toutes les notifications</a>
-                        </div>
+                <a href="${basePath}index.html">Accueil</a>
+                <a href="${basePath}Agenda.html">Agenda</a>
+                <a href="${basePath}upload.html">Cours</a>
+                <a href="#">Transports</a>
+                <a href="${basePath}Bibliothèque/bibliotheque.html">Bibliothèque</a>
+                <a href="${basePath}campus.html">Campus</a>
+                <a href="${basePath}Recette/cuisine.html">Cuisine</a>
+                <a href="${basePath}Annonce/annonces.html">Annonces</a>
+                <a href="${basePath}messages.html">Messages</a>
+                <a href="${basePath}proches.html">Ajouter un proche</a>
+            </nav>
+
+            <div class="header-right">
+                <div class="notif-wrapper">
+                    <button id="notifBtn" class="notif-btn">
+                        <img src="${basePath}images/cloche-de-notification.png" alt="Notifications">
+                        <span id="notifBadge" class="notif-badge hidden">0</span>
+                    </button>
+                    <div id="notifDropdown" class="notif-dropdown hidden">
+                        <ul id="notifList" class="notif-list">
+                            <li class="notif-item" style="text-align:center; color:#888;">Chargement...</li>
+                        </ul>
+                        <a class="notif-footer" href="${basePath}notification.html">Voir toutes les notifications</a>
                     </div>
+                </div>
 
-                    <div class="account-menu">
-                        <img src="${basePath}images/compte.png" class="icon-img" id="account-icon">
-                        
-                        <div class="dropdown-menu" id="dropdown-menu">
-                            <p class="menu-title">Invité</p>
-                            <p class="menu-subtitle">Non connecté</p> 
-
-                            <a href="${basePath}index.html?profil=true" id="btn-profil-header" class="menu-item connected-only" style="display:none;">Profil</a>
-                            <a id="logout-btn-header" class="menu-item connected-only" href="#">Se déconnecter</a>
-                            
-                            <a href="${basePath}login.html" class="menu-item disconnected-only">Se connecter</a>
-                            <a href="${basePath}inscription.html" class="menu-item disconnected-only">Créer un compte</a>
-                            <a href="#" class="menu-item">Aide</a>
-                        </div>
+                <div class="account-menu">
+                    <img src="${basePath}images/compte.png" class="icon-img" id="account-icon">
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <p class="menu-title">Invité</p>
+                        <p class="menu-subtitle">Non connecté</p> 
+                        <a href="${basePath}index.html?profil=true" id="btn-profil-header" class="menu-item connected-only" style="display:none;">Profil</a>
+                        <a id="logout-btn-header" class="menu-item connected-only" href="#">Se déconnecter</a>
+                        <a href="${basePath}login.html" class="menu-item disconnected-only">Se connecter</a>
+                        <a href="${basePath}inscription.html" class="menu-item disconnected-only">Créer un compte</a>
+                        <a href="#" class="menu-item">Aide</a>
                     </div>
                 </div>
             </div>
-        </header>`;
+        </div>
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+    </header>`;
         document.body.insertAdjacentHTML("afterbegin", headerHTML);
     }
 
@@ -88,12 +100,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         disconnectedItems.forEach(el => el.style.display = "none");
 
         // ✅ ON REMPLIT LES INFOS COMME DANS L'ANCIENNE VERSION
-        if(menuTitle) menuTitle.textContent = user.prenom + " " + user.nom;
-        if(menuSubtitle) menuSubtitle.textContent = user.email; // L'email s'affiche ici
+        if (menuTitle) menuTitle.textContent = user.prenom + " " + user.nom;
+        if (menuSubtitle) menuSubtitle.textContent = user.email; // L'email s'affiche ici
 
         const logoutBtn = document.getElementById("logout-btn-header");
         // Force le curseur "main"
-        if(logoutBtn) logoutBtn.addEventListener("click", () => {
+        if (logoutBtn) logoutBtn.addEventListener("click", () => {
             localStorage.removeItem("utilisateur");
             window.location.href = `${basePath}login.html`;
         });
@@ -109,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dropdownMenu = document.getElementById("dropdown-menu");
     const notifDropdown = document.getElementById("notifDropdown"); // On a besoin de ça pour fermer l'autre
 
-    if(accountIcon && dropdownMenu) {
+    if (accountIcon && dropdownMenu) {
         accountIcon.addEventListener("click", (e) => {
             e.stopPropagation(); // Empêche de fermer immédiatement
 
@@ -117,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (isHidden) {
                 // 1. On ferme les notifications si elles sont ouvertes (pour pas avoir 2 menus)
-                if(notifDropdown) {
+                if (notifDropdown) {
                     notifDropdown.style.display = "none";
                     notifDropdown.classList.add("hidden");
                 }
@@ -145,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.removeItem("mark_notif_read");
         fetch(`/api/notifications/${pendingNotifId}/read`, {
             method: "PUT",
-            headers: { 'Content-Type': 'application/json' }
+            headers: {'Content-Type': 'application/json'}
         }).catch(e => console.error("Erreur PUT background", e));
     }
 
@@ -177,19 +189,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Liste
             if (notifs.length === 0) {
-                notifList.innerHTML = '<li class="notif-item" style="text-align:center; color:#888;">Aucune notification</li>';
+                notifList.innerHTML = '<li class="notif-empty">Aucune notification</li>';
             } else {
                 notifList.innerHTML = notifs.slice(0, 5).map(n => `
-                    <li class="notif-item ${n.isRead ? '' : 'unread'}" 
-                        data-id="${n.id}" data-link="${n.link || ''}" data-read="${n.isRead}">
-                        <div style="font-size: 0.9rem;">${n.message}</div>
-                        <small style="color: #888; font-size: 0.75rem;">
-                            ${new Date(n.createdAt).toLocaleDateString()} ${new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                        </small>
-                    </li>
-                `).join("");
+            <li class="notif-item ${n.isRead ? '' : 'unread'}" 
+            data-id="${n.id}" data-link="${n.link || ''}" data-read="${n.isRead}">
+            
+            <div class="notif-content">${n.message}</div>
+            <div class="notif-date">
+                ${new Date(n.createdAt).toLocaleDateString()} ${new Date(n.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
+            </div>
+            
+        </li>
+    `).join("");
             }
-        } catch (e) { console.error("Err notifs", e); }
+        } catch (e) {
+            console.error("Err notifs", e);
+        }
     }
 
     // C. GESTION DU CLIC NOTIF
@@ -207,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 let readHistory = JSON.parse(localStorage.getItem("etudlife_read_history") || "[]");
                 if (!readHistory.includes(notifId)) {
                     readHistory.push(notifId);
-                    if(readHistory.length > 50) readHistory.shift();
+                    if (readHistory.length > 50) readHistory.shift();
                     localStorage.setItem("etudlife_read_history", JSON.stringify(readHistory));
                 }
             }
@@ -229,7 +248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 notifDropdown.style.display = "block";
                 notifDropdown.classList.remove("hidden");
                 // On ferme le menu profil s'il est ouvert
-                if(dropdownMenu) dropdownMenu.style.display = "none";
+                if (dropdownMenu) dropdownMenu.style.display = "none";
                 fetchNotifications();
             } else {
                 notifDropdown.style.display = "none";
@@ -252,4 +271,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             notifDropdown.classList.add("hidden");
         }
     });
+
+    // ============================================================
+    // 6. 🍔 GESTION MENU MOBILE (HAMBURGER)
+    // ============================================================
+    const hamburgerBtn = document.getElementById("mobile-menu-btn");
+    const closeMenuBtn = document.getElementById("close-menu-btn");
+    const headerNav = document.getElementById("header-nav");
+    const overlay = document.getElementById("mobile-overlay");
+
+    function toggleMenu() {
+        const isActive = headerNav.classList.contains("active");
+
+        if (isActive) {
+            headerNav.classList.remove("active");
+            overlay.classList.remove("active");
+            setTimeout(() => overlay.style.display = "none", 300); // Attendre la transition
+        } else {
+            overlay.style.display = "block";
+            // Petit délai pour permettre la transition d'opacité CSS
+            setTimeout(() => {
+                headerNav.classList.add("active");
+                overlay.classList.add("active");
+            }, 10);
+        }
+    }
+
+    if (hamburgerBtn) hamburgerBtn.addEventListener("click", toggleMenu);
+    if (closeMenuBtn) closeMenuBtn.addEventListener("click", toggleMenu);
+    if (overlay) overlay.addEventListener("click", toggleMenu);
 });
