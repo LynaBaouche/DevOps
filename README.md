@@ -59,7 +59,7 @@
 ---
 ## 🧭 Gestion de Projet & Suivi
 
--  **Jira** – Suivi des user stories, bugs et fonctionnalités :  
+-  **Jira** – Suivi des tickets, bugs et fonctionnalités :  
   👉 https://parisnanterre-team-wshw03hs.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiNjNhZGVjOGIxZDg2NDAxZDhiZmE4MmVjYTg0ZTZkN2QiLCJwIjoiaiJ9
 
 -  **Trello** – Organisation du backlog technique et avancement des tâches :  
