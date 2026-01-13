@@ -39,4 +39,7 @@ public class PostService {
     public List<Post> getPostsParGroupe(Long groupeId) {
         return postRepository.findByGroupeIdOrderByDateCreationDesc(groupeId);
     }
+    public List<Post> getHistoriqueAuteur(Long auteurId) {
+        return postRepository.findByAuteurIdOrderByDateCreationDesc(auteurId);
+    }
 }

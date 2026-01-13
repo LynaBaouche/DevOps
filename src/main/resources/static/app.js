@@ -119,7 +119,6 @@ async function loadApplicationData() {
     try {
         const userMaj = await fetchApi(`/comptes/${currentUser.id}`);
         currentUser = userMaj;
-
         await renderUserProfile();
         await renderModernUserProfile();
         await afficherProches();
@@ -127,10 +126,105 @@ async function loadApplicationData() {
         await chargerRecommandations();
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
+        await renderDashboardRightColumn();
     } catch (e) {
         console.error("Erreur chargement données :", e);
     } finally {
         isLoadingAppData = false;
+    }
+}
+/* Dashboard droite profil (Stats + Proches) */
+
+async function renderDashboardRightColumn() {
+    const container = document.getElementById("dashboard-right-container");
+    if (!container) return;
+
+    // 1. Récupérer les Proches
+    let liens = [];
+    try {
+        liens = await fetchApi(`/liens/${currentUser.id}/proches`);
+    } catch(e) { console.log("Pas de proches"); }
+
+    // 2. Générer le HTML
+    container.innerHTML = `
+        <div id="profil-stats-container">
+            <h3>📊 Mon Activité</h3>
+            <div class="stats-grid" style="display:flex; gap:10px; margin-bottom:20px;">
+                <div class="stat-card">
+                    <span class="stat-number">${currentUser.groupes ? currentUser.groupes.length : 0}</span>
+                    <span class="stat-label">Groupes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${liens.length}</span>
+                    <span class="stat-label">Proches</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${currentUser.hobbies ? currentUser.hobbies.length : 0}</span>
+                    <span class="stat-label">Hobbies</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="profil-proches-preview" class="card">
+            <h4>👥 Mes Proches</h4>
+            
+            <div class="mini-grid" style="display:flex; flex-wrap:wrap; gap:8px;">
+                ${liens.length ? liens.slice(0, 10).map(l => `
+                    <span class="proche-tag">
+                        👤 ${l.compteCible.prenom} ${l.compteCible.nom}
+                    </span>
+                `).join("") : "<p style='color:#666; font-style:italic;'>Aucun proche pour l'instant.</p>"}
+            </div>
+
+            <a href="proches.html" style="display:block; margin-top:15px; font-size:0.9rem; color:#2563eb; text-align:right;">
+                Gérer ma liste &rarr;
+            </a>
+        </div>
+    `;
+}
+/* --- GESTION DES HOBBIES --- */
+async function addHobby() {
+    const input = document.getElementById("new-hobby-input");
+    const val = input.value.trim();
+    if (!val) return;
+
+    // On récupère la liste actuelle (Set converti en Array)
+    const currentHobbies = new Set(currentUser.hobbies || []);
+    currentHobbies.add(val); // Ajout (gère les doublons automatiquement)
+
+    await updateHobbiesBackend(Array.from(currentHobbies));
+    input.value = ""; // Vider le champ
+}
+
+async function removeHobby(hobbyToDelete) {
+    if(!confirm("Supprimer ce hobby ?")) return;
+
+    const currentHobbies = new Set(currentUser.hobbies || []);
+    currentHobbies.delete(hobbyToDelete);
+
+    await updateHobbiesBackend(Array.from(currentHobbies));
+}
+
+async function updateHobbiesBackend(newHobbiesList) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/comptes/${currentUser.id}/hobbies`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newHobbiesList)
+        });
+
+        if (res.ok) {
+            // Mise à jour locale
+            currentUser.hobbies = newHobbiesList;
+            localStorage.setItem("utilisateur", JSON.stringify(currentUser));
+            // Rafraichir l'affichage
+            renderModernUserProfile();
+        } else {
+            alert("Erreur lors de la mise à jour des hobbies.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erreur réseau.");
     }
 }
 /* ============================
@@ -139,8 +233,18 @@ async function loadApplicationData() {
 async function renderModernUserProfile() {
     const container = document.getElementById("modern-user-profile");
     if (!container) return;
+    const path = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+    const isFullProfilePage = path.endsWith("groupes.html") || (path.endsWith("index.html") && params.get("profil") === "true");
 
-    container.innerHTML = `
+    const hobbiesHtml = Array.from(currentUser.hobbies || []).map(hobby => `
+        <span class="hobby-tag">
+            ${hobby} 
+            <span class="remove-hobby" onclick="removeHobby('${hobby}')">&times;</span>
+        </span>
+    `).join("");
+    // PARTIE FIXE : Carte d'identité
+    let htmlContent = `
         <div class="profile-card-modern">
             <div class="profile-header-bg"></div>
 
@@ -178,6 +282,70 @@ async function renderModernUserProfile() {
             </div>
         </div>
     `;
+    /* PARTIE CONDITIONNELLE : hobbies et historique*/
+    if (isFullProfilePage) {
+        // Préparation des hobbies
+        const hobbiesHtml = Array.from(currentUser.hobbies || []).map(hobby => `
+            <span class="hobby-tag">
+                ${hobby} 
+                <span class="remove-hobby" onclick="removeHobby('${hobby}')">&times;</span>
+            </span>
+        `).join("");
+        htmlContent += `
+            <div class="profile-card-modern" style="margin-top: 20px;">
+                <div class="hobbies-section">
+                    <h4>❤️ Mes Hobbies</h4>
+                    <div class="hobbies-list" id="hobbies-list-container">
+                        ${hobbiesHtml.length ? hobbiesHtml : "<small>Aucun hobby renseigné</small>"}
+                    </div>
+                    
+                    <div class="add-hobby-form" style="margin-top:10px; display:flex; gap:5px;">
+                        <input type="text" id="new-hobby-input" placeholder="Ajouter..." style="padding:5px; border-radius:5px; border:1px solid #ccc; flex:1; width: 100px;">
+                        <button onclick="addHobby()" style="background:#2563eb; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">+</button>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <h3>📜 Mon Historique</h3>
+                <div id="user-post-history" class="card" style="max-height: 400px; overflow-y: auto;">
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = htmlContent;
+    if (isFullProfilePage) {
+        await loadUserHistory();
+    }
+}
+/* --- CHARGEMENT HISTORIQUE --- */
+async function loadUserHistory() {
+    const container = document.getElementById("user-post-history");
+    if (!container) return;
+
+    try {
+        // Appel au nouveau endpoint backend
+        const posts = await fetchApi(`/posts/auteur/${currentUser.id}`);
+
+        if (!posts || posts.length === 0) {
+            container.innerHTML = "<p style='color:#666; font-style:italic;'>Vous n'avez rien publié pour le moment.</p>";
+            return;
+        }
+
+        container.innerHTML = posts.map(p => `
+            <div class="post" style="border-left: 4px solid #2563eb; padding-left: 15px; margin-bottom: 15px;">
+                <p style="margin:0; font-size:0.9rem; color:#666;">
+                    Publié dans <strong>${p.groupe ? p.groupe.nom : "Un groupe"}</strong> 
+                    le ${new Date(p.dateCreation).toLocaleString()}
+                </p>
+                <p style="font-size:1.1rem; margin: 5px 0;">${p.contenu}</p>
+            </div>
+        `).join("");
+
+    } catch (err) {
+        console.error("Erreur historique", err);
+        container.innerHTML = "<p>Impossible de charger l'historique.</p>";
+    }
 }
 
 // ================= MODIFIER PROFIL =================
