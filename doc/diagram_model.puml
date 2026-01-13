@@ -392,6 +392,7 @@ package com.etudlife {
 			+PostService(postRepository: PostRepository, compteRepository: CompteRepository, groupeRepository: GroupeRepository)
 			..
 			+creerPost(auteurId: Long, groupeId: Long, contenu: String): Post
+			+getHistoriqueAuteur(auteurId: Long): List<Post>
 			+getPostsParGroupe(groupeId: Long): List<Post>
 		}
 
@@ -529,6 +530,7 @@ package com.etudlife {
 			+PostController(postService: PostService)
 			..
 			+creerPost(payload: Map<String,Object>): Post
+			+getHistorique(auteurId: Long): List<Post>
 			+getPostsParGroupe(groupeId: Long): List<Post>
 		}
 
@@ -593,6 +595,7 @@ package com.etudlife {
 
 		interface com.etudlife.repository.PostRepository {
 			--
+			+findByAuteurIdOrderByDateCreationDesc(auteurId: Long): List<Post>
 			+findByGroupeIdOrderByDateCreationDesc(groupeId: Long): List<Post>
 		}
 
