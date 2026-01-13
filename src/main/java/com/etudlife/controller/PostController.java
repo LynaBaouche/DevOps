@@ -32,4 +32,8 @@ public class PostController {
 
         return postService.creerPost(auteurId, groupeId, contenu);
     }
+    @GetMapping("/auteur/{auteurId}")
+    public List<Post> getHistorique(@PathVariable Long auteurId) {
+        return postService.getHistoriqueAuteur(auteurId);
+    }
 }

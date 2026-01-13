@@ -7,4 +7,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     // Récupère les posts d'un groupe, triés par date (les plus récents en premier)
     List<Post> findByGroupeIdOrderByDateCreationDesc(Long groupeId);
+    List<Post> findByAuteurIdOrderByDateCreationDesc(Long auteurId);
 }
