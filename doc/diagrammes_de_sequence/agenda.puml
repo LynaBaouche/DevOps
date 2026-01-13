@@ -1,0 +1,38 @@
+@startuml
+title Agenda - Gestion des événements
+
+actor Utilisateur
+participant "Front Web" as Front
+participant "AgendaController" as AgendaCtrl
+participant "AgendaService" as AgendaSvc
+participant "AgendaRepository" as AgendaRepo
+database "BDD" as DB
+
+' ---------- CREATION / MODIFICATION ----------
+== Création / Modification d'événement ==
+
+Utilisateur -> Front : Saisir / modifier événement\n+ cliquer "Enregistrer"
+Front -> AgendaCtrl : POST /api/agenda\nou PUT /api/agenda/{id}
+AgendaCtrl -> AgendaSvc : enregistrerEvenement(dto, compteCourant)
+AgendaSvc -> AgendaSvc : Valider dates\nAssocier au compte
+AgendaSvc -> AgendaRepo : save(evenement)
+AgendaRepo -> DB : INSERT ou UPDATE événement
+DB --> AgendaRepo : Evenement avec id
+AgendaRepo --> AgendaSvc : Evenement enregistré
+AgendaSvc --> AgendaCtrl : Evenement enregistré
+AgendaCtrl --> Front : 200/201 + JSON événement
+Front --> Utilisateur : Afficher événement dans l'agenda
+
+' ---------- CONSULTATION ----------
+== Consultation de l'agenda ==
+
+Utilisateur -> Front : Ouvrir l'agenda
+Front -> AgendaCtrl : GET /api/agenda\n(avec filtre compteCourant)
+AgendaCtrl -> AgendaRepo : findByCompte(compteCourant)
+AgendaRepo -> DB : SELECT événements WHERE compte_id = ?
+DB --> AgendaRepo : Liste événements
+AgendaRepo --> AgendaCtrl : Liste événements
+AgendaCtrl --> Front : JSON événements
+Front --> Utilisateur : Afficher agenda complet
+
+@enduml

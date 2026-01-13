@@ -1,0 +1,60 @@
+@startuml
+title Compte - Inscription, Connexion, Modification
+
+actor Utilisateur
+participant "Front Web" as Front
+participant "CompteController" as CompteCtrl
+participant "CompteService" as CompteSvc
+participant "CompteRepository" as CompteRepo
+database "BDD" as DB
+
+' ---------- INSCRIPTION ----------
+== Inscription ==
+
+Utilisateur -> Front : Remplir formulaire inscription\n+ cliquer "S'inscrire"
+Front -> CompteCtrl : POST /api/comptes\n(body JSON)
+CompteCtrl -> CompteSvc : inscrireCompte(dto)
+CompteSvc -> CompteSvc : Valider données\nHash mot de passe
+CompteSvc -> CompteRepo : save(compte)
+CompteRepo -> DB : INSERT compte
+DB --> CompteRepo : Compte avec id
+CompteRepo --> CompteSvc : Compte créé
+CompteSvc --> CompteCtrl : Compte créé
+CompteCtrl --> Front : 200 OK + JSON compte
+Front --> Utilisateur : Afficher confirmation
+
+' ---------- CONNEXION ----------
+== Connexion ==
+
+Utilisateur -> Front : Saisir email + mot de passe\n+ cliquer "Se connecter"
+Front -> CompteCtrl : POST /api/auth/login\n(body JSON)
+CompteCtrl -> CompteSvc : authentifier(email, motDePasse)
+CompteSvc -> CompteRepo : findByEmail(email)
+CompteRepo -> DB : SELECT compte WHERE email = ?
+DB --> CompteRepo : Compte trouvé ou non
+CompteRepo --> CompteSvc : Compte trouvé
+CompteSvc -> CompteSvc : Vérifier mot de passe\n(comparaison hash)
+CompteSvc --> CompteCtrl : Succès + infos compte\n(ou erreur)
+CompteCtrl --> Front : 200 OK + jeton/session\nou 401 Unauthorized
+Front --> Utilisateur : Accès à l'espace perso\nou message d'erreur
+
+' ---------- MODIFICATION PROFIL ----------
+== Modification du profil ==
+
+Utilisateur -> Front : Modifier profil\n+ cliquer "Enregistrer"
+Front -> CompteCtrl : PUT /api/comptes/{id}\n(body JSON)
+CompteCtrl -> CompteSvc : mettreAJourProfil(id, dto)
+CompteSvc -> CompteRepo : findById(id)
+CompteRepo -> DB : SELECT compte WHERE id = ?
+DB --> CompteRepo : Compte existant
+CompteRepo --> CompteSvc : Compte existant
+CompteSvc -> CompteSvc : Mettre à jour champs\n(email, téléphone, adresse, bio...)
+CompteSvc -> CompteRepo : save(compte)
+CompteRepo -> DB : UPDATE compte
+DB --> CompteRepo : Compte mis à jour
+CompteRepo --> CompteSvc : Compte mis à jour
+CompteSvc --> CompteCtrl : Compte mis à jour
+CompteCtrl --> Front : 200 OK + JSON compte
+Front --> Utilisateur : Afficher profil mis à jour
+
+@enduml

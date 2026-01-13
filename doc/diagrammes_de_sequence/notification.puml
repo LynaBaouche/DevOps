@@ -1,0 +1,42 @@
+@startuml
+title Notifications - Création et lecture
+
+actor Utilisateur
+participant "Front Web" as Front
+participant "AnnonceController" as AnnonceCtrl
+participant "AnnonceService" as AnnonceSvc
+participant "NotificationService" as NotifSvc
+participant "NotificationController" as NotifCtrl
+participant "NotificationRepository" as NotifRepo
+database "BDD" as DB
+
+' ---------- CREATION ----------
+== Création d'une notification ==
+
+Utilisateur -> Front : Action sur une annonce\n(ex: commentaire, réservation)
+Front -> AnnonceCtrl : Requête HTTP correspondante
+AnnonceCtrl -> AnnonceSvc : traiterAction(...)
+
+AnnonceSvc -> AnnonceSvc : Traiter logique métier
+AnnonceSvc -> NotifSvc : creerNotification(type, destinataire, data)
+NotifSvc -> NotifRepo : save(notification)
+NotifRepo -> DB : INSERT notification
+DB --> NotifRepo : Notification avec id
+NotifRepo --> NotifSvc : Notification créée
+NotifSvc --> AnnonceSvc : OK
+AnnonceSvc --> AnnonceCtrl : Réponse métier
+AnnonceCtrl --> Front : 200 OK
+
+' ---------- LECTURE ----------
+== Lecture des notifications ==
+
+Utilisateur -> Front : Ouvrir page notifications
+Front -> NotifCtrl : GET /api/notifications
+NotifCtrl -> NotifRepo : findByDestinataire(compteCourant)
+NotifRepo -> DB : SELECT notifications WHERE destinataire = ?
+DB --> NotifRepo : Liste notifications
+NotifRepo --> NotifCtrl : Liste notifications
+NotifCtrl --> Front : JSON notifications
+Front --> Utilisateur : Afficher notifications
+
+@enduml

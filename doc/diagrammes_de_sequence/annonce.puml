@@ -1,0 +1,84 @@
+@startuml
+title Annonce - Création, Modification, Suppression, Favoris
+
+actor Utilisateur
+participant "Front Web" as Front
+participant "AnnonceController" as AnnonceCtrl
+participant "AnnonceService" as AnnonceSvc
+participant "AnnonceRepository" as AnnonceRepo
+participant "FavoriRepository" as FavoriRepo
+database "BDD" as DB
+
+' ---------- CREATION ----------
+== Création d'annonce ==
+
+Utilisateur -> Front : Saisir annonce\n+ cliquer "Publier"
+Front -> AnnonceCtrl : POST /api/annonces\n(body JSON)
+AnnonceCtrl -> AnnonceSvc : creerAnnonce(dto, compteCourant)
+AnnonceSvc -> AnnonceSvc : Valider données\nAssocier auteur
+AnnonceSvc -> AnnonceRepo : save(annonce)
+AnnonceRepo -> DB : INSERT annonce
+DB --> AnnonceRepo : Annonce avec id
+AnnonceRepo --> AnnonceSvc : Annonce créée
+AnnonceSvc --> AnnonceCtrl : Annonce créée
+AnnonceCtrl --> Front : 201 Created + JSON annonce
+Front --> Utilisateur : Afficher annonce publiée
+
+' ---------- MODIFICATION ----------
+== Modification d'annonce ==
+
+Utilisateur -> Front : Modifier annonce\n+ cliquer "Enregistrer"
+Front -> AnnonceCtrl : PUT /api/annonces/{id}\n(body JSON)
+AnnonceCtrl -> AnnonceSvc : modifierAnnonce(id, dto, compteCourant)
+AnnonceSvc -> AnnonceRepo : findById(id)
+AnnonceRepo -> DB : SELECT annonce WHERE id = ?
+DB --> AnnonceRepo : Annonce existante
+AnnonceRepo --> AnnonceSvc : Annonce existante
+AnnonceSvc -> AnnonceSvc : Vérifier propriétaire\nMettre à jour champs
+AnnonceSvc -> AnnonceRepo : save(annonce)
+AnnonceRepo -> DB : UPDATE annonce
+DB --> AnnonceRepo : Annonce mise à jour
+AnnonceRepo --> AnnonceSvc : Annonce mise à jour
+AnnonceSvc --> AnnonceCtrl : Annonce mise à jour
+AnnonceCtrl --> Front : 200 OK + JSON annonce
+Front --> Utilisateur : Afficher annonce mise à jour
+
+' ---------- SUPPRESSION ----------
+== Suppression d'annonce ==
+
+Utilisateur -> Front : Cliquer "Supprimer annonce"
+Front -> AnnonceCtrl : DELETE /api/annonces/{id}
+AnnonceCtrl -> AnnonceSvc : supprimerAnnonce(id, compteCourant)
+AnnonceSvc -> AnnonceRepo : findById(id)
+AnnonceRepo -> DB : SELECT annonce WHERE id = ?
+DB --> AnnonceRepo : Annonce existante
+AnnonceRepo --> AnnonceSvc : Annonce existante
+AnnonceSvc -> AnnonceSvc : Vérifier propriétaire
+AnnonceSvc -> AnnonceRepo : delete(annonce)
+AnnonceRepo -> DB : DELETE FROM annonces WHERE id = ?
+DB --> AnnonceRepo : OK
+AnnonceRepo --> AnnonceSvc : Suppression confirmée
+AnnonceSvc --> AnnonceCtrl : Suppression ok
+AnnonceCtrl --> Front : 204 No Content
+Front --> Utilisateur : Retirer annonce de la liste
+
+' ---------- FAVORIS ----------
+== Mettre une annonce en favoris ==
+
+Utilisateur -> Front : Cliquer "Ajouter aux favoris"
+Front -> AnnonceCtrl : POST /api/annonces/{id}/favoris
+AnnonceCtrl -> AnnonceSvc : ajouterFavori(idAnnonce, compteCourant)
+AnnonceSvc -> FavoriRepo : existsByCompteAndAnnonce(compte, annonce)
+FavoriRepo -> DB : SELECT favori WHERE compte_id=? AND annonce_id=?
+DB --> FavoriRepo : Résultat (vide ou non)
+FavoriRepo --> AnnonceSvc : Favori existant ou non
+AnnonceSvc -> AnnonceSvc : Si pas encore favori,\ncréer entité Favori
+AnnonceSvc -> FavoriRepo : save(favori)
+FavoriRepo -> DB : INSERT favori
+DB --> FavoriRepo : Favori avec id
+FavoriRepo --> AnnonceSvc : Favori créé
+AnnonceSvc --> AnnonceCtrl : Favori ok
+AnnonceCtrl --> Front : 200 OK ou 201 Created
+Front --> Utilisateur : Afficher icône favori activée
+
+@enduml
