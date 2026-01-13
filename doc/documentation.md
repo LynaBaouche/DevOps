@@ -136,13 +136,9 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
 ## 4. Fonctionnalités Détaillées (User Guide)
 ### 4.1 Authentification & Sécurité
 
-L’authentification est un **pré-requis indispensable** pour accéder à la plateforme **EtudLife**.  
+L’authentification est un pré-requis indispensable pour accéder à la plateforme **EtudLife**.  
 Sans compte utilisateur valide et sans session active, l’accès aux fonctionnalités principales
 (messagerie, annonces, agenda, documents, groupes) est strictement restreint.
-
-Ce module repose sur une logique backend sécurisée garantissant la protection des données personnelles
-et le contrôle des accès utilisateurs.
-
 
 #### Règles Métiers :
     *- **Accès restreint** : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
@@ -383,8 +379,6 @@ Le module cuisine combine une génération procédurale de menus et une gestion 
 ### 4.7 Petites Annonces
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
 
-Ce module repose sur une architecture REST et une gestion complète du cycle de vie des annonces (création, consultation, modification, suppression).
-
 #### Règles Métiers :
     * - **Accès authentifié** : seules les utilisateurs connectés peuvent créer, modifier ou supprimer une annonce.
     * - **Propriété des annonces** : un utilisateur ne peut modifier ou supprimer que ses propres annonces.
@@ -408,7 +402,7 @@ Tout utilisateur authentifié peut créer une annonce.
   - Ville
   - Description
   - Lien externe optionnel
-  - Image (upload)
+  - Image
 - Les images sont stockées directement en base de données sous forme **Base64**.
 - Initialisation automatique du nombre de vues à `0`.
 
@@ -421,7 +415,6 @@ Tout utilisateur authentifié peut créer une annonce.
 
 ##### Système de favoris
 - Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
-- Ce mécanisme permet de sauvegarder des annonces jugées intéressantes sans interaction immédiate.
 
 #### Classes Impliquées :
      * - `AnnonceController` (endpoints REST)
@@ -430,8 +423,6 @@ Tout utilisateur authentifié peut créer une annonce.
      * - `Annonce` (entité)
      * - `LienRepository` (récupération des proches)
      * - `NotificationService` (création des notifications)
-
-- Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
 
 #### Algorithme & Logique Backend :
 
@@ -467,7 +458,6 @@ for (Lien lienProche : liens) {
 ---
 ### 4.8 Système de notifications
 Le système de notifications permet d’informer les utilisateurs des événements importants liés à leurs interactions sur la plateforme **EtudLife**.  
-Il repose sur une logique backend centralisée et découplée des autres modules, garantissant cohérence, performance et extensibilité.
 
 #### Règles Métiers :
     * - **Notification ciblée** : chaque notification est associée à un utilisateur précis.
