@@ -165,6 +165,8 @@ package com.etudlife {
 			+setChemin(chemin: String)
 			+getDateUpload(): Instant
 			+setDateUpload(dateUpload: Instant)
+			+getDonnees(): byte[]
+			+setDonnees(donnees: byte[])
 			+getGroupId(): Long
 			+setGroupId(groupId: Long)
 			+getId(): Long
@@ -536,7 +538,7 @@ package com.etudlife {
 			..
 			+getAllDocuments(): ResponseEntity<?>
 			..
-			+getDocumentById(id: Long): ResponseEntity<?>
+			+telechargerDocument(id: Long): ResponseEntity<byte[]>
 			+upload(file: MultipartFile, uploaderId: Long, groupId: Long): ResponseEntity<?>
 		}
 
