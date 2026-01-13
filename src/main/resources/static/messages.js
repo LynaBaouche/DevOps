@@ -611,4 +611,118 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Démarrage
     loadConversations();
+
+    // =========================================================
+    // 🗑️ GESTION CLIC DROIT : CONVERSATIONS
+    // =========================================================
+
+    const conversationMenu = document.getElementById("conversationContextMenu");
+    const btnDeleteConversation = document.getElementById("btnDeleteConversation");
+    let conversationIdToDelete = null;
+    let elementToDelete = null;
+
+    // 1. Délégation d'événement sur la liste entière (car les éléments sont dynamiques)
+    if (conversationList) {
+        conversationList.addEventListener("contextmenu", (e) => {
+            const item = e.target.closest(".conversation-item");
+
+            if (item) {
+                e.preventDefault(); // Bloque le menu natif
+
+                // On récupère l'ID
+                const convId = item.dataset.id;
+
+
+                conversationIdToDelete = convId;
+                elementToDelete = item;
+
+                // Affichage du menu
+                if (conversationMenu) {
+                    conversationMenu.style.display = "block";
+
+                    // Calcul de position (pour ne pas sortir de l'écran)
+                    let posX = e.pageX;
+                    let posY = e.pageY;
+
+                    // Si on est trop bas, on remonte un peu
+                    if (posY + conversationMenu.offsetHeight > window.innerHeight) {
+                        posY -= conversationMenu.offsetHeight;
+                    }
+
+                    conversationMenu.style.top = `${posY}px`;
+                    conversationMenu.style.left = `${posX}px`;
+                }
+            }
+        });
+    }
+
+    // 2. Fermeture du menu au clic ailleurs (Gestion globale)
+    document.addEventListener("click", () => {
+        if (conversationMenu) conversationMenu.style.display = "none";
+        // On ferme aussi l'autre menu s'il est ouvert
+        if (contextMenu) contextMenu.style.display = "none";
+    });
+
+    // 3. Action de suppression
+    if (btnDeleteConversation) {
+        btnDeleteConversation.addEventListener("click", () => {
+            if (conversationIdToDelete) {
+                deleteConversation(conversationIdToDelete);
+            }
+        });
+    }
+
+    // 4. Fonction API de suppression
+    function deleteConversation(convId) {
+        // Message différent selon le cas
+        const message = (convId === "new")
+            ? "Retirer cette suggestion de nouvelle conversation ?"
+            : "Voulez-vous vraiment supprimer cette conversation et tout son historique ?";
+
+        if (!confirm(message)) return;
+
+        // CAS 1 : C'est une conversation vide/suggérée (pas encore en base de données)
+        if (convId === "new") {
+            if (elementToDelete) {
+                elementToDelete.remove(); // On supprime juste le HTML
+                // Si c'était la conv active, on vide l'écran de droite
+                // Note : Pour les items "new", on vérifie via la classe active
+                if (elementToDelete.classList.contains("active")) {
+                    resetChatView();
+                }
+            }
+            // On ferme le menu
+            if (conversationMenu) conversationMenu.style.display = "none";
+            return;
+        }
+
+        // CAS 2 : C'est une vraie conversation (Appel API)
+        fetch(`/api/conversations/${convId}`, {
+            method: 'DELETE',
+            headers: { 'X-User-ID': CURRENT_USER_ID }
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Suppression visuelle en utilisant l'élément stocké
+                    if (elementToDelete) elementToDelete.remove();
+
+                    // Si c'était la conversation active, on vide le chat
+                    if (activeConversationId == convId) {
+                        resetChatView();
+                    }
+                } else {
+                    alert("Impossible de supprimer la conversation.");
+                }
+            })
+            .catch(err => console.error("Erreur suppression conv:", err));
+    }
+
+    // Petite fonction utilitaire pour vider l'écran de droite
+    function resetChatView() {
+        messagesContainer.innerHTML = '<p class="placeholder">Conversation supprimée.</p>';
+        chatHeaderNom.textContent = "Sélectionnez une conversation";
+        activeConversationId = null;
+        const form = document.getElementById("messageForm");
+        if (form) form.style.display = "none";
+    }
 });
