@@ -993,3 +993,35 @@ body {
 .remove-hobby:hover {
     color: #b91c1c;
 }
+/* Dashboard Index */
+.stat-card {
+    flex: 1;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+.stat-number {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2563eb;
+}
+.stat-label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+}
+.proche-tag {
+    display: inline-block;
+    background-color: #f3f4f6; /* Gris très clair */
+    color: #374151;            /* Gris foncé pour le texte */
+    padding: 6px 12px;
+    border-radius: 20px;       /* Arrondi style "Badge" */
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #e5e7eb; /* Bordure subtile */
+    white-space: nowrap;       /* Empêche le nom de se couper */
+}

@@ -119,7 +119,6 @@ async function loadApplicationData() {
     try {
         const userMaj = await fetchApi(`/comptes/${currentUser.id}`);
         currentUser = userMaj;
-
         await renderUserProfile();
         await renderModernUserProfile();
         await afficherProches();
@@ -127,11 +126,61 @@ async function loadApplicationData() {
         await chargerRecommandations();
         await renderAllGroupesList();
         await renderFeedPosts(currentUser.groupes[0]?.id);
+        await renderDashboardRightColumn();
     } catch (e) {
         console.error("Erreur chargement données :", e);
     } finally {
         isLoadingAppData = false;
     }
+}
+/* Dashboard droite profil (Stats + Proches) */
+
+async function renderDashboardRightColumn() {
+    const container = document.getElementById("dashboard-right-container");
+    if (!container) return;
+
+    // 1. Récupérer les Proches
+    let liens = [];
+    try {
+        liens = await fetchApi(`/liens/${currentUser.id}/proches`);
+    } catch(e) { console.log("Pas de proches"); }
+
+    // 2. Générer le HTML
+    container.innerHTML = `
+        <div id="profil-stats-container">
+            <h3>📊 Mon Activité</h3>
+            <div class="stats-grid" style="display:flex; gap:10px; margin-bottom:20px;">
+                <div class="stat-card">
+                    <span class="stat-number">${currentUser.groupes ? currentUser.groupes.length : 0}</span>
+                    <span class="stat-label">Groupes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${liens.length}</span>
+                    <span class="stat-label">Proches</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${currentUser.hobbies ? currentUser.hobbies.length : 0}</span>
+                    <span class="stat-label">Hobbies</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="profil-proches-preview" class="card">
+            <h4>👥 Mes Proches</h4>
+            
+            <div class="mini-grid" style="display:flex; flex-wrap:wrap; gap:8px;">
+                ${liens.length ? liens.slice(0, 10).map(l => `
+                    <span class="proche-tag">
+                        👤 ${l.compteCible.prenom} ${l.compteCible.nom}
+                    </span>
+                `).join("") : "<p style='color:#666; font-style:italic;'>Aucun proche pour l'instant.</p>"}
+            </div>
+
+            <a href="proches.html" style="display:block; margin-top:15px; font-size:0.9rem; color:#2563eb; text-align:right;">
+                Gérer ma liste &rarr;
+            </a>
+        </div>
+    `;
 }
 /* --- GESTION DES HOBBIES --- */
 async function addHobby() {
