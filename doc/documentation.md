@@ -145,14 +145,13 @@ et le contrôle des accès utilisateurs.
 
 
 #### Règles Métiers :
-
-- **Accès restreint** : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
-- **Email universitaire obligatoire** : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
-- **Email unique** : une adresse email ne peut être associée qu’à un seul compte.
-- **Mot de passe sécurisé** : le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
-- **Validation serveur** : toutes les règles de sécurité sont appliquées côté backend.
-- **Sécurité des mots de passe** : aucun mot de passe n’est stocké en clair.
-- **Traçabilité de connexion** : la dernière activité de l’utilisateur est enregistrée.
+    *- **Accès restreint** : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
+    *- **Email universitaire obligatoire** : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
+    *- **Email unique** : une adresse email ne peut être associée qu’à un seul compte.
+    *- **Mot de passe sécurisé** : le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
+    *- **Validation serveur** : toutes les règles de sécurité sont appliquées côté backend.
+    *- **Sécurité des mots de passe** : aucun mot de passe n’est stocké en clair.
+    *- **Traçabilité de connexion** : la dernière activité de l’utilisateur est enregistrée.
 
 
 #### Fonctionnalités :
@@ -169,7 +168,6 @@ et le contrôle des accès utilisateurs.
 - Mise à jour de la date de dernière connexion (`lastConnection`).
 - Retour des informations utilisateur après authentification réussie.
 
----
 ##### Gestion du profil utilisateur
 - Chaque utilisateur dispose d’une page **Profil** accessible après authentification.
 - L’utilisateur peut modifier ses informations personnelles, notamment :numéro de téléphone, adresse, biographie...
@@ -178,12 +176,11 @@ et le contrôle des accès utilisateurs.
 
 
 #### Classes Impliquées :
-
-- `CompteController` (exposition des endpoints REST)
-- `CompteService` (logique métier d’authentification)
-- `CompteRepository` (accès aux données utilisateurs)
-- `Compte` (entité utilisateur)
-- `BCryptPasswordEncoder` (hashage des mots de passe)
+     * `CompteController` (exposition des endpoints REST)
+     * `CompteService` (logique métier d’authentification)
+     * `CompteRepository` (accès aux données utilisateurs)
+     * `Compte` (entité utilisateur)
+     * `BCryptPasswordEncoder` (hashage des mots de passe)
 
 
 
@@ -229,7 +226,7 @@ Cette fonctionnalité repose sur une logique de filtrage côté serveur pour pro
 #### Algorithme & Logique Backend :
   Le backend implémente un algorithme de filtrage via l'API **Java Stream** dans `GroupeService`. Il récupère tous les groupes et applique un pipeline de filtres pour exclure les groupes déjà rejoints et ne garder que ceux correspondant aux centres d'intérêt.
 
-    ```java
+```java
     // Extrait de GroupeService.java
     public List<Groupe> getRecommandations(Long userId) {
         Compte user = compteRepository.findById(userId).orElseThrow();
@@ -243,8 +240,8 @@ Cette fonctionnalité repose sur une logique de filtrage côté serveur pour pro
                 .filter(g -> g.getMembres().stream().noneMatch(m -> m.getId().equals(userId)))
                 .collect(Collectors.toList());
     }
-
-    ```
+```    
+            
 ---
 ### 4.3 Réseau Social : Proches
 La gestion des proches utilise une entité de liaison dédiée pour gérer la relation asymétrique ou symétrique entre deux comptes.
@@ -292,16 +289,16 @@ La gestion des proches utilise une entité de liaison dédiée pour gérer la re
 L'agenda repose sur une agrégation dynamique des événements de l'utilisateur et de ses proches.
 
 ##### Règles Métiers :
-   * **Accès authentifié** : seuls les utilisateurs connectés peuvent consulter et gérer l’agenda.
+    * **Accès authentifié** : seuls les utilisateurs connectés peuvent consulter et gérer l’agenda.
     * **Visibilité Partagée :** La vue "Proches" doit afficher les événements de l'utilisateur connecté **ET** ceux de ses proches.
     * **Agrégation SQL :** Utilisation d'une clause `IN` pour récupérer tous les événements en une seule requête performante.
     * **Notification automatique** : l’ajout d’un événement déclenche une notification pour tous les proches.
 #### Classes Impliquées :
-- `EvenementService` (logique métier)
-- `EvenementRepository` (accès aux données)
-- `LienService` (récupération des identifiants des proches)
-- `NotificationService` (envoi des notifications)
-- `Evenement` (entité)
+     * - `EvenementService` (logique métier)
+     * - `EvenementRepository` (accès aux données)
+     * - `LienService` (récupération des identifiants des proches)
+     * - `NotificationService` (envoi des notifications)
+     * - `Evenement` (entité)
 
 #### Fonctionnalités :
 ##### Gestion des événements
@@ -332,7 +329,7 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
         return evenementRepository.findByUtilisateurIdIn(procheIds);
     }
     ```
-
+---
 ### 4.5 Vie Quotidienne : Cuisine
 Le module cuisine combine une génération procédurale de menus et une gestion de favoris.
 
@@ -350,7 +347,7 @@ Le module cuisine combine une génération procédurale de menus et une gestion 
     * **Génération du Menu :** La méthode `getMenuDeLaSemaine` récupère toutes les recettes, utilise `Collections.shuffle(all)` pour mélanger la liste aléatoirement, puis itère sur un tableau de jours (`Lundi`...`Dimanche`). Elle remplit une `Map` imbriquée (`Jour` -> `Midi/Soir`) en utilisant un index qui se réinitialise à 0 si la fin de la liste est atteinte.
     * **Favoris :** Les méthodes `ajouterFavori` et `retirerFavori` manipulent directement la collection `Set<Recette> recettesFavorites` de l'entité `Compte`, assurant qu'une recette ne peut pas être en favori deux fois (propriété du `Set`).
 
-    ```java
+```java
     // Extrait de RecetteService.java
     public Map<String, Map<String, Recette>> getMenuDeLaSemaine() {
         List<Recette> all = recetteRepository.findAll();
@@ -373,7 +370,10 @@ Le module cuisine combine une génération procédurale de menus et une gestion 
             menuSemaine.put(jour, repasJour);
         }
         return menuSemaine;
-    }```
+    }
+    
+```    
+            
 ---
 
 
@@ -386,12 +386,11 @@ Le module **Petites Annonces** permet aux étudiants de publier, consulter et g�
 Ce module repose sur une architecture REST et une gestion complète du cycle de vie des annonces (création, consultation, modification, suppression).
 
 #### Règles Métiers :
-
-- **Accès authentifié** : seules les utilisateurs connectés peuvent créer, modifier ou supprimer une annonce.
-- **Propriété des annonces** : un utilisateur ne peut modifier ou supprimer que ses propres annonces.
-- **Filtrage par catégorie** : les annonces peuvent être filtrées par catégorie.
-- **Traçabilité** : chaque annonce conserve sa date de publication et son nombre de vues.
-- **Notification automatique** : la création d’une annonce déclenche une notification pour les proches de l’auteur.
+    * - **Accès authentifié** : seules les utilisateurs connectés peuvent créer, modifier ou supprimer une annonce.
+    * - **Propriété des annonces** : un utilisateur ne peut modifier ou supprimer que ses propres annonces.
+    * - **Filtrage par catégorie** : les annonces peuvent être filtrées par catégorie.
+    * - **Traçabilité** : chaque annonce conserve sa date de publication et son nombre de vues.
+    * - **Notification automatique** : la création d’une annonce déclenche une notification pour les proches de l’auteur.
 
 #### Fonctionnalités :
 #### Consultation et recherche des annonces
@@ -425,13 +424,12 @@ Tout utilisateur authentifié peut créer une annonce.
 - Ce mécanisme permet de sauvegarder des annonces jugées intéressantes sans interaction immédiate.
 
 #### Classes Impliquées :
-
-- `AnnonceController` (endpoints REST)
-- `AnnonceService` (logique métier)
-- `AnnonceRepository` (accès aux données)
-- `Annonce` (entité)
-- `LienRepository` (récupération des proches)
-- `NotificationService` (création des notifications)
+     * - `AnnonceController` (endpoints REST)
+     * - `AnnonceService` (logique métier)
+     * - `AnnonceRepository` (accès aux données)
+     * - `Annonce` (entité)
+     * - `LienRepository` (récupération des proches)
+     * - `NotificationService` (création des notifications)
 
 - Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
 
@@ -472,12 +470,11 @@ Le système de notifications permet d’informer les utilisateurs des événemen
 Il repose sur une logique backend centralisée et découplée des autres modules, garantissant cohérence, performance et extensibilité.
 
 #### Règles Métiers :
-
-- **Notification ciblée** : chaque notification est associée à un utilisateur précis.
-- **Statut de lecture** : une notification peut être marquée comme lue ou non lue(en bleu==> n'est pas lue, en gris==> est lue)
-- **Badge dynamique** : le nombre de notifications non lues est affiché sous forme d’un badge rouge.
-- **Historisation** : toutes les notifications sont conservées et consultables.
-- **Ordre chronologique** : les notifications sont affichées de la plus récente à la plus ancienne.
+    * - **Notification ciblée** : chaque notification est associée à un utilisateur précis.
+    * - **Statut de lecture** : une notification peut être marquée comme lue ou non lue(en bleu==> n'est pas lue, en gris==> est lue)
+    * - **Badge dynamique** : le nombre de notifications non lues est affiché sous forme d’un badge rouge.
+    * - **Historisation** : toutes les notifications sont conservées et consultables.
+    * - **Ordre chronologique** : les notifications sont affichées de la plus récente à la plus ancienne.
 
 #### Types de notifications :
 
@@ -513,12 +510,11 @@ Chaque notification contient :
 
 
 #### Classes Impliquées :
-
-- `NotificationController` (endpoints REST)
-- `NotificationService` (logique métier)
-- `NotificationRepository` (accès aux données)
-- `Notification` (entité)
-- `NotificationType` (énumération des types de notification)
+     * - `NotificationController` (endpoints REST)
+     * - `NotificationService` (logique métier)
+     * - `NotificationRepository` (accès aux données)
+     * - `Notification` (entité)
+     * - `NotificationType` (énumération des types de notification)
 
 #### Algorithme & Logique Backend :
 
