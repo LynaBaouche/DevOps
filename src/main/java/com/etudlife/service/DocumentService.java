@@ -26,43 +26,19 @@ public class DocumentService {
 
     // Enregistrer un fichier dans le dossier + base
     public Document enregistrer(MultipartFile fichier, Long uploaderId, Long groupId) throws IOException {
+        if (fichier.isEmpty()) throw new RuntimeException("Fichier vide !");
 
-        if (fichier.isEmpty()) {
-            throw new RuntimeException("Fichier vide !");
-        }
-
-        // 1️⃣ Vérifier doublon pour cet utilisateur
-        Optional<Document> existing = repo.findByNomAndUploaderId(fichier.getOriginalFilename(), uploaderId);
-        if (existing.isPresent()) {
-            throw new RuntimeException("Ce fichier existe déjà !");
-        }
-
-        // 2️⃣ Vérifier taille max (20 Mo)
-        long MAX_SIZE = 20 * 1024 * 1024;
-        if (fichier.getSize() > MAX_SIZE) {
-            throw new RuntimeException("Fichier trop volumineux (max 20 Mo)");
-        }
-
-        // 3️⃣ Créer le dossier si non présent
-        Path dossier = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Files.createDirectories(dossier);
-
-        // NOM UNIQUE du fichier enregistré physiquement
-        String nomFichierUnique = Instant.now().toEpochMilli() + "_" + fichier.getOriginalFilename();
-        Path chemin = dossier.resolve(nomFichierUnique);
-
-        // 4️⃣ Sauvegarde physique
-        Files.copy(fichier.getInputStream(), chemin, StandardCopyOption.REPLACE_EXISTING);
-
-        // 5️⃣ Sauvegarde en base
+        // On crée l'objet Document
         Document doc = new Document();
         doc.setNom(fichier.getOriginalFilename());
         doc.setType(fichier.getContentType());
         doc.setTaille(fichier.getSize());
-        doc.setChemin(nomFichierUnique); // 🔥 important : juste le nom
         doc.setUploaderId(uploaderId);
         doc.setGroupId(groupId);
         doc.setDateUpload(Instant.now());
+
+        // 🔥 On enregistre les octets du fichier directement
+        doc.setDonnees(fichier.getBytes());
 
         return repo.save(doc);
     }
@@ -76,4 +52,5 @@ public class DocumentService {
     public Optional<Document> getDocumentById(Long id) {
         return repo.findById(id);
     }
+
 }

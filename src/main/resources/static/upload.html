@@ -95,19 +95,22 @@
                 return;
             }
 
-            container.innerHTML = `<div class="documents-container">` +
-                docs.map(doc => `
-                <div class="doc-card">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">
-                        ${getIconForType(doc.type)}
-                    </div>
-                    <strong>${doc.nom}</strong>
-                    <p style="color:gray; font-size:0.9em;">
-                        ${(doc.taille / 1024).toFixed(1)} Ko • ${new Date(doc.dateUpload).toLocaleDateString()}
-                    </p>
-                    <a href="${API_BASE_URL}/documents/${doc.id}" class="btn-download" target="_blank">Télécharger</a>
-                </div>
-            `).join("") + `</div>`;
+// Remplace cette partie dans ton docs.map
+container.innerHTML = `<div class="documents-container">` +
+    docs.map(doc => `
+    <div class="doc-card">
+        <div style="font-size: 2rem; margin-bottom: 10px;">
+            ${getIconForType(doc.type)}
+        </div>
+        <strong>${doc.nom}</strong>
+        <p style="color:gray; font-size:0.9em;">
+            ${(doc.taille / 1024).toFixed(1)} Ko • ${new Date(doc.dateUpload).toLocaleDateString()}
+        </p>
+        <a href="${API_BASE_URL}/documents/${doc.id}/download" class="btn-download">
+            Télécharger
+        </a>
+    </div>
+`).join("") + `</div>`;
 
         } catch (err) {
             console.error("Erreur chargement docs :", err);
