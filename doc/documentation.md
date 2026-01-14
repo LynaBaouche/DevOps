@@ -131,7 +131,7 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
 
 ![Diagramme de Classe](diagram_model.png)
 Le diagramme étant complexe, nous recommandons de l'ouvrir dans un nouvel onglet :
-🔗 **[Voir le Diagramme de Classes Complet (Zoomable)](./doc/diagram-zoomable.svg)**
+🔗 **[Voir le Diagramme de Classes Complet (Zoomable)](diagram-zoomable.svg)**
 
 ---
 
