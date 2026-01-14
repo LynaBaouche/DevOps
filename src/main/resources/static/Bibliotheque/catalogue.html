@@ -4,40 +4,31 @@
     <meta charset="UTF-8">
     <title>Catalogue – Bibliothèque</title>
     <link rel="stylesheet" href="bu.css">
+    <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="subheader.css">
 </head>
 
 <body>
 
-<header>
-    <!-- NAVBAR PRINCIPALE -->
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <img src="etudlife.png" alt="logo">
-            <span>EtudLife</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/static/Agenda.html">Agenda</a></li>
-            <li><a href="/Cours.html">Cours</a></li>
-            <li><a href="transports.html">Transports</a></li>
-            <li><a href="/static/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
-            <li><a href="/Campus.html">Campus</a></li>
-            <li><a href="/Restaurant.html">Restaurant</a></li>
-            <li><a href="/static/Annonce/annonces.html">Annonces</a></li>
-            <li><a href="/static/messages.html">Messages</a></li>
-        </ul>
-        <div class="profile"><img src="compte.png"></div>
-    </nav>
+<script src="../header.js"></script>
 
-    <!-- SOUS-MENU BU -->
-    <nav class="bu-submenu">
-        <a href="catalogue.html" class="active">Catalogue</a>
-        <a href="emprunts.html">Mes Emprunts</a>
-        <a href="reservation.html">Réservations</a>
-        <a href="places.html">Réserver une Place</a>
-        <a href="services.html">Services</a>
-    </nav>
-</header>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector('.main-header');
+        //sous-header spécifique à la bibliothèque
+        const subMenuHTML = `
+                <nav class="bu-submenu">
+                    <a href="catalogue.html" class="active">Catalogue</a>
+                    <a href="emprunts.html">Mes Emprunts</a>
+                    <a href="reservation.html">Réservations</a>
+                    <a href="places.html">Réserver une Place</a>
+                    <a href="services.html">Services</a>
+                </nav>
+            `;
+
+        header.insertAdjacentHTML('beforeend', subMenuHTML);
+    });
+</script>
 
 <main class="page">
 

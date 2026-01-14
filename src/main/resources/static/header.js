@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <a href="${basePath}index.html">Accueil</a>
                 <a href="${basePath}Agenda.html">Agenda</a>
                 <a href="${basePath}upload.html">Cours</a>
-                <a href="#">Transports</a>
                 <a href="${basePath}Bibliotheque/bibliotheque.html">Bibliothèque</a>
                 <a href="${basePath}campus.html">Campus</a>
                 <a href="${basePath}Recette/cuisine.html">Cuisine</a>
