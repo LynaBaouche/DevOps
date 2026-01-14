@@ -5,7 +5,6 @@
     <title>Réserver une Place – BU</title>
     <link rel="stylesheet" href="bu.css">
 </head>
-
 <body>
 
 <header>
@@ -14,7 +13,6 @@
             <img src="../images/etudlife.png" alt="logo">
             <span>EtudLife</span>
         </a>
-
         <ul class="nav-links">
             <li><a href="/">Accueil</a></li>
             <li><a href="/Agenda.html">Agenda</a></li>
@@ -22,7 +20,6 @@
             <li><a href="/Transports.html">Transports</a></li>
             <li><a href="/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
         </ul>
-
         <div class="profile"><img src="../images/compte.png"></div>
     </nav>
 
@@ -35,20 +32,17 @@
     </nav>
 </header>
 
-
 <main class="page">
-
     <h1 class="page-title">Réserver une place à la BU</h1>
     <p class="page-subtitle">Choisissez un type d’espace pour étudier confortablement.</p>
 
     <section class="place-grid">
-
         <article class="place-card">
             <div class="place-icon blue">👤</div>
             <div class="place-title">Place Individuelle</div>
             <div class="place-desc">Espace calme pour étudier seul</div>
             <div class="place-availability">24 places libres</div>
-            <button class="btn-primary">Réserver</button>
+            <button class="btn-primary" onclick="openPlaceModal('Place Individuelle')">Réserver</button>
         </article>
 
         <article class="place-card">
@@ -56,7 +50,7 @@
             <div class="place-title">Salle de Groupe</div>
             <div class="place-desc">Pour les projets à plusieurs</div>
             <div class="place-availability">5 salles libres</div>
-            <button class="btn-primary">Réserver</button>
+            <button class="btn-primary" onclick="openPlaceModal('Salle de Groupe')">Réserver</button>
         </article>
 
         <article class="place-card">
@@ -64,7 +58,7 @@
             <div class="place-title">Box Silencieux</div>
             <div class="place-desc">Isolation totale pour se concentrer</div>
             <div class="place-availability">8 box libres</div>
-            <button class="btn-primary">Réserver</button>
+            <button class="btn-primary" onclick="openPlaceModal('Box Silencieux')">Réserver</button>
         </article>
 
         <article class="place-card">
@@ -72,101 +66,143 @@
             <div class="place-title">Salle Informatique</div>
             <div class="place-desc">Postes avec logiciels dédiés</div>
             <div class="place-availability">12 postes libres</div>
-            <button class="btn-primary">Réserver</button>
+            <button class="btn-primary" onclick="openPlaceModal('Salle Informatique')">Réserver</button>
         </article>
-
     </section>
-
 
     <section class="section-card">
-        <div class="section-title">Mes réservations</div>
-
-        <div class="place-res-list">
-
-            <div class="place-res-card">
-                <div class="place-res-icon">👤</div>
-                <div>
-                    <div class="place-res-info-title">Place A204</div>
-                    <div class="place-res-info-sub">Aujourd’hui – 14h à 18h</div>
-                </div>
-                <button class="btn-cancel">Annuler</button>
-            </div>
-
-            <div class="place-res-card">
-                <div class="place-res-icon">👥</div>
-                <div>
-                    <div class="place-res-info-title">Salle G12</div>
-                    <div class="place-res-info-sub">Demain – 10h à 12h</div>
-                </div>
-                <button class="btn-cancel">Annuler</button>
-            </div>
-
+        <div class="section-title">Mes réservations de salles</div>
+        <div id="placeResList" class="place-res-list">
         </div>
-
     </section>
-
 </main>
 
+<div id="placeModalOverlay" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+    <div class="modal-content" style="background:white; padding:25px; border-radius:12px; width:450px;">
+        <h2 id="placeModalTitle">Réserver une zone</h2>
+        <hr><br>
+
+        <label>Nom complet *</label>
+        <input type="text" id="nomComplet" placeholder="Jean Dupont" style="width:100%; margin-bottom:15px; padding:8px;">
+
+        <label>Numéro étudiant *</label>
+        <input type="text" id="numEtudiant" placeholder="20231234" style="width:100%; margin-bottom:15px; padding:8px;">
+
+        <label>Date *</label>
+        <input type="date" id="datePlace" style="width:100%; margin-bottom:15px; padding:8px;">
+
+        <label>Heure de début *</label>
+        <input type="time" id="heureDebut" style="width:100%; margin-bottom:15px; padding:8px;">
+
+        <label>Durée *</label>
+        <select id="duree" style="width:100%; margin-bottom:15px; padding:8px;">
+            <option value="1h">1 heure</option>
+            <option value="2h">2 heures</option>
+            <option value="4h">4 heures</option>
+        </select>
+
+        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+            <button onclick="closePlaceModal()" style="padding:10px; cursor:pointer;">Annuler</button>
+            <button class="btn-primary" onclick="confirmerReservationSalle()">Confirmer la réservation</button>
+        </div>
+    </div>
+</div>
 
 <script>
-    // ouverture modal
-const placeButtons = document.querySelectorAll(".place-card .btn-primary");
-const placeModalOverlay = document.getElementById("placeModalOverlay");
-const placeModalClose = document.getElementById("placeModalClose");
-const placeModalCancel = document.getElementById("placeModalCancel");
-const placeModalConfirm = document.getElementById("placeModalConfirm");
-const placeModalTitle = document.getElementById("placeModalTitle");
-const placeToast = document.getElementById("placeToast");
+    const USER_ID = 1; // Statique pour les tests
+    let currentZone = "";
 
-placeButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        const type = btn.getAttribute("data-place");
-        switch (type) {
-            case "individuelle":
-                placeModalTitle.textContent = "Place Individuelle";
-                break;
-            case "groupe":
-                placeModalTitle.textContent = "Salle de Groupe";
-                break;
-            case "box":
-                placeModalTitle.textContent = "Box Silencieux";
-                break;
-            case "info":
-                placeModalTitle.textContent = "Espace Informatique";
-                break;
-            case "multi":
-                placeModalTitle.textContent = "Salle Multimédia";
-                break;
-            case "detente":
-                placeModalTitle.textContent = "Espace Détente";
-                break;
+    // 1. Ouvrir la modale
+    function openPlaceModal(zoneName) {
+        currentZone = zoneName;
+        document.getElementById("placeModalTitle").textContent = "Réserver : " + zoneName;
+        document.getElementById("placeModalOverlay").style.display = "flex";
+    }
+
+    // 2. Fermer la modale
+    function closePlaceModal() {
+        document.getElementById("placeModalOverlay").style.display = "none";
+    }
+
+    // 3. Envoyer au Backend
+    async function confirmerReservationSalle() {
+        const data = {
+            idUser: USER_ID,
+            nomComplet: document.getElementById("nomComplet").value,
+            numeroEtudiant: document.getElementById("numEtudiant").value,
+            zone: currentZone,
+            dateReservation: document.getElementById("datePlace").value,
+            heureDebut: document.getElementById("heureDebut").value,
+            duree: document.getElementById("duree").value
+        };
+
+        if(!data.nomComplet || !data.dateReservation || !data.heureDebut) {
+            alert("Veuillez remplir les champs obligatoires *");
+            return;
         }
-        placeModalOverlay.style.display = "flex";
-    });
-});
 
-function closePlaceModal() {
-    placeModalOverlay.style.display = "none";
-}
+        try {
+            const res = await fetch("http://localhost:8080/api/salles/reserver", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-placeModalClose.addEventListener("click", closePlaceModal);
-placeModalCancel.addEventListener("click", closePlaceModal);
-
-placeModalConfirm.addEventListener("click", () => {
-    closePlaceModal();
-    placeToast.style.display = "block";
-    setTimeout(() => placeToast.style.display = "none", 3000);
-});
-
-// Annulation des réservations existantes
-document.querySelectorAll(".place-res-card .btn-cancel").forEach(btn => {
-    btn.addEventListener("click", () => {
-        if (confirm("Annuler cette réservation de place ?")) {
-            btn.closest(".place-res-card").remove();
+            if (res.ok) {
+                alert("Place réservée !");
+                closePlaceModal();
+                loadMesSalles(); // Recharger la liste en bas
+            }
+        } catch (e) {
+            console.error("Erreur:", e);
         }
-    });
-});
+    }
 
+    // 4. Charger les réservations depuis la base de données
+    async function loadMesSalles() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/salles/utilisateur/${USER_ID}`);
+            if (!res.ok) return;
+            const salles = await res.json();
+            renderSalles(salles);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderSalles(list) {
+        const container = document.getElementById("placeResList");
+        container.innerHTML = "";
+
+        if(list.length === 0) {
+            container.innerHTML = "<p>Aucune réservation de place.</p>";
+            return;
+        }
+
+        list.forEach(s => {
+            const div = document.createElement("div");
+            div.className = "place-res-card";
+            div.innerHTML = `
+                <div class="place-res-icon">📍</div>
+                <div>
+                    <div class="place-res-info-title">${s.zone}</div>
+                    <div class="place-res-info-sub">${s.dateReservation} – ${s.heureDebut} (${s.duree})</div>
+                </div>
+                <button class="btn-cancel" onclick="annulerSalle(${s.id})">Annuler</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    async function annulerSalle(id) {
+        if(!confirm("Annuler cette réservation ?")) return;
+        await fetch(`http://localhost:8080/api/salles/${id}`, { method: "DELETE" });
+        loadMesSalles();
+    }
+
+    // Charger au démarrage
+    document.addEventListener("DOMContentLoaded", loadMesSalles);
 </script>
+
 </body>
 </html>

@@ -16,7 +16,7 @@ public class LivreBu {
     private String isbn;
     private Integer pages;
 
-    @Column(name = "disponible", columnDefinition = "BIT")
+   @Column(name = "disponible", columnDefinition = "BIT")
     private boolean disponible;
 
     // --- GETTERS ET SETTERS (Tous à l'intérieur des accolades de la classe) ---
