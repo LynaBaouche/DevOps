@@ -144,3 +144,12 @@ function renderReservations(list) {
         resContainer.appendChild(div);
     });
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+
+    if (searchQuery) {
+        // Appelle ta fonction de filtrage avec searchQuery
+        filterBooks(searchQuery);
+    }
+});

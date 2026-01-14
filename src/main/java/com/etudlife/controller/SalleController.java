@@ -25,4 +25,10 @@ public class SalleController {
     public List<ReservationSalle> getMesSalles(@PathVariable Long userId) {
         return repository.findByIdUser(userId);
     }
+    // Dans SalleController.java
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> annuler(@PathVariable Long id) {
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
