@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.springframework.http.ResponseEntity;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/evenements")
@@ -79,8 +79,36 @@ public class EvenementController {
     }
 
 
-    @DeleteMapping("/{id}")
-    public void supprimer(@PathVariable Long id) {
-        evenementRepository.deleteById(id);
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Evenement> modifier(@PathVariable Long id,
+                                              @RequestBody Evenement evenementModifie) {
+
+        Evenement evenement = evenementRepository.findById(id)
+                .orElse(null);
+
+        if (evenement == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        evenement.setTitre(evenementModifie.getTitre());
+        evenement.setDescription(evenementModifie.getDescription());
+        evenement.setDateDebut(evenementModifie.getDateDebut());
+        evenement.setDateFin(evenementModifie.getDateFin());
+        evenement.setCouleur(evenementModifie.getCouleur());
+
+        Evenement saved = evenementRepository.save(evenement);
+        return ResponseEntity.ok(saved);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> supprimer(@PathVariable Long id) {
+        if (!evenementRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        evenementRepository.deleteById(id);
+        return ResponseEntity.noContent().build(); // 204
+    }
+
 }

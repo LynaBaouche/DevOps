@@ -81,11 +81,14 @@
     </div>
 </main>
 
-<!-- 🔷 POPUP Ajouter un événement -->
+<!-- 🔷 POPUP Ajouter / Modifier un événement -->
 <div id="popup" class="popup hidden">
     <div class="popup-content">
-        <h3>Ajouter un événement</h3>
+        <h3 id="popup-title">Ajouter un événement</h3>
         <form id="formEvent">
+            <!-- id caché : vide en création, rempli en modification -->
+            <input type="hidden" id="eventId">
+
             <input type="text" id="titre" placeholder="Titre" required>
             <textarea id="description" placeholder="Description"></textarea>
 
@@ -95,45 +98,15 @@
             <label>Fin :</label>
             <input type="datetime-local" id="dateFin" required>
 
-            <button type="submit">Enregistrer</button>
+            <button type="submit" id="btnSave">Enregistrer</button>
+            <button type="button" id="btnDelete" class="danger hidden">Supprimer</button>
             <button type="button" id="btnCancel">Annuler</button>
         </form>
     </div>
 </div>
+
 <script src="app.js"></script>
 <script src="agenda.js"></script>
-
-<!--- <script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const icon = document.getElementById("account-icon");
-        const menu = document.getElementById("dropdown-menu");
-
-        // Affiche / cache le menu
-        icon.addEventListener("click", () => {
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
-        });
-
-        // Ferme si on clique ailleurs
-        document.addEventListener("click", (e) => {
-            if (!icon.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = "none";
-            }
-        });
-
-        // ---- Mise à jour quand connecté ----
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
-        const title = document.querySelector(".menu-title");
-        const subtitle = document.querySelector(".menu-subtitle");
-
-        if (user) {
-            title.textContent = user.prenom + " " + user.nom;
-            subtitle.textContent = user.email;
-
-
-        }
-    });
-</script>-->
 
 </body>
 </html>

@@ -4,26 +4,21 @@
 let currentDate = new Date(); // Date de référence
 let currentView = "month";    // 'month' ou 'week'
 
-// Assurez-vous que ces variables existent dans la portée globale de app.js si elles ne le sont pas déjà
+// Variables globales
 if (typeof allEventsCache === "undefined") var allEventsCache = [];
 if (typeof selectedProchesIds === "undefined") var selectedProchesIds = new Set();
+
 
 /* =========================
    INIT SPÉCIFIQUE AGENDA
    ========================= */
 document.addEventListener("DOMContentLoaded", async () => {
     const path = window.location.pathname.toLowerCase();
-    console.log("AGENDA DOM LOADED, path =", path);
-
     if (!path.endsWith("agenda.html")) {
         return;
     }
 
-    console.log("PAGE AGENDA détectée");
-
     const utilisateur = JSON.parse(localStorage.getItem("utilisateur"));
-    console.log("utilisateur localStorage =", utilisateur);
-
     if (!utilisateur) {
         window.location.href = "login.html";
         return;
@@ -37,7 +32,6 @@ document.addEventListener("DOMContentLoaded", async () => {
    INIT DE LA PAGE AGENDA
    ========================= */
 async function initAgendaPage() {
-    console.log("initAgendaPage()");
 
     const btnLogout = document.getElementById("btnLogout");
     if (btnLogout) btnLogout.addEventListener("click", logout);
@@ -45,10 +39,29 @@ async function initAgendaPage() {
     const btnNewEvent = document.getElementById("btnNewEvent");
     const btnCancel = document.getElementById("btnCancel");
     const formEvent = document.getElementById("formEvent");
+    const btnDelete = document.getElementById("btnDelete");
 
-    if (btnNewEvent) btnNewEvent.addEventListener("click", () => togglePopup(true));
+    if (btnNewEvent) btnNewEvent.addEventListener("click", () => openCreatePopup());
     if (btnCancel) btnCancel.addEventListener("click", () => togglePopup(false));
     if (formEvent) formEvent.addEventListener("submit", saveEvent);
+
+    // bouton supprimer dans la popup
+    if (btnDelete) {
+        btnDelete.addEventListener("click", async () => {
+            const id = document.getElementById("eventId").value;
+            if (!id) return;
+            if (!confirm("Supprimer cet événement ?")) return;
+
+            try {
+                await deleteEvenement(id);
+                togglePopup(false);
+                await fetchEvents();
+                await afficherAgenda();
+            } catch (err) {
+                alert("❌ " + err.message);
+            }
+        });
+    }
 
     const prevMonth = document.getElementById("prevMonth");
     const nextMonth = document.getElementById("nextMonth");
@@ -69,6 +82,52 @@ async function initAgendaPage() {
 function togglePopup(show) {
     const popup = document.getElementById("popup");
     if (popup) popup.classList.toggle("hidden", !show);
+}
+
+/* Ouvrir popup en mode création */
+function openCreatePopup() {
+    const popupTitle = document.getElementById("popup-title");
+    const inputId = document.getElementById("eventId");
+    const inputTitre = document.getElementById("titre");
+    const inputDescription = document.getElementById("description");
+    const inputDateDebut = document.getElementById("dateDebut");
+    const inputDateFin = document.getElementById("dateFin");
+    const btnDelete = document.getElementById("btnDelete");
+
+    if (inputId) inputId.value = "";
+    if (inputTitre) inputTitre.value = "";
+    if (inputDescription) inputDescription.value = "";
+    if (inputDateDebut) inputDateDebut.value = "";
+    if (inputDateFin) inputDateFin.value = "";
+    if (popupTitle) popupTitle.textContent = "Ajouter un événement";
+    if (btnDelete) btnDelete.classList.add("hidden");
+
+    togglePopup(true);
+}
+
+/* Ouvrir popup en mode édition */
+function openEditPopup(ev) {
+    const popupTitle = document.getElementById("popup-title");
+    const inputId = document.getElementById("eventId");
+    const inputTitre = document.getElementById("titre");
+    const inputDescription = document.getElementById("description");
+    const inputDateDebut = document.getElementById("dateDebut");
+    const inputDateFin = document.getElementById("dateFin");
+    const btnDelete = document.getElementById("btnDelete");
+
+    if (inputId) inputId.value = ev.id;
+    if (inputTitre) inputTitre.value = ev.titre || "";
+    if (inputDescription) inputDescription.value = ev.description || "";
+
+    const dDebut = new Date(ev.dateDebut);
+    const dFin = new Date(ev.dateFin);
+    if (inputDateDebut) inputDateDebut.value = dDebut.toISOString().slice(0, 16);
+    if (inputDateFin) inputDateFin.value = dFin.toISOString().slice(0, 16);
+
+    if (popupTitle) popupTitle.textContent = "Modifier l'événement";
+    if (btnDelete) btnDelete.classList.remove("hidden");
+
+    togglePopup(true);
 }
 
 /* Changer vue mois / semaine */
@@ -105,7 +164,6 @@ function navigateDate(offset) {
 
 /* Affichage global (en fonction de la vue) */
 async function afficherAgenda() {
-    console.log("afficherAgenda(), view =", currentView);
     if (currentView === "month") {
         renderMonthView();
     } else {
@@ -220,6 +278,8 @@ function createDayCell(dateObj, isWeekView) {
             eDiv.innerHTML = `${timeString}Occupé (${ev.utilisateur.prenom})`;
         } else {
             eDiv.innerHTML = `${timeString}${ev.titre}`;
+            eDiv.style.cursor = "pointer";
+            eDiv.addEventListener("click", () => openEditPopup(ev));
         }
 
         div.appendChild(eDiv);
@@ -234,13 +294,10 @@ function createDayCell(dateObj, isWeekView) {
 async function fetchEvents() {
     try {
         const url = `${API_BASE_URL}/evenements/shared/${currentUser.id}`;
-        console.log("fetchEvents →", url);
         const res = await fetch(url);
-        console.log("fetchEvents status =", res.status);
 
         if (!res.ok) throw new Error("Erreur API événements");
         allEventsCache = await res.json();
-        console.log("events reçus =", allEventsCache);
 
         if (typeof renderToday === "function") renderToday(allEventsCache);
         return allEventsCache;
@@ -251,10 +308,12 @@ async function fetchEvents() {
 }
 
 /* =========================
-   Ajout d’un événement
+   Création / Modification
    ========================= */
 async function saveEvent(e) {
     e.preventDefault();
+
+    const id = document.getElementById("eventId").value;
 
     const event = {
         titre: document.getElementById("titre").value,
@@ -264,19 +323,47 @@ async function saveEvent(e) {
     };
 
     try {
-        const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(event)
-        });
+        if (!id) {
+            // création
+            const res = await fetch(`${API_BASE_URL}/evenements/${currentUser.id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(event)
+            });
+            if (!res.ok) throw new Error("Erreur création événement");
+        } else {
+            // modification
+            await updateEvenement(id, event);
+        }
 
-        if (!res.ok) throw new Error("Erreur création événement");
         togglePopup(false);
-
         await fetchEvents();
         await afficherAgenda();
     } catch (err) {
         alert("❌ " + err.message);
+    }
+}
+
+/* Modifier un événement */
+async function updateEvenement(id, evenement) {
+    const res = await fetch(`${API_BASE_URL}/evenements/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(evenement)
+    });
+    if (!res.ok) {
+        throw new Error("Erreur lors de la modification de l'événement");
+    }
+    return await res.json();
+}
+
+/* Supprimer un événement */
+async function deleteEvenement(id) {
+    const res = await fetch(`${API_BASE_URL}/evenements/${id}`, {
+        method: "DELETE"
+    });
+    if (!res.ok && res.status !== 204) {
+        throw new Error("Erreur lors de la suppression de l'événement");
     }
 }
 
