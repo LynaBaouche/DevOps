@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Réservations – BU</title>
+    <link rel="stylesheet" href="bu.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <img src="../images/etudlife.png">
+            <span>EtudLife</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/static/Agenda.html">Agenda</a></li>
+            <li><a href="/Cours.html">Cours</a></li>
+            <li><a href="transports.html">Transports</a></li>
+            <li><a href="/static/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
+            <li><a href="/Campus.html">Campus</a></li>
+            <li><a href="/Restaurant.html">Restaurant</a></li>
+            <li><a href="/static//Annonce/annonces.html">Annonces</a></li>
+            <li><a href="/static/messages.html">Messages</a></li>
+        </ul>
+
+        <div class="profile"><img src="../images/compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="emprunts.html">Mes Emprunts</a>
+        <a href="reservation.html" class="active">Réservations</a>
+        <a href="places.html">Réserver une Place</a>
+        <a href="services.html">Services</a>
+    </nav>
+</header>
+
+
+<main class="page">
+
+    <h1 class="page-title">Mes réservations</h1>
+
+    <!-- Conteneur où JS va injecter les réservations -->
+    <section id="reservationContainer" class="reservations-list"></section>
+
+</main>
+<script>
+    const userId = 1;
+
+    async function loadReservations() {
+      try {
+        // 🔥 Utilise bien les backticks ` pour que ${userId} fonctionne
+        const res = await fetch(`http://localhost:8080/api/reservation/utilisateur/${userId}`);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const reservations = await res.json();
+
+        const withBooks = await Promise.all(
+          reservations.map(async (r) => {
+            let livre = null;
+            try {
+              // 🔥 Correction de l'URL pour correspondre à ton LivreController (/api/livres)
+              const lr = await fetch(`http://localhost:8080/api/livres`);
+              if (lr.ok) {
+                  const tousLesLivres = await lr.json();
+                  // On cherche le livre correspondant à l'ID de la réservation
+                  livre = tousLesLivres.find(l => l.id === r.idLivre);
+              }
+            } catch (_) {}
+            return { ...r, livre };
+          })
+        );
+
+        renderReservations(withBooks);
+      } catch (e) {
+        console.error("Erreur chargement réservations :", e);
+      }
+    }
+
+    function renderReservations(reservations) {
+      const container = document.getElementById("reservationContainer");
+      container.innerHTML = "";
+
+      if (!reservations || reservations.length === 0) {
+        container.innerHTML = "<p>Aucune réservation pour le moment.</p>";
+        return;
+      }
+
+      reservations.forEach(r => {
+        const card = document.createElement("article");
+        card.className = "book-card";
+
+        const titre = r.livre?.titre ?? `Livre #${r.idLivre}`;
+        const auteur = r.livre?.auteur ?? "Auteur inconnu";
+
+        card.innerHTML = `
+          <div class="book-header">
+            <div class="book-info">
+              <div class="book-title">${titre}</div>
+              <div class="book-author">${auteur}</div>
+              <span class="badge badge-available">
+                ${r.empruntDomicile ? "Emprunt à domicile" : "Consultation sur place"}
+              </span>
+            </div>
+          </div>
+          <div class="book-footer">
+            <span>
+              Réservé le : ${r.dateReservation ?? ""}<br>
+              Récupération : ${r.dateRecuperation ?? ""}
+            </span>
+            <button class="btn-danger" style="background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;"
+                    onclick="annulerReservation(${r.id})">Annuler</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function annulerReservation(id) {
+      if (!confirm("Voulez-vous vraiment annuler cette réservation ?")) return;
+      try {
+          const res = await fetch(`http://localhost:8080/api/reservation/${id}`, { method: "DELETE" });
+          if (res.ok) {
+              alert("Réservation annulée.");
+              loadReservations(); // Recharge la liste
+          }
+      } catch (e) {
+          alert("Erreur lors de l'annulation");
+      }
+    }
+
+    loadReservations();
+</script>
+
+</body>
+</html>
