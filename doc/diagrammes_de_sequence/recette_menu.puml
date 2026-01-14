@@ -1,0 +1,31 @@
+@startuml
+title Séquence - Génération du Menu de la Semaine
+actor "Utilisateur" as User
+participant "RecetteController" as Controller
+participant "RecetteService" as Service
+participant "RecetteRepository" as Repo
+database "Base de Données" as DB
+
+User -> Controller : GET /recettes/menu-semaine
+activate Controller
+
+Controller -> Service : getMenuDeLaSemaine()
+activate Service
+
+Service -> Repo : findAll()
+activate Repo
+Repo -> DB : SELECT * FROM recettes
+activate DB
+DB --> Repo : List<Recette>
+deactivate DB
+Repo --> Service : toutesLesRecettes
+deactivate Repo
+
+Service -> Service : Filtrer et organiser par jour/moment\n(Logique métier interne)
+
+Service --> Controller : Map<String, Map<String, Recette>> (menu)
+deactivate Service
+
+Controller --> User : 200 OK (JSON Menu)
+deactivate Controller
+@enduml

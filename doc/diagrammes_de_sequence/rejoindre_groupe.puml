@@ -1,0 +1,47 @@
+@startuml
+title Séquence - Rejoindre un Groupe
+actor "Utilisateur" as User
+participant "GroupeController" as Controller
+participant "GroupeService" as Service
+participant "GroupeRepository" as GroupeRepo
+participant "CompteRepository" as UserRepo
+database "Base de Données" as DB
+
+User -> Controller : POST /groupes/{groupeId}/ajouter/{compteId}
+activate Controller
+
+Controller -> Service : ajouterMembre(groupeId, compteId)
+activate Service
+
+Service -> GroupeRepo : findById(groupeId)
+activate GroupeRepo
+GroupeRepo --> Service : Groupe
+deactivate GroupeRepo
+
+Service -> UserRepo : findById(compteId)
+activate UserRepo
+UserRepo --> Service : Compte
+deactivate UserRepo
+
+alt Groupe et Compte existent
+    Service -> Service : groupe.getMembres().add(compte)
+
+    Service -> GroupeRepo : save(groupe)
+    activate GroupeRepo
+    GroupeRepo -> DB : UPDATE groupe_membres...
+    activate DB
+    DB --> GroupeRepo : Success
+    deactivate DB
+    GroupeRepo --> Service : Groupe mis à jour
+    deactivate GroupeRepo
+
+    Service --> Controller : Groupe (avec nouveau membre)
+else Groupe ou Compte introuvable
+    Service --> Controller : null / Exception
+end
+
+deactivate Service
+
+Controller --> User : 200 OK (Groupe JSON)
+deactivate Controller
+@enduml

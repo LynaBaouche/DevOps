@@ -128,10 +128,9 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
 * **Messagerie :**
 #### 5. Système de Notification
 * **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`, `ANNONCE`, `NEW_MESSAGE`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
-
-![Diagramme de Classe](diagram_model.png)
-Le diagramme étant complexe, nous recommandons de l'ouvrir dans un nouvel onglet :
-🔗 **[Voir le Diagramme de Classes Complet (Zoomable)](diagram-zoomable.svg)**
+### Diagramme de Classes Complet
+Le diagramme de classe étant complexe, nous recommandons de l'ouvrir dans un nouvel onglet :
+🔗 **[Voir le Diagramme de Classes Complet (Zoomable)](uml/diagram-zoomable.svg)**
 
 ---
 
@@ -174,12 +173,12 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 
 #### Classes Impliquées :
-     * `CompteController` (exposition des endpoints REST)
-     * `CompteService` (logique métier d’authentification)
-     * `CompteRepository` (accès aux données utilisateurs)
-     * `Compte` (entité utilisateur)
-     * `BCryptPasswordEncoder` (hashage des mots de passe)
-
+*
+    `CompteController` (exposition des endpoints REST)
+    * `CompteService` (logique métier d’authentification)
+    * `CompteRepository` (accès aux données utilisateurs)
+    * `Compte` (entité utilisateur)
+    * `BCryptPasswordEncoder` (hashage des mots de passe)
 
 
 #### Algorithme & Logique Backend :
@@ -193,110 +192,62 @@ une protection efficace contre les attaques par compromission de base de donnée
 Lors de la connexion, le mot de passe saisi est comparé au hash stocké via la méthode `matches`,
 sans jamais exposer le mot de passe original.
 
-```java
 
-//INSCRIPTION : hashage du mot de passe
-
-String motDePasseHash = passwordEncoder.encode(compte.getMotDePasse());
-compte.setMotDePasse(motDePasseHash);
-
-// CONNEXION : vérification du mot de passe
-
-if (!passwordEncoder.matches(motDePasse, compte.getMotDePasse())) {
-    throw new IllegalArgumentException("Mot de passe incorrect.");
-}
-```
----
 
 ### 4.2 Communauté : Groupes & Recommandations Intelligentes
 Cette fonctionnalité repose sur une logique de filtrage côté serveur pour proposer du contenu pertinent sans surcharger la base de données par des requêtes complexes.
 
 #### Règles Métiers :
-    * **Correspondance Hobbies :** Un groupe n'est recommandé que si sa catégorie correspond à l'un des "Hobbies" définis par l'utilisateur.
-    * **Exclusion des Adhésions :** Un utilisateur ne doit jamais se voir recommander un groupe dont il est déjà membre.
-    * **Lazy Loading :** Le chargement des listes de membres est optimisé pour éviter les boucles récursives JSON.
+* **Accès Authentifié :** Seuls les utilisateurs connectés peuvent accéder à la liste des groupes recommandés.
+* **Correspondance Hobbies :** Un groupe n'est recommandé que si sa catégorie correspond à l'un des "Hobbies" définis par l'utilisateur.
+* **Exclusion des Adhésions :** Un utilisateur ne doit jamais se voir recommander un groupe dont il est déjà membre.
+* **Lazy Loading :** Le chargement des listes de membres est optimisé pour éviter les boucles récursives JSON.
 
 #### Classes Impliquées :
-    * `GroupeService` (Logique métier)
-    * `GroupeRepository` (Accès données)
-    * `Compte` (Entité utilisateur contenant le `Set<String> hobbies`)
-    * `Groupe` (Entité contenant la catégorie et la liste des membres)
+* `GroupeService` (Logique métier)
+* `GroupeRepository` (Accès données)
+* `Compte` (Entité utilisateur contenant le `Set<String> hobbies`)
+* `Groupe` (Entité contenant la catégorie et la liste des membres)
 #### Algorithme & Logique Backend :
-  Le backend implémente un algorithme de filtrage via l'API **Java Stream** dans `GroupeService`. Il récupère tous les groupes et applique un pipeline de filtres pour exclure les groupes déjà rejoints et ne garder que ceux correspondant aux centres d'intérêt.
+  * Le backend implémente un algorithme de filtrage via l'API **Java Stream** dans `GroupeService`. Il récupère tous les groupes et applique un pipeline de filtres pour exclure les groupes déjà rejoints et ne garder que ceux correspondant aux centres d'intérêt.
+  * La recommandation s'appuie sur la correspondance directe entre les attributs de l'utilisateur (ses centres d'intérêt) et les attributs des groupes (leur catégorie).
 
-```java
-    // Extrait de GroupeService.java
-    public List<Groupe> getRecommandations(Long userId) {
-        Compte user = compteRepository.findById(userId).orElseThrow();
-        Set<String> userHobbies = user.getHobbies();
-        List<Groupe> allGroupes = groupeRepository.findAll();
-
-        return allGroupes.stream()
-                // 1. Filtrer : On garde seulement si la catégorie correspond aux hobbies
-                .filter(g -> g.getCategorie() != null && userHobbies.contains(g.getCategorie()))
-                // 2. Filtrer : On exclut les groupes où je suis déjà membre
-                .filter(g -> g.getMembres().stream().noneMatch(m -> m.getId().equals(userId)))
-                .collect(Collectors.toList());
-    }
-```    
-            
----
+ ![img.png](images/recommendations.png)
+Aperçu de la page complète des groupes 
+![img.png](images/pageGroupes.png)
 ### 4.3 Réseau Social : Proches
 La gestion des proches utilise une entité de liaison dédiée pour gérer la relation asymétrique ou symétrique entre deux comptes.
 
 #### Règles Métiers :
-    * **Interdiction d'auto-ajout :** Un utilisateur ne peut pas s'ajouter lui-même en proche.
-    * **Unicité du lien :** Le système empêche la création de doublons si une relation existe déjà.
-    * **Notification :** L'ajout d'un proche déclenche automatiquement une notification.
+* **Interdiction d'auto-ajout :** Un utilisateur ne peut pas s'ajouter lui-même en proche.
+* **Unicité du lien :** Le système empêche la création de doublons si une relation existe déjà.
+* **Notification :** L'ajout d'un proche déclenche automatiquement une notification.
 
 #### Classes Impliquées :
-    * `LienService` (Gestion de la création et suppression)
-    * `Lien` (Entité de jointure `Compte` source -> `Compte` cible)
-    * `CompteService` (Pour la recherche utilisateur)
-    * `NotificationService` (Trigger événementiel)
+* `LienService` (Gestion de la création et suppression)
+* `Lien` (Entité de jointure `Compte` source -> `Compte` cible)
+* `CompteService` (Pour la recherche utilisateur)
+* `NotificationService` (Trigger événementiel)
 #### Algorithme & Logique Backend :
   * **Création :** La méthode `creerLien` effectue d'abord une validation via `existsByCompteSourceIdAndCompteCibleId`. Si valide, l'entité `Lien` est persistée et le service appelle `notificationService.create`.
   * **Recherche :** Utilisation des **JPA Query Methods** optimisées : `findAllByNomIgnoreCaseAndPrenomIgnoreCase` dans le `CompteRepository` pour garantir la performance de la barre de recherche.
 
-    ```java
-    // Extrait de LienService.java
-    public Optional<Lien> creerLien(Long idSource, Long idCible) {
-        // 1. Règle métier : On empêche de s'ajouter soi-même
-        if (idSource.equals(idCible)) return Optional.empty();
-
-        // 2. Règle métier : Vérification d'unicité
-        if (lienRepository.existsByCompteSourceIdAndCompteCibleId(idSource, idCible)) {
-            return Optional.empty();
-        }
-
-        // Création et Notification
-        Lien lien = new Lien(source.get(), cible.get());
-        Lien saved = lienRepository.save(lien);
-
-        notificationService.create(
-                cible.get().getId(),
-                NotificationType.FRIEND_ADDED,
-                source.get().getNom() + " vous a ajouté comme proche",
-                "/proches.html#mes-proches"
-        );
-        return Optional.of(saved);
-    }
-    ```
+    
 ---
 ### 4.4 Organisation : Agenda Partagé
 L'agenda repose sur une agrégation dynamique des événements de l'utilisateur et de ses proches.
 
 ##### Règles Métiers :
-    * **Accès authentifié** : seuls les utilisateurs connectés peuvent consulter et gérer l’agenda.
-    * **Visibilité Partagée :** La vue "Proches" doit afficher les événements de l'utilisateur connecté **ET** ceux de ses proches.
-    * **Agrégation SQL :** Utilisation d'une clause `IN` pour récupérer tous les événements en une seule requête performante.
-    * **Notification automatique** : l’ajout d’un événement déclenche une notification pour tous les proches.
+* **Accès authentifié** : seuls les utilisateurs connectés peuvent consulter et gérer l’agenda.
+* **Visibilité Partagée :** La vue "Proches" doit afficher les événements de l'utilisateur connecté **ET** ceux de ses proches.
+* **Agrégation SQL :** Utilisation d'une clause `IN` pour récupérer tous les événements en une seule requête performante.
+* **Notification automatique** : l’ajout d’un événement déclenche une notification pour tous les proches.
 #### Classes Impliquées :
-     * - `EvenementService` (logique métier)
-     * - `EvenementRepository` (accès aux données)
-     * - `LienService` (récupération des identifiants des proches)
-     * - `NotificationService` (envoi des notifications)
-     * - `Evenement` (entité)
+* `EvenementService` (logique métier)
+* `EvenementRepository` (accès aux données)
+* `LienService` (récupération des identifiants des proches)
+* `NotificationService` (envoi des notifications)
+* `Evenement` (entité)
 
 #### Fonctionnalités :
 ##### Gestion des événements
@@ -308,70 +259,39 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
   - les événements de l’utilisateur,
   - les événements de ses proches.
 - Les événements sont affichés de manière simultanée afin de faciliter la planification commune.
-
+Aperçu de la page complète de l'agenda
+- ![img.png](images/agenda.png)
 #### Algorithme & Logique Backend :
   **Agrégation (Vue Proches) :** La méthode `getSharedAvailability(Long myUserId)` fonctionne en deux temps :
   1.  Appel de `lienService.getProcheIds(myUserId)` pour obtenir une liste d'IDs (ex: `[ID_Ami1, ID_Ami2]`).
   2.  Ajout de l'ID de l'utilisateur courant à cette liste.
   3.  Exécution d'une requête JPA avec clause `IN` : `findByUtilisateurIdIn(List<Long> ids)` qui récupère en une seule requête SQL tous les événements concernés.
-    ```java
-    // Extrait de EvenementService.java
-    public List<Evenement> getSharedAvailability(Long myUserId) {
-        // 1. Récupérer les IDs des amis via le LienService
-        List<Long> procheIds = lienService.getProcheIds(myUserId);
-        
-        // 2. Ajouter mon propre ID à la liste
-        procheIds.add(myUserId);
+![agendaPuml.png](images/agendaPuml.png)
 
-        // 3. Requête optimisée (SELECT * FROM Event WHERE user_id IN (...))
-        return evenementRepository.findByUtilisateurIdIn(procheIds);
-    }
-    ```
 ---
 ### 4.5 Vie Quotidienne : Cuisine
 Le module cuisine combine une génération procédurale de menus et une gestion de favoris.
 
 #### Règles Métiers :
-    * **Génération Aléatoire (Menu Semaine) :** Le système génère une combinaison unique de recettes pour chaque demande, couvrant 7 jours (Midi et Soir).
-    * **Rotation :** Si le nombre de recettes en base est insuffisant pour couvrir 14 repas (7 jours x 2), l'algorithme doit boucler sur les recettes existantes pour remplir la grille.
-    * **Favoris Persistants :** Les recettes favorites sont liées au compte utilisateur via une relation Many-to-Many.
+* **Génération Aléatoire (Menu Semaine) :** Le système génère une combinaison unique de recettes pour chaque demande, couvrant 7 jours (Midi et Soir).
+* **Rotation :** Si le nombre de recettes en base est insuffisant pour couvrir 14 repas (7 jours x 2), l'algorithme doit boucler sur les recettes existantes pour remplir la grille.
+* **Favoris Persistants :** Les recettes favorites sont liées au compte utilisateur via une relation Many-to-Many.
+* **Unicité des Favoris :** Une recette ne peut être ajoutée qu'une seule fois aux favoris d'un utilisateur (propriété du `Set`).
+* ** Ajout de la recette à l'agenda :** L'utilisateur peut ajouter une recette sélectionnée directement à son agenda sous forme d'événement.
 
 #### Classes Impliquées :
-    * `RecetteService` (Logique de génération)
-    * `CompteService` (Gestion des favoris)
-    * `Recette` (Entité métier avec ingrédients et catégories)
+* `RecetteService` (Logique de génération)
+* `CompteService` (Gestion des favoris)
+* `Recette` (Entité métier avec ingrédients et catégories)
 
 #### Algorithme & Logique Backend :
-    * **Génération du Menu :** La méthode `getMenuDeLaSemaine` récupère toutes les recettes, utilise `Collections.shuffle(all)` pour mélanger la liste aléatoirement, puis itère sur un tableau de jours (`Lundi`...`Dimanche`). Elle remplit une `Map` imbriquée (`Jour` -> `Midi/Soir`) en utilisant un index qui se réinitialise à 0 si la fin de la liste est atteinte.
-    * **Favoris :** Les méthodes `ajouterFavori` et `retirerFavori` manipulent directement la collection `Set<Recette> recettesFavorites` de l'entité `Compte`, assurant qu'une recette ne peut pas être en favori deux fois (propriété du `Set`).
+* **Génération du Menu :** La méthode `getMenuDeLaSemaine` récupère toutes les recettes, utilise `Collections.shuffle(all)` pour mélanger la liste aléatoirement, puis itère sur un tableau de jours (`Lundi`...`Dimanche`). Elle remplit une `Map` imbriquée (`Jour` -> `Midi/Soir`) en utilisant un index qui se réinitialise à 0 si la fin de la liste est atteinte.
+* **Favoris :** Les méthodes `ajouterFavori` et `retirerFavori` manipulent directement la collection `Set<Recette> recettesFavorites` de l'entité `Compte`, assurant qu'une recette ne peut pas être en favori deux fois (propriété du `Set`)
 
-```java
-    // Extrait de RecetteService.java
-    public Map<String, Map<String, Recette>> getMenuDeLaSemaine() {
-        List<Recette> all = recetteRepository.findAll();
-        Collections.shuffle(all); // Mélange aléatoire pour varier les menus
+![img.png](images/recette.png)
 
-        Map<String, Map<String, Recette>> menuSemaine = new LinkedHashMap<>();
-        String[] jours = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-        int index = 0;
-
-        for (String jour : jours) {
-            Map<String, Recette> repasJour = new HashMap<>();
-
-            // Distribution Midi / Soir avec boucle (index reset)
-            if (index < all.size()) repasJour.put("midi", all.get(index++));
-            else index = 0; 
-
-            if (index < all.size()) repasJour.put("soir", all.get(index++));
-            else index = 0;
-
-            menuSemaine.put(jour, repasJour);
-        }
-        return menuSemaine;
-    }
-    
-```    
-            
+Aperçu de la page complète des recettes
+![img.png](images/page_recette.png)
 ---
 
 
@@ -382,11 +302,11 @@ Le module cuisine combine une génération procédurale de menus et une gestion 
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
 
 #### Règles Métiers :
-    * - **Accès authentifié** : seules les utilisateurs connectés peuvent créer, modifier ou supprimer une annonce.
-    * - **Propriété des annonces** : un utilisateur ne peut modifier ou supprimer que ses propres annonces.
-    * - **Filtrage par catégorie** : les annonces peuvent être filtrées par catégorie.
-    * - **Traçabilité** : chaque annonce conserve sa date de publication et son nombre de vues.
-    * - **Notification automatique** : la création d’une annonce déclenche une notification pour les proches de l’auteur.
+* **Accès authentifié** : seules les utilisateurs connectés peuvent créer, modifier ou supprimer une annonce.
+* **Propriété des annonces** : un utilisateur ne peut modifier ou supprimer que ses propres annonces.
+* **Filtrage par catégorie** : les annonces peuvent être filtrées par catégorie.
+* **Traçabilité** : chaque annonce conserve sa date de publication et son nombre de vues.
+* **Notification automatique** : la création d’une annonce déclenche une notification pour les proches de l’auteur.
 
 #### Fonctionnalités :
 #### Consultation et recherche des annonces
@@ -419,12 +339,12 @@ Tout utilisateur authentifié peut créer une annonce.
 - Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
 
 #### Classes Impliquées :
-     * - `AnnonceController` (endpoints REST)
-     * - `AnnonceService` (logique métier)
-     * - `AnnonceRepository` (accès aux données)
-     * - `Annonce` (entité)
-     * - `LienRepository` (récupération des proches)
-     * - `NotificationService` (création des notifications)
+*  `AnnonceController` (endpoints REST)
+* `AnnonceService` (logique métier)
+* `AnnonceRepository` (accès aux données)
+* `Annonce` (entité)
+* `LienRepository` (récupération des proches)
+* `NotificationService` (création des notifications)
 
 #### Algorithme & Logique Backend :
 
@@ -440,7 +360,7 @@ Lors de la création d’une annonce :
 4. Les proches de l’auteur sont récupérés via le `LienRepository`.
 5. Une notification est envoyée à chaque proche.
 
-```java
+``` java
 Annonce saved = service.save(annonce);
 
 List<Lien> liens = lienRepository.findByCompteSourceId(utilisateurId);
@@ -462,11 +382,11 @@ for (Lien lienProche : liens) {
 Le système de notifications permet d’informer les utilisateurs des événements importants liés à leurs interactions sur la plateforme **EtudLife**.  
 
 #### Règles Métiers :
-    * - **Notification ciblée** : chaque notification est associée à un utilisateur précis.
-    * - **Statut de lecture** : une notification peut être marquée comme lue ou non lue(en bleu==> n'est pas lue, en gris==> est lue)
-    * - **Badge dynamique** : le nombre de notifications non lues est affiché sous forme d’un badge rouge.
-    * - **Historisation** : toutes les notifications sont conservées et consultables.
-    * - **Ordre chronologique** : les notifications sont affichées de la plus récente à la plus ancienne.
+* **Notification ciblée** : chaque notification est associée à un utilisateur précis.
+* **Statut de lecture** : une notification peut être marquée comme lue ou non lue(en bleu==> n'est pas lue, en gris==> est lue)
+* **Badge dynamique** : le nombre de notifications non lues est affiché sous forme d’un badge rouge.
+* **Historisation** : toutes les notifications sont conservées et consultables.
+* **Ordre chronologique** : les notifications sont affichées de la plus récente à la plus ancienne.
 
 #### Types de notifications :
 
@@ -502,11 +422,11 @@ Chaque notification contient :
 
 
 #### Classes Impliquées :
-     * - `NotificationController` (endpoints REST)
-     * - `NotificationService` (logique métier)
-     * - `NotificationRepository` (accès aux données)
-     * - `Notification` (entité)
-     * - `NotificationType` (énumération des types de notification)
+*  `NotificationController` (endpoints REST)
+* `NotificationService` (logique métier)
+*  `NotificationRepository` (accès aux données)
+*  `Notification` (entité)
+*  `NotificationType` (énumération des types de notification)
 
 #### Algorithme & Logique Backend :
 
@@ -524,7 +444,7 @@ FROM notification
 WHERE user_id = ? 
 AND is_read = false;
 
-```java
+``` java
 // Création d'une notification
 Notification n = new Notification(userId, type, message, link);
 repo.save(n);

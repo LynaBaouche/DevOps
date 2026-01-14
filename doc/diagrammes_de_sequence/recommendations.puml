@@ -1,0 +1,49 @@
+@startuml
+title Séquence - Recommandation de Groupes
+actor "Utilisateur" as User
+participant "GroupeController" as Controller
+participant "GroupeService" as Service
+participant "CompteRepository" as UserRepo
+participant "GroupeRepository" as GroupeRepo
+database "Base de Données" as DB
+
+User -> Controller : GET /groupes/recommandations/{userId}
+activate Controller
+
+Controller -> Service : getRecommandations(userId)
+activate Service
+
+' Récupération de l'utilisateur pour ses hobbies
+Service -> UserRepo : findById(userId)
+activate UserRepo
+UserRepo -> DB : SELECT * FROM compte WHERE id = ...
+activate DB
+DB --> UserRepo : Compte (avec Hobbies)
+deactivate DB
+UserRepo --> Service : utilisateur
+deactivate UserRepo
+
+' Récupération de tous les groupes
+Service -> GroupeRepo : findAll()
+activate GroupeRepo
+GroupeRepo -> DB : SELECT * FROM groupe
+activate DB
+DB --> GroupeRepo : List<Groupe>
+deactivate DB
+GroupeRepo --> Service : tousLesGroupes
+deactivate GroupeRepo
+
+' Logique de filtrage (Algorithme)
+loop Pour chaque Groupe
+    Service -> Service : Vérifier si user.hobbies contient groupe.categorie
+    alt Correspondance trouvée
+        Service -> Service : Ajouter à la liste recommandée
+    end
+end
+
+Service --> Controller : List<Groupe> (Recommandés)
+deactivate Service
+
+Controller --> User : 200 OK (JSON List)
+deactivate Controller
+@enduml
