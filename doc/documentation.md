@@ -130,6 +130,8 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
 * **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`, `ANNONCE`, `NEW_MESSAGE`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
 
 ![Diagramme de Classe](diagram_model.png)
+Le diagramme étant complexe, nous recommandons de l'ouvrir dans un nouvel onglet :
+🔗 **[Voir le Diagramme de Classes Complet (Zoomable)](./doc/diagram-zoomabe.svg)**
 
 ---
 

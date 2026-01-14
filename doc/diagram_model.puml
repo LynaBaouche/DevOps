@@ -1,6 +1,10 @@
 @startuml
-
+skinparam classAttributeIconSize 0
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam shadowing false
+
+
 package com.etudlife {
 	class com.etudlife.EtudlifeApp {
 		--
