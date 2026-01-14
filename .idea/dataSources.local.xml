@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-253.29346.240">
+  <component name="dataSourceStorageLocal" created-in="IU-252.26830.84">
     <data-source name="etudlife_db@localhost" uuid="5bb5cf03-9dbf-4619-aaf6-d4f0b0361ab4">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
       <secret-storage>master_key</secret-storage>

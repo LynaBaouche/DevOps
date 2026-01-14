@@ -1,38 +1,97 @@
 @startuml
-title Agenda - Gestion des événements
+title Agenda - Gestion des événements (EtudLife)
 
 actor Utilisateur
 participant "Front Web" as Front
-participant "AgendaController" as AgendaCtrl
-participant "AgendaService" as AgendaSvc
-participant "AgendaRepository" as AgendaRepo
+participant "EvenementController" as EvCtrl
+participant "EvenementService" as EvSvc
+participant "EvenementRepository" as EvRepo
+participant "LienService" as LienSvc
+participant "NotificationService" as NotifSvc
 database "BDD" as DB
 
-' ---------- CREATION / MODIFICATION ----------
-== Création / Modification d'événement ==
+' ---------- CREATION ----------
+== Création d'un événement ==
 
-Utilisateur -> Front : Saisir / modifier événement\n+ cliquer "Enregistrer"
-Front -> AgendaCtrl : POST /api/agenda\nou PUT /api/agenda/{id}
-AgendaCtrl -> AgendaSvc : enregistrerEvenement(dto, compteCourant)
-AgendaSvc -> AgendaSvc : Valider dates\nAssocier au compte
-AgendaSvc -> AgendaRepo : save(evenement)
-AgendaRepo -> DB : INSERT ou UPDATE événement
-DB --> AgendaRepo : Evenement avec id
-AgendaRepo --> AgendaSvc : Evenement enregistré
-AgendaSvc --> AgendaCtrl : Evenement enregistré
-AgendaCtrl --> Front : 200/201 + JSON événement
+Utilisateur -> Front : Saisir événement\n+ cliquer "Enregistrer"
+Front -> EvCtrl : POST /api/evenements/{userId}\nJSON Evenement
+EvCtrl -> "CompteRepository" : findById(userId)
+"CompteRepository" -> DB : SELECT compte WHERE id = userId
+DB --> "CompteRepository" : Compte
+"CompteRepository" --> EvCtrl : Compte
+EvCtrl -> EvSvc : add(evenement avec utilisateur)
+
+EvSvc -> EvRepo : save(evenement)
+EvRepo -> DB : INSERT événement
+DB --> EvRepo : Evenement avec id
+EvRepo --> EvSvc : Evenement enregistré
+
+EvSvc -> LienSvc : getProcheIds(userId)
+LienSvc -> DB : SELECT proches de userId
+DB --> LienSvc : liste ids proches
+LienSvc --> EvSvc : List<Long> procheIds
+
+EvSvc -> NotifSvc : create(procheId, NEW_EVENT,\n"{prenom nom} a ajouté un nouvel événement", "/agenda.html") (boucle sur proches)
+NotifSvc -> DB : INSERT notifications
+
+EvSvc --> EvCtrl : Evenement enregistré
+EvCtrl --> Front : 201 + JSON événement
 Front --> Utilisateur : Afficher événement dans l'agenda
 
-' ---------- CONSULTATION ----------
-== Consultation de l'agenda ==
+' ---------- MODIFICATION ----------
+== Modification d'un événement ==
+
+Utilisateur -> Front : Modifier événement existant\n+ cliquer "Enregistrer"
+Front -> EvCtrl : PUT /api/evenements/{id}\nJSON Evenement modifié
+EvCtrl -> EvRepo : findById(id)
+EvRepo -> DB : SELECT événement WHERE id = ?
+DB --> EvRepo : Evenement
+EvRepo --> EvCtrl : Evenement
+
+EvCtrl -> EvCtrl : Mettre à jour titre, description,\n dates, couleur
+EvCtrl -> EvRepo : save(evenement)
+EvRepo -> DB : UPDATE événement
+DB --> EvRepo : Evenement mis à jour
+EvRepo --> EvCtrl : Evenement sauvegardé
+EvCtrl --> Front : 200 + JSON événement
+Front --> Utilisateur : Mettre à jour l'affichage
+
+' ---------- SUPPRESSION ----------
+== Suppression d'un événement ==
+
+Utilisateur -> Front : Cliquer "Supprimer"
+Front -> EvCtrl : DELETE /api/evenements/{id}
+EvCtrl -> EvRepo : existsById(id)
+EvRepo -> DB : SELECT 1 FROM événements WHERE id = ?
+DB --> EvRepo : true/false
+EvRepo --> EvCtrl : existe ?
+
+EvCtrl -> EvRepo : deleteById(id) [si existe]
+EvRepo -> DB : DELETE FROM événements WHERE id = ?
+EvRepo --> EvCtrl : (void)
+EvCtrl --> Front : 204 No Content ou 404 Not Found
+Front --> Utilisateur : Retirer l'événement de l'affichage
+
+' ---------- CONSULTATION (partagée) ----------
+== Consultation des événements partagés ==
 
 Utilisateur -> Front : Ouvrir l'agenda
-Front -> AgendaCtrl : GET /api/agenda\n(avec filtre compteCourant)
-AgendaCtrl -> AgendaRepo : findByCompte(compteCourant)
-AgendaRepo -> DB : SELECT événements WHERE compte_id = ?
-DB --> AgendaRepo : Liste événements
-AgendaRepo --> AgendaCtrl : Liste événements
-AgendaCtrl --> Front : JSON événements
-Front --> Utilisateur : Afficher agenda complet
+Front -> EvCtrl : GET /api/evenements/shared/{userId}
+EvCtrl -> EvSvc : getSharedAvailability(userId)
+
+EvSvc -> LienSvc : getProcheIds(userId)
+LienSvc -> DB : SELECT proches de userId
+DB --> LienSvc : liste ids proches
+LienSvc --> EvSvc : List<Long> procheIds (+ userId)
+
+EvSvc -> EvRepo : findByUtilisateurIdIn(procheIds + userId)
+EvRepo -> DB : SELECT événements WHERE utilisateur_id IN (...)
+DB --> EvRepo : Liste événements
+EvRepo --> EvSvc : Liste événements
+EvSvc --> EvCtrl : Liste événements
+
+EvCtrl -> EvCtrl : Masquer titre/description\npour événements des proches\n(remplacer par \"Occupé\")
+EvCtrl --> Front : JSON événements (filtrés)
+Front --> Utilisateur : Afficher agenda partagé
 
 @enduml
