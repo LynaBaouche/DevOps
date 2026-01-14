@@ -523,7 +523,8 @@ package com.etudlife {
 			+ajouter(userId: Long, evenement: Evenement): Evenement
 			+getEvenements(userId: Long): List<Evenement>
 			+getSharedEvents(userId: Long): List<Evenement>
-			+supprimer(id: Long)
+			+modifier(id: Long, evenementModifie: Evenement): ResponseEntity<Evenement>
+			+supprimer(id: Long): ResponseEntity<Void>
 		}
 
 		class com.etudlife.controller.GroupeController {
