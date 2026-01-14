@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.etudlife.model.NotificationType;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -68,8 +69,10 @@ public class LienService {
                 .orElse(List.of());
     }
 
-    public void supprimerLien(Long id) {
-        lienRepository.deleteById(id);
+    @Transactional
+    public void supprimerLien(Long idSource, Long idCible) {
+        // On supprime le lien dans le sens "Source -> Cible" (celui que je vois)
+        lienRepository.deleteByCompteSourceIdAndCompteCibleId(idSource, idCible);
     }
     /*
     * Récupère la liste des IDs de tous les comptes que l'utilisateur a ajoutés en proche.

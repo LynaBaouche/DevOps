@@ -1025,3 +1025,33 @@ body {
     border: 1px solid #e5e7eb; /* Bordure subtile */
     white-space: nowrap;       /* Empêche le nom de se couper */
 }
+/* Liste des proches */
+.proches-list {
+    list-style: none;
+    padding: 0;
+}
+
+.proche-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+.delete-proche-btn {
+    color: #9ca3af; /* Gris discret */
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 10px;
+    line-height: 1;
+    padding: 0 5px;
+}
+
+.delete-proche-btn:hover {
+    color: #ef4444; /* Rouge au survol */
+    background-color: #fee2e2;
+    border-radius: 4px;
+}

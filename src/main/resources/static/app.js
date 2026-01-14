@@ -758,15 +758,51 @@ async function afficherProches() {
         }
 
         prochesDiv.innerHTML = `
-            <ul>
-                ${liens.map(l => `
-                    <li>${l.compteCible.prenom} ${l.compteCible.nom}</li>
-                `).join("")}
+            <ul class="proches-list">
+                            ${liens.map(l => `
+                                <li class="proche-item">
+                                    <span>👤 ${l.compteCible.prenom} ${l.compteCible.nom}</span>
+                                    <span class="delete-proche-btn" onclick="supprimerProche(${l.compteCible.id})" title="Retirer ce proche">
+                                        &times;
+                                    </span>
+                                </li>
+                            `).join("")}
             </ul>
         `;
     } catch (err) {
         prochesDiv.innerHTML = "<p>Erreur de chargement des proches.</p>";
         console.error(err);
+    }
+}
+async function supprimerProche(idCible) {
+    if (!confirm("Voulez-vous vraiment retirer cette personne de vos proches ?")) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/liens?idSource=${currentUser.id}&idCible=${idCible}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            // Mise à jour immédiate de l'affichage
+            await afficherProches();
+
+            // Si on est sur le dashboard (index.html), on met aussi à jour la colonne de droite
+            if (typeof renderDashboardRightColumn === "function") {
+                await renderDashboardRightColumn();
+            }
+
+            // Si on est sur la page de recherche, on relance la recherche pour réactiver le bouton "Ajouter"
+            const formSearch = document.getElementById("form-search-compte");
+            if(formSearch) {
+                formSearch.dispatchEvent(new Event('submit'));
+            }
+
+        } else {
+            alert("Erreur lors de la suppression.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erreur réseau.");
     }
 }
 /*  REJOINDRE UN GROUPE

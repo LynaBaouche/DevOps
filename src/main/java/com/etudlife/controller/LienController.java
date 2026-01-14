@@ -27,8 +27,8 @@ public class LienController {
         return lienService.getLiensPourCompte(idSource);
     }
 
-    @DeleteMapping("/{id}")
-    public void supprimerLien(@PathVariable Long id) {
-        lienService.supprimerLien(id);
+    @DeleteMapping
+    public void supprimerLien(@RequestParam Long idSource, @RequestParam Long idCible) {
+        lienService.supprimerLien(idSource, idCible);
     }
 }
