@@ -533,16 +533,84 @@ repo.save(n);
 long unread = repo.countByUserIdAndIsReadFalse(userId);
 ```
 ---
+C'est une excellente idée de documenter la messagerie en suivant le même modèle. Cela donne une cohérence professionnelle à ton rapport.
+
+En me basant sur ton code (notamment `MessageService`, `MessageController`, et le frontend `messages.js`), voici une proposition de rédaction pour ton fichier `.md`. J'ai structuré le contenu pour mettre en valeur les règles métiers (comme le lien avec les "Proches") et les fonctionnalités techniques (Polling, Responsive).
+
+Voici le contenu à copier-coller :
+
+---
+
+### 4.9 Système de Messagerie Instantanée
+
+La messagerie instantanée est une composante centrale d'**EtudLife** qui favorise l'entraide et la communication. Elle permet aux étudiants d'échanger en temps réel avec leurs contacts ajoutés (les "Proches").
+
+#### Règles Métiers :
+
+* **Cercle de confiance** : un utilisateur ne peut initier une conversation qu'avec une personne faisant partie de sa liste de **Proches**.
+* **Confidentialité** : les messages sont privés et visibles uniquement par l'expéditeur et le destinataire.
+* **Intégrité** : un utilisateur peut supprimer ses propres messages, mais pas ceux de son interlocuteur.
+* **Continuité** : l'historique des conversations est persistant, un utilisateur retrouve ses anciens échanges (sauf ceux supprimés) à chaque connexion.
+* **Statut de présence** : un indicateur visuel permet de savoir si l'interlocuteur est actuellement **en ligne** ou hors ligne.
+
+#### Fonctionnalités Principales :
+
+##### 1. Gestion des Conversations
+
+* **Vue synthétique** : L'écran principal affiche la liste de toutes les conversations actives.
+* **Aperçu intelligent** : Pour chaque conversation, le système affiche le **dernier message échangé** ainsi que sa date, permettant de voir en un coup d'œil les discussions récentes.
+* **Tri chronologique** : Les conversations ayant l'activité la plus récente apparaissent en haut de la liste.
+
+##### 2. Échanges et Interactions
+
+* **Envoi de messages** : L'envoi est instantané. Dès qu'un message est envoyé, une **notification** (`NEW_MESSAGE`) est déclenchée pour avertir le destinataire s'il n'est pas sur la page.
+* **Suppression** : Un clic droit (ou appui long sur mobile) sur un message envoyé permet de le supprimer définitivement de la conversation via un menu contextuel.
+* **Statut En Ligne** : Un système de "Heartbeat" (battement de cœur) signale la présence de l'utilisateur au serveur, mettant à jour son statut en temps réel pour ses amis.
+
+##### 3. Interface Responsive (Mobile & Desktop)
+
+L'interface a été conçue pour s'adapter aux usages modernes :
+
+* **Version PC** : Une vue en deux colonnes (liste des contacts à gauche, chat actif à droite) pour une navigation fluide.
+* **Version Mobile** : Une navigation fluide où la liste des conversations occupe tout l'écran, et bascule vers la vue "Chat" lors de la sélection d'un contact, avec un bouton de retour intuitif.
+
+#### Aperçu de l'interface :
+
+**Version Ordinateur (Vue globale)**
+
+> *La vue classique permettant de naviguer entre les conversations tout en discutant.*
+<img src="/doc/images/msg_laptop.png" alt="Interface Messagerie Desktop" width="100%">
+
+**Version Mobile (Liste & Discussion)**
+
+> *L'interface s'adapte aux petits écrans en séparant la liste des contacts et la zone de discussion.*
+
+<div style="display: flex; gap: 10px;">
+<img src="/doc/images/msg_mobile1.png" alt="Liste Mobile" width="45%">
+<img src="/doc/images/msg_mobile2.png" alt="Chat Mobile" width="45%">
+</div>
+
+#### Implémentation Technique :
+
+Le système repose sur une architecture optimisée pour la réactivité :
+
+* **API REST** : Des endpoints dédiés (`/api/conversations`) gèrent la récupération et l'envoi des données.
+* **Polling Dynamique** : Le frontend interroge périodiquement le serveur pour récupérer les nouveaux messages sans recharger la page (`getNewMessagesAfter`), garantissant une expérience proche du temps réel.
+* **SQL Natif Optimisé** : Une requête complexe avec jointures est utilisée pour construire l'aperçu des conversations (récupération du dernier message et du bon interlocuteur en une seule requête) afin d'assurer de hautes performances.
+---
+
 ## 5. Matrice de Responsabilités & Réalisations
 
 | Fonctionnalité                                          | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
 |---------------------------------------------------------|:------------:|:-------------------:|:-----------:|:------------:|
-| Architecture Backend                                    | ✅ | ⬜ | ✅ | ⬜ |
+| Architecture Backend                                    | ✅ | ✅ | ✅ | ⬜ |
+| Gestion BDD                                             | ⬜ | ✅ | ⬜ | ⬜ |
 | Gestion des Releases & CI/CD                            | ✅ | ⬜ | ⬜ | ⬜ |
 | Documentation & UML                                     | ✅ | ⬜ | ✅ | ⬜ |
 | Organisation & Pilotage Agile                           | ✅ | ⬜ | ✅ | ⬜ |
 | Agenda (Mensuel / Hebdo / Proches)                      | ✅ | ⬜ | ✅ | ⬜ |
 | Proches                                                 | ✅ | ⬜ | ⬜ | ⬜ |
+| Messagerie                                              | ⬜ | ✅ | ⬜ | ⬜ |
 | Groupes & Publications                                  | ✅ | ⬜ | ⬜ | ⬜ |
 | Recettes                                                | ✅ | ⬜ | ⬜ | ⬜ |
 | Système de notifications                                | ⬜ | ⬜ | ✅ | ⬜ |
