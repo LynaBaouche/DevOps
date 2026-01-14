@@ -10,6 +10,11 @@ public class ReservationSalle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // Dans ReservationSalle.java
+    private Integer nbPersonnes;
+
+    public Integer getNbPersonnes() { return nbPersonnes; }
+    public void setNbPersonnes(Integer nbPersonnes) { this.nbPersonnes = nbPersonnes; }
 
     private Long idUser;
     private String nomComplet;
