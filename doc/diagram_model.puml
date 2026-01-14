@@ -266,6 +266,8 @@ package com.etudlife {
 			+setId(id: Long)
 			+getIdUser(): Long
 			+setIdUser(idUser: Long)
+			+getNbPersonnes(): Integer
+			+setNbPersonnes(nbPersonnes: Integer)
 			+getNomComplet(): String
 			+setNomComplet(nomComplet: String)
 			+getNumeroEtudiant(): String
