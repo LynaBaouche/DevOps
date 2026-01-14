@@ -254,6 +254,26 @@ package com.etudlife {
 			+setUserId(userId: Long)
 		}
 
+		class com.etudlife.model.ReservationSalle {
+			--
+			+getDateReservation(): LocalDate
+			+setDateReservation(dateReservation: LocalDate)
+			+getDuree(): String
+			+setDuree(duree: String)
+			+getHeureDebut(): LocalTime
+			+setHeureDebut(heureDebut: LocalTime)
+			+getId(): Long
+			+setId(id: Long)
+			+getIdUser(): Long
+			+setIdUser(idUser: Long)
+			+getNomComplet(): String
+			+setNomComplet(nomComplet: String)
+			+getNumeroEtudiant(): String
+			+setNumeroEtudiant(numeroEtudiant: String)
+			+getZone(): String
+			+setZone(zone: String)
+		}
+
 	}
 
 	package com.etudlife.dto {
@@ -534,6 +554,12 @@ package com.etudlife {
 			+updateProfil(id: Long, payload: Compte): ResponseEntity<?>
 		}
 
+		class com.etudlife.controller.SalleController {
+			--
+			+getMesSalles(userId: Long): List<ReservationSalle>
+			+reserver(res: ReservationSalle): ResponseEntity<String>
+		}
+
 		class com.etudlife.controller.LivreController {
 			--
 			+getAllLivres(): List<LivreBu>
@@ -629,6 +655,11 @@ package com.etudlife {
 			+findByPrixEstimeLessThanEqual(prixMax: Double): List<Recette>
 		}
 
+		interface com.etudlife.repository.ReservationSalleRepository {
+			--
+			+findByIdUser(idUser: Long): List<ReservationSalle>
+		}
+
 		interface com.etudlife.repository.AnnonceRepository {
 			--
 			+findByCategorie(categorie: String): List<Annonce>
@@ -693,6 +724,7 @@ com.etudlife.controller.EvenementController --* com.etudlife.service.LienService
 com.etudlife.controller.GroupeController --* com.etudlife.service.GroupeService
 com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
 com.etudlife.controller.CompteController --* com.etudlife.repository.CompteRepository
+com.etudlife.controller.SalleController --* com.etudlife.repository.ReservationSalleRepository
 com.etudlife.controller.LivreController --* com.etudlife.repository.LivreBuRepository
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
 com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
