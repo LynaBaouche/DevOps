@@ -2,22 +2,80 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Services – BU</title>
+    <title>Services – BU | EtudLife</title>
     <link rel="stylesheet" href="bu.css">
     <link rel="stylesheet" href="../header.css">
-    <link rel="stylesheet" href="subheader.css">
-</head>
 
+    <style>
+        .services-simple-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .service-item {
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Style des titres cliquables */
+        .service-link-title {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #1e293b;
+            transition: color 0.3s ease;
+        }
+
+        .service-link-title:hover {
+            color: #e61e2a; /* Rouge Pixel */
+        }
+
+        .service-icon {
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+
+        /* Section Impression et Plan */
+        .print-info {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .plan-container {
+            margin-top: 25px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .plan-img {
+            width: 100%;
+            display: block;
+            height: auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
 <body>
 
 <script src="../header.js"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const header = document.querySelector('.main-header');
-        //sous-header spécifique à la bibliothèque
+        // Sous-header spécifique à la bibliothèque
         const subMenuHTML = `
                 <nav class="bu-submenu">
+                    <a href="bibliotheque.html">Accueil BU</a>
                     <a href="catalogue.html">Catalogue</a>
                     <a href="emprunts.html">Mes Emprunts</a>
                     <a href="reservation.html">Réservations</a>
@@ -30,45 +88,40 @@
     });
 </script>
 
-
-<main class="page">
-
+<main class="services-simple-container">
     <h1 class="page-title">Services de la BU</h1>
+    <p style="color: #64748b; margin-bottom: 40px;">Accédez aux services essentiels de votre bibliothèque universitaire.</p>
+    <section class="service-item" style="border-bottom: none;">
+        <div class="service-link-title" style="cursor: default;">
+            <span class="service-icon">🖨️</span>
+            <h2>Impression & Scan</h2>
+        </div>
 
-    <section class="services-grid">
+        <div class="print-info">
+            <p>La société SEDECO gère le service d'impressions et de copies à l'Université Paris Nanterre. Elle dispose d'une boutique à la bibliothèque universitaire et d'une vingtaine de copieurs répartis sur le campus.</p>
+            <p><strong>Localisation des bornes et copieurs sur le campus :</strong></p>
+        </div>
 
-        <article class="service-card">
-            <div class="service-icon blue">📚</div>
-            <div class="service-title">Prêt de livres</div>
-            <div class="service-desc">Empruntez facilement des ouvrages.</div>
-            <a class="service-link blue" href="catalogue.html">Voir le catalogue →</a>
-        </article>
-
-        <article class="service-card">
-            <div class="service-icon green">🖨️</div>
-            <div class="service-title">Impression & Scan</div>
-            <div class="service-desc">Disponible à tous les étages.</div>
-        </article>
-
-        <article class="service-card">
-            <div class="service-icon orange">💼</div>
-            <div class="service-title">Salles de réunion</div>
-            <div class="service-desc">Réservables sur l'application.</div>
-            <a class="service-link orange" href="places.html">Réserver →</a>
-        </article>
-
-        <article class="service-card">
-            <div class="service-icon purple">🧑‍🏫</div>
-            <div class="service-title">Aide à la recherche</div>
-            <div class="service-desc">Un bibliothécaire peut vous aider.</div>
-        </article>
-
+        <div class="plan-container">
+            <img src="../images/Plan-copieurs-2024.png" alt="Plan des emplacements bornes et copieurs" class="plan-img">
+        </div>
+    </section>
+    <section class="service-item">
+        <a href="catalogue.html" class="service-link-title">
+            <span class="service-icon">📚</span>
+            <h2>Réserver un livre</h2>
+        </a>
     </section>
 
-</main>
-<script>
-    console.log("Page Services BU chargée.");
+    <section class="service-item">
+        <a href="places.html" class="service-link-title">
+            <span class="service-icon">👥</span>
+            <h2>Réserver une place</h2>
+        </a>
+    </section>
 
-</script>
+
+</main>
+
 </body>
 </html>
