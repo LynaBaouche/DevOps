@@ -185,10 +185,10 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 - Lors de l’inscription, la méthode creerCompte du CompteService vérifie d’abord l’existence préalable d’un compte à partir de l’adresse email via findByEmail dans le CompteRepository. Si l’email est déjà présent en base de données, la création est refusée afin de garantir l’unicité des comptes. En cas de validation, le mot de passe fourni est automatiquement hashé à l’aide de BCryptPasswordEncoder avant la persistance de l’entité Compte, assurant une protection efficace des données sensibles.
 - Lors de la connexion, la méthode login récupère le compte associé à l’email fourni. Le mot de passe saisi est comparé au hash stocké en base grâce à la méthode matches de BCrypt, sans jamais manipuler le mot de passe en clair. En cas d’authentification réussie, la date de dernière connexion (lastConnection) est mise à jour afin de permettre la gestion du statut en ligne de l’utilisateur.
-![img.png](images/authentification.png)
+  ![img.png](images/authentification.png)
 Aperçu de la page complète
-![img.png](images/compte2.png)
-![img.png](images/inscreption.png)
+  ![img.png](images/compte2.PNG)
+  ![img.png](images/inscreption.PNG)
 ### 4.2 Communauté : Groupes & Recommandations Intelligentes
 Cette fonctionnalité repose sur une logique de filtrage côté serveur pour proposer du contenu pertinent sans surcharger la base de données par des requêtes complexes.
 
@@ -259,7 +259,7 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
 Aperçu de la page complète de l'agenda
 ![img.png](images/agenda.png)
 #### Algorithme & Logique Backend :
-**création et mdofication et suppression des évenements de l'agenda:**
+**création et modification et suppression des évenements de l'agenda:**
 
 **Création d’un événement :**
 Lors de l’ajout d’un événement, la méthode ajouter associe automatiquement l’événement à l’utilisateur connecté. La persistance est assurée par le EvenementService via save.
@@ -359,12 +359,12 @@ Tout utilisateur authentifié peut créer une annonce.
 - Les annonces sont accessibles via des endpoints REST permettant de consulter toutes les annonces (findAll), de les filtrer par catégorie (findByCategorie) ou d’afficher celles d’un utilisateur spécifique (findByUtilisateurId).
 - Lors de la création, les données sont validées puis persistées. L’image est convertie en Base64 avant stockage, et les champs de traçabilité (date de publication, nombre de vues) sont automatiquement initialisés.
 - Après la publication d’une annonce, les proches de l’auteur sont récupérés via le système de liens, puis notifiés automatiquement à l’aide du NotificationService.
--  Les annonces peuvent être modifiées ou supprimées.Les utilisateurs peuvent ajouter ou retirer une annonce de leurs favoris.
-![img.png](images/annonce.png)
+- Les annonces peuvent être modifiées ou supprimées.Les utilisateurs peuvent ajouter ou retirer une annonce de leurs favoris.
+  ![img.png](images/Annonce.png)
 Aperçu de la page complète
-![img.png](images/annonces.png)
-![img.png](images/mes_annonces.png)
-![img.png](images/favoris_annonces.png)
+   ![img.png](images/annonces.PNG)
+   ![img.png](images/mes_annonces.PNG)
+   ![img.png](images/favoris_annonces.PNG)
 ---
 ### 4.8 Système de notifications
 Le système de notifications permet d’informer les utilisateurs des événements importants liés à leurs interactions sur la plateforme **EtudLife**.  
@@ -424,7 +424,7 @@ Chaque notification contient :
 - Le compteur de notifications non lues repose sur la méthode countByUserIdAndIsReadFalse, utilisée pour l’affichage dynamique du badge. Lorsqu’une notification est consultée, la méthode markAsRead met à jour son état afin d’assurer une synchronisation immédiate entre le backend et l’interface utilisateur.
 ![img.png](images/notification.png)
 Aperçu de la page complète
-![img.png](images/notif2.png)
+  ![img.png](images/notif2.PNG)
 ---
 
 ### 4.9 Système de Messagerie Instantanée
