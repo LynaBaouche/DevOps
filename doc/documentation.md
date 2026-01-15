@@ -142,13 +142,13 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 (messagerie, annonces, agenda, documents, groupes) est strictement restreint.
 
 #### Règles Métiers :
-    *- **Accès restreint** : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
-    *- **Email universitaire obligatoire** : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
-    *- **Email unique** : une adresse email ne peut être associée qu’à un seul compte.
-    *- **Mot de passe sécurisé** : le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
-    *- **Validation serveur** : toutes les règles de sécurité sont appliquées côté backend.
-    *- **Sécurité des mots de passe** : aucun mot de passe n’est stocké en clair.
-    *- **Traçabilité de connexion** : la dernière activité de l’utilisateur est enregistrée.
+    * Accès restreint : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
+    * Email universitaire obligatoire : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
+    * Email unique : une adresse email ne peut être associée qu’à un seul compte.
+    * Mot de passe sécurisé: le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
+    * Validation serveur : toutes les règles de sécurité sont appliquées côté backend.
+    * Sécurité des mots de passe : aucun mot de passe n’est stocké en clair.
+    * Traçabilité de connexion : la dernière activité de l’utilisateur est enregistrée.
 
 
 #### Fonctionnalités :
@@ -173,8 +173,8 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 
 #### Classes Impliquées :
-*
-    `CompteController` (exposition des endpoints REST)
+
+    *`CompteController` (exposition des endpoints REST)
     * `CompteService` (logique métier d’authentification)
     * `CompteRepository` (accès aux données utilisateurs)
     * `Compte` (entité utilisateur)
@@ -183,17 +183,12 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 #### Algorithme & Logique Backend :
 
-Lors de l’inscription, le service vérifie l’existence préalable d’un compte via l’email.
-Si l’email est déjà présent en base, la création est refusée.
-
-Le mot de passe fourni est hashé à l’aide de **BCrypt** avant d’être persisté, garantissant
-une protection efficace contre les attaques par compromission de base de données.
-
-Lors de la connexion, le mot de passe saisi est comparé au hash stocké via la méthode `matches`,
-sans jamais exposer le mot de passe original.
-
-
-
+- Lors de l’inscription, la méthode creerCompte du CompteService vérifie d’abord l’existence préalable d’un compte à partir de l’adresse email via findByEmail dans le CompteRepository. Si l’email est déjà présent en base de données, la création est refusée afin de garantir l’unicité des comptes. En cas de validation, le mot de passe fourni est automatiquement hashé à l’aide de BCryptPasswordEncoder avant la persistance de l’entité Compte, assurant une protection efficace des données sensibles.
+- Lors de la connexion, la méthode login récupère le compte associé à l’email fourni. Le mot de passe saisi est comparé au hash stocké en base grâce à la méthode matches de BCrypt, sans jamais manipuler le mot de passe en clair. En cas d’authentification réussie, la date de dernière connexion (lastConnection) est mise à jour afin de permettre la gestion du statut en ligne de l’utilisateur.
+![img.png](images/authentification.png)
+Aperçu de la page complète
+![img.png](images/compte2.png)
+![img.png](images/inscreption.png)
 ### 4.2 Communauté : Groupes & Recommandations Intelligentes
 Cette fonctionnalité repose sur une logique de filtrage côté serveur pour proposer du contenu pertinent sans surcharger la base de données par des requêtes complexes.
 
@@ -252,6 +247,8 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
 #### Fonctionnalités :
 ##### Gestion des événements
 - Création d’événements personnels (titre, description, dates).
+- modification d'un évenement existant.
+- suppression d'un évenement.
 - Association automatique de l’événement à l’utilisateur connecté.
 
 ##### Vue partagée avec les proches
@@ -260,8 +257,19 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
   - les événements de ses proches.
 - Les événements sont affichés de manière simultanée afin de faciliter la planification commune.
 Aperçu de la page complète de l'agenda
-- ![img.png](images/agenda.png)
+![img.png](images/agenda.png)
 #### Algorithme & Logique Backend :
+**création et mdofication et suppression des évenements de l'agenda:**
+
+**Création d’un événement :**
+Lors de l’ajout d’un événement, la méthode ajouter associe automatiquement l’événement à l’utilisateur connecté. La persistance est assurée par le EvenementService via save.
+
+**Notification automatique :**
+Après la création d’un événement, les identifiants des proches sont récupérés via le LienService. Pour chacun d’eux, le NotificationService.create est appelé afin d’envoyer une notification signalant l’ajout d’un nouvel événement dans l’agenda partagé.
+
+**Modification et suppression :**
+Les événements peuvent être modifiés ou supprimés via des endpoints REST dédiés. Les modifications sont immédiatement persistées en base de données et la suppression repose sur la méthode deleteById.
+
   **Agrégation (Vue Proches) :** La méthode `getSharedAvailability(Long myUserId)` fonctionne en deux temps :
   1.  Appel de `lienService.getProcheIds(myUserId)` pour obtenir une liste d'IDs (ex: `[ID_Ami1, ID_Ami2]`).
   2.  Ajout de l'ID de l'utilisateur courant à cette liste.
@@ -339,7 +347,7 @@ Tout utilisateur authentifié peut créer une annonce.
 - Les utilisateurs peuvent ajouter une annonce à leurs **favoris** afin de la conserver pour un usage ultérieur.
 
 #### Classes Impliquées :
-*  `AnnonceController` (endpoints REST)
+* `AnnonceController` (endpoints REST)
 * `AnnonceService` (logique métier)
 * `AnnonceRepository` (accès aux données)
 * `Annonce` (entité)
@@ -348,35 +356,15 @@ Tout utilisateur authentifié peut créer une annonce.
 
 #### Algorithme & Logique Backend :
 
-La récupération des annonces s’effectue via des endpoints REST permettant :
-- la récupération globale ;
-- le filtrage par catégorie ;
-- la récupération des annonces d’un utilisateur donné.
-
-Lors de la création d’une annonce :
-1. Les données sont validées.
-2. L’image est convertie en **Base64** si elle est fournie.
-3. L’annonce est persistée en base de données.
-4. Les proches de l’auteur sont récupérés via le `LienRepository`.
-5. Une notification est envoyée à chaque proche.
-
-``` java
-Annonce saved = service.save(annonce);
-
-List<Lien> liens = lienRepository.findByCompteSourceId(utilisateurId);
-
-for (Lien lienProche : liens) {
-    Compte proche = lienProche.getCompteCible();
-    if (proche != null) {
-        notificationService.create(
-            proche.getId(),
-            NotificationType.ANNONCE,
-            auteur + " a publié une nouvelle annonce.",
-            "/Annonce/annonces.html"
-        );
-    }
-}
-```
+- Les annonces sont accessibles via des endpoints REST permettant de consulter toutes les annonces (findAll), de les filtrer par catégorie (findByCategorie) ou d’afficher celles d’un utilisateur spécifique (findByUtilisateurId).
+- Lors de la création, les données sont validées puis persistées. L’image est convertie en Base64 avant stockage, et les champs de traçabilité (date de publication, nombre de vues) sont automatiquement initialisés.
+- Après la publication d’une annonce, les proches de l’auteur sont récupérés via le système de liens, puis notifiés automatiquement à l’aide du NotificationService.
+-  Les annonces peuvent être modifiées ou supprimées.Les utilisateurs peuvent ajouter ou retirer une annonce de leurs favoris.
+![img.png](images/annonce.png)
+Aperçu de la page complète
+![img.png](images/annonces.png)
+![img.png](images/mes_annonces.png)
+![img.png](images/favoris_annonces.png)
 ---
 ### 4.8 Système de notifications
 Le système de notifications permet d’informer les utilisateurs des événements importants liés à leurs interactions sur la plateforme **EtudLife**.  
@@ -422,6 +410,7 @@ Chaque notification contient :
 
 
 #### Classes Impliquées :
+
 *  `NotificationController` (endpoints REST)
 * `NotificationService` (logique métier)
 *  `NotificationRepository` (accès aux données)
@@ -430,35 +419,12 @@ Chaque notification contient :
 
 #### Algorithme & Logique Backend :
 
-La création d’une notification est centralisée dans le `NotificationService`.  
-Lorsqu’un événement métier survient (ajout d’un proche, création d’annonce, événement, message), le service concerné appelle la méthode `create(...)`.
-
-Les notifications sont stockées en base de données avec :
-- un identifiant utilisateur ;
-- un statut de lecture (`isRead`) ;
-- une date de création automatique.
-
-Le nombre de notifications non lues est calculé via une requête optimisée.
-SELECT COUNT(*)
-FROM notification
-WHERE user_id = ? 
-AND is_read = false;
-
-``` java
-// Création d'une notification
-Notification n = new Notification(userId, type, message, link);
-repo.save(n);
-
-// Comptage des notifications non lues
-long unread = repo.countByUserIdAndIsReadFalse(userId);
-```
----
-C'est une excellente idée de documenter la messagerie en suivant le même modèle. Cela donne une cohérence professionnelle à ton rapport.
-
-En me basant sur ton code (notamment `MessageService`, `MessageController`, et le frontend `messages.js`), voici une proposition de rédaction pour ton fichier `.md`. J'ai structuré le contenu pour mettre en valeur les règles métiers (comme le lien avec les "Proches") et les fonctionnalités techniques (Polling, Responsive).
-
-Voici le contenu à copier-coller :
-
+- la création d'une notification se fait par la méthode create lors d’actions déclenchées par les utilisateurs (publication d’une annonce, ajout d’un événement, ajout d’un proche).
+- La récupération des notifications d’un utilisateur s’effectue via le NotificationRepository à l’aide de la méthode findByUserIdOrderByCreatedAtDesc, permettant d’afficher les notifications dans un ordre chronologique décroissant.
+- Le compteur de notifications non lues repose sur la méthode countByUserIdAndIsReadFalse, utilisée pour l’affichage dynamique du badge. Lorsqu’une notification est consultée, la méthode markAsRead met à jour son état afin d’assurer une synchronisation immédiate entre le backend et l’interface utilisateur.
+![img.png](images/notification.png)
+Aperçu de la page complète
+![img.png](images/notif2.png)
 ---
 
 ### 4.9 Système de Messagerie Instantanée
