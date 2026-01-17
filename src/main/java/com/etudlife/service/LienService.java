@@ -46,11 +46,13 @@ public class LienService {
             Lien lien = new Lien(source.get(), cible.get());
             Lien saved = lienRepository.save(lien);
 
-            // 🔔 notification
+            // 🔔 CORRECTION ICI : On met Prénom + Nom
+            String nomAffichage = source.get().getPrenom() + " " + source.get().getNom();
+
             notificationService.create(
                     cible.get().getId(),
                     NotificationType.FRIEND_ADDED,
-                    source.get().getNom() + " vous a ajouté comme proche",
+                    nomAffichage + " vous a ajouté comme proche", // Maintenant ça contient "Alice"
                     "/proches.html#mes-proches"
             );
 
