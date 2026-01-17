@@ -228,6 +228,7 @@ La gestion des proches utilise une entité de liaison dédiée pour gérer la re
 #### Algorithme & Logique Backend :
   * **Création :** La méthode `creerLien` effectue d'abord une validation via `existsByCompteSourceIdAndCompteCibleId`. Si valide, l'entité `Lien` est persistée et le service appelle `notificationService.create`.
   * **Recherche :** Utilisation des **JPA Query Methods** optimisées : `findAllByNomIgnoreCaseAndPrenomIgnoreCase` dans le `CompteRepository` pour garantir la performance de la barre de recherche.
+
 ![prochesPuml.png](images/prochesPuml.png)
 Voici l'aperçu de la page dédiée à l'ajout des proches et le gestion de ces derniers.
 ![pageProches.png](images/pageProches.png)
