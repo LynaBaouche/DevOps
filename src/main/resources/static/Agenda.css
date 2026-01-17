@@ -374,3 +374,32 @@ body {
 /*.menu-item:hover {*/
 /*    background: #f3f3f3;*/
 /*}*/
+.popup-content {
+    position: relative;  /* 🔥 IMPORTANT */
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px 30px 20px 30px;  /* 🔥 Padding top pour X */
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;      /* 🔥 Descend un peu */
+    right: 20px;    /* 🔥 À DROITE */
+    left: auto;     /* 🔥 Force PAS à gauche */
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    z-index: 10;    /* 🔥 Au-dessus */
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+}
+
+.close-btn:hover {
+
+    background: #f0f0f0;
+    border-radius: 50%;
+}

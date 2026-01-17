@@ -84,6 +84,12 @@ async function initAgendaPage() {
                 }
             }
         });
+        // Dans initAgendaPage() APRÈS les autres event listeners
+        const btnClosePopup = document.getElementById("btnClosePopup");
+        if (btnClosePopup) {
+            btnClosePopup.addEventListener("click", () => togglePopup(false));
+        }
+
     }
     const prevMonth = document.getElementById("prevMonth");
     const nextMonth = document.getElementById("nextMonth");
@@ -104,6 +110,27 @@ async function initAgendaPage() {
 function togglePopup(show) {
     const popup = document.getElementById("popup");
     if (popup) popup.classList.toggle("hidden", !show);
+}
+function openCreatePopupAvecResetComplet() {
+    // Reset COMPLÈT du formulaire
+    const form = document.getElementById("formEvent");
+    form.reset(); // Vide TOUS les champs
+
+    // Reset titre et bouton delete
+    document.getElementById("popup-title").textContent = "Ajouter un événement";
+    document.getElementById("eventId").value = ""; // Crucial pour mode création
+    document.getElementById("btnDelete").classList.add("hidden");
+
+    // Reset dates min
+    const now = new Date();
+    document.getElementById("dateDebut").min = toDatetimeLocal(now);
+    document.getElementById("dateFin").min = toDatetimeLocal(now);
+
+    // Force clear value si persistance bizarre
+    document.getElementById("titre").value = "";
+    document.getElementById("description").value = "";
+
+    togglePopup(true);
 }
 
 /* Ouvrir popup en mode création */
