@@ -382,6 +382,7 @@ Aperçu de la page complète
    ![img.png](images/annonces.PNG)
    ![img.png](images/mes_annonces.PNG)
    ![img.png](images/favoris_annonces.PNG)
+  ![img.png](images/modifier_annonce.PNG)
 ---
 ### 4.8 Système de notifications
 Le système de notifications permet d’informer les utilisateurs des événements importants liés à leurs interactions sur la plateforme **EtudLife**.  
@@ -441,7 +442,8 @@ Chaque notification contient :
 - Le compteur de notifications non lues repose sur la méthode countByUserIdAndIsReadFalse, utilisée pour l’affichage dynamique du badge. Lorsqu’une notification est consultée, la méthode markAsRead met à jour son état afin d’assurer une synchronisation immédiate entre le backend et l’interface utilisateur.
 ![img.png](images/notification.png)
 Aperçu de la page complète
-  ![img.png](images/notif2.PNG)
+  ![img.png](images/notifications.PNG)
+  ![img.png](images/mes_notifications.PNG)
 ---
 
 ### 4.9 Système de Messagerie Instantanée
