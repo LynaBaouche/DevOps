@@ -230,7 +230,9 @@ La gestion des proches utilise une entité de liaison dédiée pour gérer la re
   * **Recherche :** Utilisation des **JPA Query Methods** optimisées : `findAllByNomIgnoreCaseAndPrenomIgnoreCase` dans le `CompteRepository` pour garantir la performance de la barre de recherche.
 
 ![prochesPuml.png](images/prochesPuml.png)
+
 Voici l'aperçu de la page dédiée à l'ajout des proches et le gestion de ces derniers.
+
 ![pageProches.png](images/pageProches.png)
 ---
 ### 4.4 Organisation : Agenda Partagé
