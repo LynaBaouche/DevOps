@@ -1,0 +1,94 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam style strictuml
+autoactivate on
+autonumber
+
+actor "Alice (Client)" as Alice
+participant "Frontend (JS)" as Front
+box "Backend Spring Boot" #F0F8FF
+    participant "LienController\n& Service" as LienSvc
+    participant "ConversationController\n& Service" as ConvSvc
+    participant "MessageController\n& Service" as MsgSvc
+    participant "NotificationService" as NotifSvc
+end box
+database "Base de Données\n(Repositories)" as DB
+
+== ÉTAPE 1 : Ajout d'un Proche (Prérequis) ==
+
+Alice -> Front : Clique sur "Ajouter Bob"
+Front -> LienSvc : POST /api/liens (Alice, Bob)
+
+LienSvc -> DB : existsByCompteSourceIdAndCompteCibleId?
+DB --> LienSvc : false
+
+LienSvc -> DB : save(Lien)
+note right: Création de l'amitié
+DB --> LienSvc : Lien sauvegardé
+
+LienSvc -> NotifSvc : create(FRIEND_ADDED, "Alice vous a ajouté...")
+NotifSvc -> DB : save(Notification)
+DB --> NotifSvc : ok
+NotifSvc --> LienSvc : ok
+
+LienSvc --> Front : 200 OK (Lien créé)
+
+== ÉTAPE 2 : Chargement de la Messagerie ==
+
+Alice -> Front : Ouvre "messages.html"
+
+par Chargement Historique
+    Front -> ConvSvc : GET /api/conversations
+    note right: Récupère l'historique avec SQL natif
+    ConvSvc -> DB : findConversationPreviewsByUserId()
+    DB --> ConvSvc : Resultset
+    ConvSvc --> Front : List<ConversationPreviewDTO>
+else Chargement Amis
+    Front -> LienSvc : GET /api/liens/{id}/proches
+    LienSvc -> DB : findByCompteSourceId()
+    DB --> LienSvc : Resultset
+    LienSvc --> Front : List<Lien>
+end
+
+Front -> Front : Fusion des listes (Conv existantes + Nouveaux Proches)
+return Interface prête
+
+== ÉTAPE 3 : Initialisation d'une conversation ==
+
+Alice -> Front : Clique sur "Bob" (Nouvelle discussion)
+Front -> ConvSvc : GET /api/conversations/init/{BobId}
+
+ConvSvc -> DB : findConversationIdByParticipants(Alice, Bob)
+DB --> ConvSvc : ID ou null
+
+alt Conversation existe déjà
+    ConvSvc --> Front : ID existant (ex: 500)
+else Pas de conversation
+    ConvSvc -> ConvSvc : Génère ID temporaire (Timestamp)
+    return ID temporaire
+    ConvSvc --> Front : ID temporaire
+end
+
+== ÉTAPE 4 : Envoi d'un Message ==
+
+Alice -> Front : Tape "Salut Bob" et Envoie
+Front -> MsgSvc : POST /api/.../{id}/messages
+
+MsgSvc -> MsgSvc : saveNewMessage(sender, receiver, content)
+MsgSvc -> DB : save(Message)
+DB --> MsgSvc : Message sauvegardé
+
+MsgSvc -> NotifSvc : create(NEW_MESSAGE, "Nouveau message reçu")
+note right: Alerte le destinataire
+NotifSvc -> DB : save(Notification)
+DB --> NotifSvc : ok
+NotifSvc --> MsgSvc : ok
+
+return Message Sauvegardé
+
+MsgSvc --> Front : 201 Created (Message JSON)
+
+Front -> Front : Affiche le message (appendNewMessage)
+return Vue mise à jour
+
+@enduml

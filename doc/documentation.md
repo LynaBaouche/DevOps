@@ -462,6 +462,7 @@ La messagerie instantanée est une composante centrale d'**EtudLife** qui favori
 * **Statut de présence** : un indicateur visuel permet de savoir si l'interlocuteur est actuellement **en ligne** ou hors ligne.
 
 #### Fonctionnalités Principales :
+![img.png](images/messages.png)
 
 ##### 1. Gestion des Conversations
 
@@ -514,8 +515,8 @@ Le système repose sur une architecture optimisée pour la réactivité :
 | Architecture Backend                                    | ✅ | ✅ | ✅ | ⬜ |
 | Gestion BDD                                             | ⬜ | ✅ | ⬜ | ⬜ |
 | Gestion des Releases & CI/CD                            | ✅ | ⬜ | ⬜ | ⬜ |
-| Documentation & UML                                     | ✅ | ⬜ | ✅ | ⬜ |
-| Organisation & Pilotage Agile                           | ✅ | ⬜ | ✅ | ⬜ |
+| Documentation & UML                                     | ✅ | ✅ | ✅ | ⬜ |
+| Organisation & Pilotage Agile                           | ✅ | ✅ | ✅ | ⬜ |
 | Agenda (Mensuel / Hebdo / Proches)                      | ✅ | ⬜ | ✅ | ⬜ |
 | Proches                                                 | ✅ | ⬜ | ⬜ | ⬜ |
 | Messagerie                                              | ⬜ | ✅ | ⬜ | ⬜ |
@@ -530,11 +531,14 @@ Le système repose sur une architecture optimisée pour la réactivité :
 | Tests Postman                                           | ✅ | ✅ | ✅ | ✅ |
 ## 6. Tests effectués
 
-| Test | Type | Argument Clé                                                                     |
-|------|------|----------------------------------------------------------------------------------|
-|  Agenda   | Intégration     | Valider la requête SQL (IN) et le croisement de données.                         |
-|  Groupe    | Unitaire     | Tester l'algorithme pur (Logique Java), rapidité, isolation (pas besoin de BDD). |
-|    Lien  | Intégration     | Valider l'effet de bord (1 action = 2 conséquences en BDD) et la communication entre services.                                                                                 |
+| Test                         | Type        | Argument Clé                                                                                            |
+|------------------------------|-------------|---------------------------------------------------------------------------------------------------------|
+| Agenda                       | Intégration | Valider la requête SQL (IN) et le croisement de données.                                                |
+| Groupe                       | Unitaire    | Tester l'algorithme pur (Logique Java), rapidité, isolation (pas besoin de BDD).                        |
+| Lien                         | Intégration | Valider l'effet de bord (1 action = 2 conséquences en BDD) et la communication entre services.          |
+| Messagerie (MessageService)	 | Unitaire    | 	Garantir la sécurité critique (seul l'auteur peut supprimer son message) et les mocks de notification. |
+| Messagerie (Conversation)	   | Unitaire	   | Vérifier la logique conditionnelle : retourner l'ID existant (BDD) OU générer un ID temporaire (Algo) si c'est une nouvelle discussion.|
+| Messagerie & Proches         | Intégration | Valider la cohérence du scénario complet (Ajout Ami $\rightarrow$ Chat) et le bon fonctionnement de la requête SQL native complexe (Aperçus avec jointures). |
 
 
 ## 7. Guide d'Installation & Déploiement
