@@ -84,29 +84,27 @@ body {
    SOUS-MENU BU
 =========================================== */
 
+/* Aligne le menu à gauche avec une marge cohérente */
 .bu-submenu {
-    background: #ffffff;
-    padding: 18px 60px;
-    border-bottom: 1px solid #e5e7eb;
     display: flex;
-    gap: 35px;
-    font-size: 15px;
+    justify-content: flex-start; /* Aligne à gauche */
+    padding: 10px 5%; /* Aligne sur le logo au-dessus */
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    gap: 20px;
 }
 
 .bu-submenu a {
     text-decoration: none;
-    color: #4b5563;
-    padding-bottom: 6px;
+    color: #64748b;
+    font-weight: 500;
+    padding: 5px 0;
 }
 
+/* Style pour le lien actif */
 .bu-submenu a.active {
-    color: #1d4ed8;
-    border-bottom: 3px solid #1d4ed8;
-    font-weight: 600;
-}
-
-.bu-submenu a:hover {
-    color: #1d4ed8;
+    color: #e61e2a;
+    border-bottom: 2px solid #e61e2a;
 }
 
 
@@ -405,3 +403,26 @@ body {
 }
 
 .btn-cancel:hover { background: #fee2e2; }
+.notification-toast {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background-color: #28a745; /* Vert pour le succès */
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: opacity 0.5s ease;
+}
+
+.toast-content strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}

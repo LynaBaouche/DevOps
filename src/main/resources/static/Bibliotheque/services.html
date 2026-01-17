@@ -74,14 +74,12 @@
         const header = document.querySelector('.main-header');
         // Sous-header spécifique à la bibliothèque
         const subMenuHTML = `
-                <nav class="bu-submenu">
-                    <a href="bibliotheque.html">Accueil BU</a>
-                    <a href="catalogue.html">Catalogue</a>
-                    <a href="emprunts.html">Mes Emprunts</a>
-                    <a href="reservation.html">Réservations</a>
-                    <a href="places.html">Réserver une Place</a>
-                    <a href="services.html" class="active">Services</a>
-                </nav>
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="reservation.html">Mes Réservations</a>
+        <a href="places.html">Réserver une Place</a>
+        <a href="services.html">Services</a>
+    </nav>
             `;
 
         header.insertAdjacentHTML('beforeend', subMenuHTML);
@@ -111,9 +109,7 @@
             <span class="service-icon">📚</span>
             <h2>Réserver un livre</h2>
         </a>
-    </section>
 
-    <section class="service-item">
         <a href="places.html" class="service-link-title">
             <span class="service-icon">👥</span>
             <h2>Réserver une place</h2>

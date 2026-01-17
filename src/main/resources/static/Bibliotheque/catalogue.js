@@ -83,30 +83,45 @@ document.getElementById("bookModalCancel").onclick = () => modalOverlay.style.di
 /* ============================================================
    3. ENVOYER LA RÉSERVATION AU BACKEND (Table reservation)
 ============================================================ */
+/* ============================================================
+   3. ENVOYER LA RÉSERVATION AU BACKEND
+============================================================ */
 document.getElementById("bookModalConfirm").onclick = async () => {
-    const date = document.getElementById("dateRecuperation").value;
-    if (!date) return alert("Veuillez choisir une date !");
+    // 1. Récupérer l'élément input du formulaire
+    const dateInput = document.getElementById("dateRecuperation");
+
+    // 2. Vérifier s'il existe et extraire sa valeur
+    const date = dateInput ? dateInput.value : null;
+
+    // 3. Vérifier si la date est remplie
+    if (!date) {
+        return alert("Veuillez choisir une date de récupération !");
+    }
 
     const domicile = document.getElementById("domicile").checked;
 
     try {
-        // Envoie les données au ReservationController
+        // L'URL utilise maintenant la variable 'date' bien définie
         const url = `${API_URL}/reservation?iduser=${USER_ID}&livreId=${selectedBookId}&dateRecuperation=${date}&domicile=${domicile}`;
 
         const res = await fetch(url, { method: "POST" });
         if (!res.ok) throw new Error(await res.text());
 
         modalOverlay.style.display = "none";
-        alert("Réservation confirmée !");
 
-        // Rafraîchir les deux listes
+        // Utilisation de ta fonction de notification si elle est prête
+        if (typeof showNotification === "function") {
+            showNotification("📚 Votre livre a été réservé avec succès !");
+        } else {
+            alert("Réservation confirmée !");
+        }
+
         loadBooks();
         loadReservations();
     } catch (e) {
         alert("Erreur: " + e.message);
     }
 };
-
 /* ============================================================
    4. AFFICHER MES EMPRUNTS (Table reservation)
 ============================================================ */
@@ -144,6 +159,18 @@ function renderReservations(list) {
         resContainer.appendChild(div);
     });
 }
+function filterBooks(query) {
+    const allCards = document.querySelectorAll(".book-card");
+    allCards.forEach(card => {
+        const title = card.querySelector(".book-title").textContent.toLowerCase();
+        const author = card.querySelector(".book-author").textContent.toLowerCase();
+        if (title.includes(query.toLowerCase()) || author.includes(query.toLowerCase())) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
 document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     const searchQuery = urlParams.get('search');
@@ -153,3 +180,19 @@ document.addEventListener("DOMContentLoaded", () => {
         filterBooks(searchQuery);
     }
 });
+function showNotification(message) {
+    const toast = document.getElementById("notifToast");
+    const toastMsg = document.getElementById("toastMessage");
+
+    if (toast && toastMsg) {
+        toastMsg.textContent = message;
+        toast.style.display = "block";
+        toast.style.opacity = "1";
+
+        // Disparaît après 4 secondes
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => { toast.style.display = "none"; }, 500);
+        }, 4000);
+    }
+}

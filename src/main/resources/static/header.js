@@ -300,3 +300,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (closeMenuBtn) closeMenuBtn.addEventListener("click", toggleMenu);
     if (overlay) overlay.addEventListener("click", toggleMenu);
 });
+
+function ajouterNotificationMenu(message) {
+    const dateActuelle = new Date().toLocaleString();
+    const listeNotifs = document.querySelector('.dropdown-notifications'); // Votre sélecteur de menu
+
+    // Création de l'élément
+    const nouvelleNotif = `
+        <div class="notification-item">
+            <p><strong>Système</strong> : ${message}</p>
+            <small>${dateActuelle}</small>
+        </div>
+    `;
+
+    if (listeNotifs) {
+        listeNotifs.insertAdjacentHTML('afterbegin', nouvelleNotif);
+
+        // Mise à jour du compteur (point rouge)
+        const badge = document.querySelector('.notification-badge');
+        if (badge) badge.style.display = 'block';
+    }
+}

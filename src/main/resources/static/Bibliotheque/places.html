@@ -4,30 +4,40 @@
     <meta charset="UTF-8">
     <title>Réserver une Place – BU</title>
     <link rel="stylesheet" href="bu.css">
-    <link rel="stylesheet" href="../header.css">
-    <link rel="stylesheet" href="subheader.css">
 </head>
 <body>
+<div id="notifToast" class="notification-toast" style="display:none;"></div>
 
-<script src="../header.js"></script>
+<header>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <img src="../images/etudlife.png">
+            <span>EtudLife</span>
+        </a>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const header = document.querySelector('.main-header');
-        //sous-header spécifique à la bibliothèque
-        const subMenuHTML = `
-                <nav class="bu-submenu">
-                    <a href="catalogue.html">Catalogue</a>
-                    <a href="emprunts.html">Mes Emprunts</a>
-                    <a href="reservation.html">Réservations</a>
-                    <a href="places.html" class="active">Réserver une Place</a>
-                    <a href="services.html">Services</a>
-                </nav>
-            `;
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/static/Agenda.html">Agenda</a></li>
+            <li><a href="/Cours.html">Cours</a></li>
+            <li><a href="transports.html">Transports</a></li>
+            <li><a href="/static/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
+            <li><a href="/Campus.html">Campus</a></li>
+            <li><a href="/Restaurant.html">Restaurant</a></li>
+            <li><a href="/static//Annonce/annonces.html">Annonces</a></li>
+            <li><a href="/static/messages.html">Messages</a></li>
+        </ul>
 
-        header.insertAdjacentHTML('beforeend', subMenuHTML);
-    });
-</script>
+        <div class="profile"><img src="../images/compte.png"></div>
+    </nav>
+
+    <nav class="bu-submenu">
+        <a href="catalogue.html">Catalogue</a>
+        <a href="reservation.html">Mes Réservations</a>
+        <a href="places.html" class="active">Réserver une Place</a>
+        <a href="services.html">Services</a>
+    </nav>
+</header>
+
 
 <main class="page">
     <h1 class="page-title">Réserver une place à la BU</h1>
@@ -217,6 +227,24 @@
     }
 
     document.addEventListener("DOMContentLoaded", loadMesSalles);
+    function showNotification(message) {
+    const toast = document.getElementById("notifToast");
+
+    if (toast) {
+        toast.textContent = message;
+        toast.style.display = "block"; // Affiche l'élément
+        toast.style.opacity = "1";    // Assure la visibilité si vous utilisez des transitions
+
+        // Disparaît automatiquement après 4 secondes
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 4000);
+    } else {
+        // Si l'ID n'est pas trouvé, on utilise une alerte de secours pour debugger
+        console.error("Erreur: L'élément #notifToast est introuvable dans le HTML.");
+        alert(message);
+    }
+}
 </script>
 </body>
 </html>
