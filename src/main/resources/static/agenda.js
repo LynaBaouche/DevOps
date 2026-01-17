@@ -62,7 +62,29 @@ async function initAgendaPage() {
             }
         });
     }
+    const inputDateDebut = document.getElementById("dateDebut");
+    const inputDateFin = document.getElementById("dateFin");
 
+    if (inputDateDebut && inputDateFin) {
+
+        // empêcher les dates passées
+        const now = new Date();
+        const minNow = toDatetimeLocal(now);
+
+        inputDateDebut.min = minNow;
+        inputDateFin.min = minNow;
+
+        // forcer dateFin >= dateDebut
+        inputDateDebut.addEventListener("change", () => {
+            if (inputDateDebut.value) {
+                inputDateFin.min = inputDateDebut.value;
+
+                if (inputDateFin.value && inputDateFin.value < inputDateDebut.value) {
+                    inputDateFin.value = inputDateDebut.value;
+                }
+            }
+        });
+    }
     const prevMonth = document.getElementById("prevMonth");
     const nextMonth = document.getElementById("nextMonth");
     const btnViewMonth = document.getElementById("btnViewMonth");
@@ -86,24 +108,22 @@ function togglePopup(show) {
 
 /* Ouvrir popup en mode création */
 function openCreatePopup() {
-    const popupTitle = document.getElementById("popup-title");
-    const inputId = document.getElementById("eventId");
-    const inputTitre = document.getElementById("titre");
-    const inputDescription = document.getElementById("description");
     const inputDateDebut = document.getElementById("dateDebut");
     const inputDateFin = document.getElementById("dateFin");
-    const btnDelete = document.getElementById("btnDelete");
 
-    if (inputId) inputId.value = "";
-    if (inputTitre) inputTitre.value = "";
-    if (inputDescription) inputDescription.value = "";
-    if (inputDateDebut) inputDateDebut.value = "";
-    if (inputDateFin) inputDateFin.value = "";
-    if (popupTitle) popupTitle.textContent = "Ajouter un événement";
-    if (btnDelete) btnDelete.classList.add("hidden");
+    const now = new Date();
+    const minNow = toDatetimeLocal(now);
+
+    inputDateDebut.value = "";
+    inputDateFin.value = "";
+
+    // ⛔ impossible de choisir une date passée
+    inputDateDebut.min = minNow;
+    inputDateFin.min = minNow;
 
     togglePopup(true);
 }
+
 
 /* Ouvrir popup en mode édition */
 function openEditPopup(ev) {
@@ -450,4 +470,15 @@ async function chargerProchesSidebar() {
     } catch (err) {
         console.error("Erreur chargement proches agenda", err);
     }
+
+
+
+
+}
+/* =========================
+   UTILITAIRE DATE (GLOBAL)
+   ========================= */
+function toDatetimeLocal(date) {
+    const pad = n => n.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }

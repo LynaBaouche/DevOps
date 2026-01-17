@@ -1055,3 +1055,56 @@ body {
     background-color: #fee2e2;
     border-radius: 4px;
 }
+/* Style de base d'une notification (déjà lue) */
+.notif-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9fafb;   /* gris clair */
+    color: #111827;
+    cursor: pointer;
+}
+
+/* Notification non lue */
+.notif-item.unread {
+    background-color: #e0f2ff;   /* bleu très clair */
+    border-left: 4px solid #1d4ed8; /* petit trait bleu à gauche */
+    font-weight: 600;
+}
+
+/* Hover */
+.notif-item:hover {
+    background-color: #e5e7eb;
+}
+
+     /* 🔥 NOTIFICATIONS DROPDOWN - COULEURS BLEUES */
+ .notif-list {
+     max-height: 350px;
+     overflow-y: auto;
+ }
+
+.notif-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notif-item.unread {
+    background: #dbeafe !important;           /* bleu clair */
+    border-left: 4px solid #3b82f6 !important; /* barre bleue */
+    font-weight: 500;
+    color: #1e40af;
+}
+
+.notif-item:hover {
+    background: #eff6ff;
+}
+
+.notif-empty {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-style: italic;
+}
+

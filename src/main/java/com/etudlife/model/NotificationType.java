@@ -7,5 +7,5 @@ public enum NotificationType {
     NEW_RECIPE,
     NEW_EVENT,
     NEW_MESSAGE,
-    ANNONCE
+    ANNONCE,
 }

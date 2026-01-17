@@ -4,12 +4,53 @@
     <meta charset="UTF-8">
     <title>Mes notifications</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles locaux si style.css n'est pas prêt */
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; }
+        h2 { padding: 20px; color: #111827; }
+
+        /* Zone scrollable */
+        #allNotifList {
+            list-style: none;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            margin: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        /* Notification lue (gris) */
+        .notif-item {
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background-color: #f9fafb;
+            color: #374151;
+            cursor: pointer;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        /* Notification non lue (bleu) */
+        .notif-item.unread {
+            background-color: #e0f2ff;
+            border-left: 4px solid #1d4ed8;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Hover */
+        .notif-item:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
 </head>
 <body>
 
-<h2 style="padding:20px;">Mes notifications</h2>
+<h2>Mes notifications</h2>
 
-<ul id="allNotifList" style="list-style:none; padding:20px;"></ul>
+<ul id="allNotifList"></ul>
 
 <script>
     const user = JSON.parse(localStorage.getItem("utilisateur"));
@@ -28,15 +69,21 @@
 
                 notifs.forEach(n => {
                     const li = document.createElement("li");
-                    li.style.padding = "10px 0";
+
+                    // bleu si non lue, gris si lue
+                    li.className = n.isRead ? "notif-item" : "notif-item unread";
+
                     li.innerHTML = `
-                    ${n.isRead ? "" : "🔵 "}
-                    ${n.message}
-                    <br>
-                    <small>${new Date(n.createdAt).toLocaleString()}</small>
-                `;
+                        <div>${n.message}</div>
+                        <small>${new Date(n.createdAt).toLocaleString()}</small>
+                    `;
+
                     list.appendChild(li);
                 });
+            })
+            .catch(err => {
+                console.error("Erreur:", err);
+                list.innerHTML = "<li>Erreur de chargement</li>";
             });
     }
 </script>
