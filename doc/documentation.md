@@ -529,6 +529,14 @@ Le système repose sur une architecture optimisée pour la réactivité :
 | Recommandation intelligente de groupes                  | ✅ | ⬜ | ⬜ | ⬜ |
 | Tests Postman                                           | ✅ | ✅ | ✅ | ✅ |
 ## 6. Tests effectués
+
+| Test | Type | Argument Clé                                                                     |
+|------|------|----------------------------------------------------------------------------------|
+|  Agenda   | Intégration     | Valider la requête SQL (IN) et le croisement de données.                         |
+|  Groupe    | Unitaire     | Tester l'algorithme pur (Logique Java), rapidité, isolation (pas besoin de BDD). |
+|    Lien  | Intégration     | Valider l'effet de bord (1 action = 2 conséquences en BDD) et la communication entre services.                                                                                 |
+
+
 ## 7. Guide d'Installation & Déploiement
 
 ### Prérequis
