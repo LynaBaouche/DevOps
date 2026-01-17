@@ -214,8 +214,10 @@ Aperçu de la page complète des groupes
 La gestion des proches utilise une entité de liaison dédiée pour gérer la relation asymétrique ou symétrique entre deux comptes.
 
 #### Règles Métiers :
+* **Accès Authentifié :** Seuls les utilisateurs connectés peuvent gérer leur liste de proches.
+* **Recherche Dynamique :** La barre de recherche permet de filtrer les utilisateurs par nom et prénom en temps réel.
 * **Interdiction d'auto-ajout :** Un utilisateur ne peut pas s'ajouter lui-même en proche.
-* **Unicité du lien :** Le système empêche la création de doublons si une relation existe déjà.
+* **Unicité du lien :** Le système empêche la création de doublons si une relation existe déjà, le bouton "Ajouter" devient grisé avec la mention "Déjà Ajouté".
 * **Notification :** L'ajout d'un proche déclenche automatiquement une notification.
 
 #### Classes Impliquées :
@@ -226,8 +228,9 @@ La gestion des proches utilise une entité de liaison dédiée pour gérer la re
 #### Algorithme & Logique Backend :
   * **Création :** La méthode `creerLien` effectue d'abord une validation via `existsByCompteSourceIdAndCompteCibleId`. Si valide, l'entité `Lien` est persistée et le service appelle `notificationService.create`.
   * **Recherche :** Utilisation des **JPA Query Methods** optimisées : `findAllByNomIgnoreCaseAndPrenomIgnoreCase` dans le `CompteRepository` pour garantir la performance de la barre de recherche.
-
-    
+![prochesPuml.png](images/prochesPuml.png)
+Voici l'aperçu de la page dédiée à l'ajout des proches et le gestion de ces derniers.
+![pageProches.png](images/pageProches.png)
 ---
 ### 4.4 Organisation : Agenda Partagé
 L'agenda repose sur une agrégation dynamique des événements de l'utilisateur et de ses proches.
@@ -258,6 +261,8 @@ L'agenda repose sur une agrégation dynamique des événements de l'utilisateur 
 - Les événements sont affichés de manière simultanée afin de faciliter la planification commune.
 Aperçu de la page complète de l'agenda
 ![img.png](images/agenda.png)
+  ![img.png](images/ajoutEvent.png)
+![img.png](images/editEvent.png)
 #### Algorithme & Logique Backend :
 **création et modification et suppression des évenements de l'agenda:**
 
@@ -275,6 +280,7 @@ Les événements peuvent être modifiés ou supprimés via des endpoints REST d�
   2.  Ajout de l'ID de l'utilisateur courant à cette liste.
   3.  Exécution d'une requête JPA avec clause `IN` : `findByUtilisateurIdIn(List<Long> ids)` qui récupère en une seule requête SQL tous les événements concernés.
 ![agendaPuml.png](images/agendaPuml.png)
+
 
 ---
 ### 4.5 Vie Quotidienne : Cuisine
@@ -300,6 +306,17 @@ Le module cuisine combine une génération procédurale de menus et une gestion 
 
 Aperçu de la page complète des recettes
 ![img.png](images/page_recette.png)
+* Lorsque l'utilisateur clique sur une recette, il accède à une page détaillée avec :
+  - Ingrédients
+  - Étapes de préparation
+  - Catégorie
+  - Bouton pour ajouter aux favoris
+  - Bouton pour ajouter à l'agenda
+  
+  ![img.png](images/recette_detail.png)
+
+* Aperçu de la page des recettes mises en favoris 
+![recette_favoris.png](images/recette_favoris.png)
 ---
 
 
@@ -506,8 +523,8 @@ Le système repose sur une architecture optimisée pour la réactivité :
 | Modification du profil                                  | ⬜ | ⬜ | ✅ | ⬜ |
 | Recommandation intelligente de groupes                  | ✅ | ⬜ | ⬜ | ⬜ |
 | Tests Postman                                           | ✅ | ✅ | ✅ | ✅ |
-
-## 6. Guide d'Installation & Déploiement
+## 6. Tests effectués
+## 7. Guide d'Installation & Déploiement
 
 ### Prérequis
 * Java 17 ou 21 installé.

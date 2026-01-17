@@ -1,0 +1,97 @@
+@startuml
+title Séquence - Gestion des Proches (Ajout, Notification & Suppression)
+actor "Utilisateur" as User
+participant "LienController" as Controller
+participant "LienService" as Service
+participant "NotificationService" as NotifService
+participant "LienRepository" as Repo
+database "Base de Données" as DB
+
+' === PARTIE AJOUT & NOTIFICATION ===
+group Ajout d'un Proche (POST)
+    User -> Controller : POST /api/liens?idSource=A&idCible=B
+    activate Controller
+
+    Controller -> Service : creerLien(idSource, idCible)
+    activate Service
+
+    ' 1. Vérifications (Pas soi-même, pas déjà existant)
+    Service -> Service : Vérif idSource != idCible
+    Service -> Repo : existsBy...(idSource, idCible)
+    activate Repo
+    Repo -> DB : SELECT COUNT(*) ...
+    activate DB
+    DB --> Repo : false (n'existe pas)
+    deactivate DB
+    Repo --> Service : boolean
+    deactivate Repo
+
+    alt Conditions valides
+        ' 2. Création du Lien
+        Service -> Repo : save(lien)
+        activate Repo
+        Repo -> DB : INSERT INTO lien ...
+        activate DB
+        DB --> Repo : Lien créé
+        deactivate DB
+        Repo --> Service : objLien
+        deactivate Repo
+
+        ' 3. ENVOI DE LA NOTIFICATION (Relation Notifs)
+        note right of Service
+            L'ajout déclenche une alerte
+            pour l'utilisateur cible
+        end note
+
+        Service -> NotifService : create(idCible, FRIEND_ADDED, ...)
+        activate NotifService
+        NotifService -> DB : INSERT INTO notification ...
+        activate DB
+        DB --> NotifService : Success
+        deactivate DB
+        NotifService --> Service : void
+        deactivate NotifService
+
+        Service --> Controller : Optional<Lien>
+
+        note right of Controller
+            Relation Messagerie :
+            Ce lien permet maintenant d'appeler
+            ConversationService.initConversation()
+        end note
+
+        Controller --> User : 200 OK (JSON)
+    else Erreur (Existe déjà / Soi-même)
+        Service --> Controller : Empty
+        Controller --> User : 409 Conflict / 400 Bad Request
+    end
+    deactivate Service
+    deactivate Controller
+end
+
+' === PARTIE SUPPRESSION ===
+group Suppression d'un Proche (DELETE)
+    User -> Controller : DELETE /api/liens?idSource=A&idCible=B
+    activate Controller
+
+    Controller -> Service : supprimerLien(idSource, idCible)
+    activate Service
+
+    ' Appel transactionnel au Repo
+    Service -> Repo : deleteByCompteSourceIdAndCompteCibleId(...)
+    activate Repo
+    Repo -> DB : DELETE FROM lien WHERE ...
+    activate DB
+    DB --> Repo : Success
+    deactivate DB
+    Repo --> Service : void
+    deactivate Repo
+
+    Service --> Controller : void
+    deactivate Service
+
+    Controller --> User : 200 OK
+    deactivate Controller
+end
+
+@enduml
