@@ -463,7 +463,6 @@ La messagerie instantanée est une composante centrale d'**EtudLife** qui favori
 * **Statut de présence** : un indicateur visuel permet de savoir si l'interlocuteur est actuellement **en ligne** ou hors ligne.
 
 #### Fonctionnalités Principales :
-![img.png](images/messages.png)
 
 ##### 1. Gestion des Conversations
 
@@ -501,8 +500,8 @@ L'interface a été conçue pour s'adapter aux usages modernes :
 </div>
 
 #### Implémentation Technique :
-
 Le système repose sur une architecture optimisée pour la réactivité :
+![img.png](images/messages.png)
 
 * **API REST** : Des endpoints dédiés (`/api/conversations`) gèrent la récupération et l'envoi des données.
 * **Polling Dynamique** : Le frontend interroge périodiquement le serveur pour récupérer les nouveaux messages sans recharger la page (`getNewMessagesAfter`), garantissant une expérience proche du temps réel.
