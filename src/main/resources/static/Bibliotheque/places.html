@@ -3,41 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Réserver une Place – BU</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../header.css">
     <link rel="stylesheet" href="bu.css">
+    <link rel="stylesheet" href="subheader.css">
 </head>
 <body>
 <div id="notifToast" class="notification-toast" style="display:none;"></div>
+<script src="../header.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector('.main-header');
+        const currentPath = window.location.pathname; // Détecte la page actuelle
 
-<header>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <img src="../images/etudlife.png">
-            <span>EtudLife</span>
-        </a>
-
-        <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/static/Agenda.html">Agenda</a></li>
-            <li><a href="/Cours.html">Cours</a></li>
-            <li><a href="transports.html">Transports</a></li>
-            <li><a href="/static/Bibliothèque/bibliotheque.html" class="active">Bibliothèque</a></li>
-            <li><a href="/Campus.html">Campus</a></li>
-            <li><a href="/Restaurant.html">Restaurant</a></li>
-            <li><a href="/static//Annonce/annonces.html">Annonces</a></li>
-            <li><a href="/static/messages.html">Messages</a></li>
-        </ul>
-
-        <div class="profile"><img src="../images/compte.png"></div>
-    </nav>
-
-    <nav class="bu-submenu">
-        <a href="catalogue.html">Catalogue</a>
-        <a href="reservation.html">Mes Réservations</a>
-        <a href="places.html" class="active">Réserver une Place</a>
-        <a href="services.html">Services</a>
-    </nav>
-</header>
-
+        if (header) {
+            const subMenuHTML = `
+                <nav class="bu-submenu">
+                    <a href="catalogue.html" class="${currentPath.includes('catalogue') ? 'active' : ''}">Catalogue</a>
+                    <a href="reservation.html" class="${currentPath.includes('reservation') ? 'active' : ''}">Mes Réservations</a>
+                    <a href="places.html" class="${currentPath.includes('places') ? 'active' : ''}">Réserver une Place</a>
+                    <a href="services.html" class="${currentPath.includes('services') ? 'active' : ''}">Services</a>
+                </nav>`;
+            header.insertAdjacentHTML('beforeend', subMenuHTML);
+        }
+    });
+</script>
 
 <main class="page">
     <h1 class="page-title">Réserver une place à la BU</h1>
@@ -246,5 +236,7 @@
     }
 }
 </script>
+<script src="/app.js"></script>
+
 </body>
 </html>

@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Services – BU | EtudLife</title>
-    <link rel="stylesheet" href="bu.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="bu.css">
+    <link rel="stylesheet" href="subheader.css">
 
     <style>
         .services-simple-container {
@@ -70,21 +72,22 @@
 
 <script src="../header.js"></script>
 <script>
+    // Injection du SOUS-MENU (Catalogue, Places, etc.)
     document.addEventListener("DOMContentLoaded", () => {
         const header = document.querySelector('.main-header');
-        // Sous-header spécifique à la bibliothèque
-        const subMenuHTML = `
-    <nav class="bu-submenu">
-        <a href="catalogue.html">Catalogue</a>
-        <a href="reservation.html">Mes Réservations</a>
-        <a href="places.html">Réserver une Place</a>
-        <a href="services.html">Services</a>
-    </nav>
-            `;
-
-        header.insertAdjacentHTML('beforeend', subMenuHTML);
+        if (header) {
+            const subMenuHTML = `
+                <nav class="bu-submenu">
+                    <a href="catalogue.html">Catalogue</a>
+                    <a href="reservation.html">Mes Réservations</a>
+                    <a href="places.html" class="active">Réserver une Place</a>
+                    <a href="services.html">Services</a>
+                </nav>`;
+            header.insertAdjacentHTML('beforeend', subMenuHTML);
+        }
     });
 </script>
+
 
 <main class="services-simple-container">
     <h1 class="page-title">Services de la BU</h1>
@@ -119,5 +122,6 @@
 
 </main>
 
+<script src="/app.js"></script>
 </body>
 </html>

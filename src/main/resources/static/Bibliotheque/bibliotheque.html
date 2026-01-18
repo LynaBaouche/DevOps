@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <script>
-        // Vérification de connexion identique à Agenda.html
-        const user = JSON.parse(localStorage.getItem("utilisateur"));
-        if (!user) {
-            alert("⚠️ Vous devez vous connecter pour accéder à la bibliothèque de l'université.");
-            window.location.href = "/login.html";
-        }
-    </script>
+
     <meta charset="UTF-8">
     <title>Bibliothèque – Le Pixel</title>
-
+    <link rel="stylesheet" href="../header.css">
     <link rel="stylesheet" href="bibliotheque.css">
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="subheader.css">
 
     <style>
         /* Styles visuels "Le Pixel" */
@@ -104,53 +97,36 @@
         .nav-card:hover { transform: translateY(-10px); color: #e61e2a; }
     </style>
 </head>
-
 <body>
+<script src="../header.js"></script>
 
-<script src="header.js"></script>
+<script>
+    const userCheck = JSON.parse(localStorage.getItem("utilisateur"));
+    if (!userCheck) {
+        alert("⚠️ Vous devez vous connecter pour accéder à la bibliothèque.");
+        window.location.href = "../login.html";
+    }
+</script>
 
-<header class="main-header">
-    <div class="header-container">
-        <div class="header-left">
-            <div class="logo">
-                <img src="/images/etudlife.png" alt="Logo EtudLife" class="logo-icon">
-                <span class="logo-text"><strong>Etud</strong>Life</span>
-            </div>
-        </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector('.main-header');
+        const currentPath = window.location.pathname.toLowerCase(); // Récupère l'URL actuelle
 
-        <nav class="header-nav">
-            <a href="/index.html">Accueil</a>
-            <a href="/Agenda.html">Agenda</a>
-            <a href="/upload.html">Cours</a>
-            <a href="#">Transports</a>
-            <a href="bibliotheque.html" class="active">Bibliothèque</a>
-            <a href="#">Campus</a>
-            <a href="/Recette/cuisine.html">Cuisine</a>
-            <a href="/Annonce/annonces.html" >Annonces</a>
-            <a href="/messages.html">Messages</a>
-            <a href="/proches.html">Ajouter un proche</a>
-        </nav>
+        const subMenuHTML = `
+            <nav class="bu-submenu">
+                <a href="catalogue.html" class="${currentPath.includes('catalogue.html') ? 'active' : ''}">Catalogue</a>
+                <a href="reservation.html" class="${currentPath.includes('reservation.html') ? 'active' : ''}">Réservations</a>
+                <a href="places.html" class="${currentPath.includes('places.html') ? 'active' : ''}">Réserver une Place</a>
+                <a href="services.html" class="${currentPath.includes('services.html') ? 'active' : ''}">Services</a>
+            </nav>
+        `;
 
-        <div class="account-menu">
-            <img src="/images/compte.png" class="icon-img" id="account-icon">
-            <div class="dropdown-menu" id="dropdown-menu">
-                <p class="menu-title">Invité</p>
-                <p class="menu-subtitle">Non connecté</p>
-                <a href="/index.html?profil=true" id="btn-profil" class="menu-item connected-only" style="display:none;">Profil</a>
-                <a href="/login.html" class="menu-item disconnected-only">Se connecter</a>
-                <a href="/inscription.html" class="menu-item disconnected-only">Créer un compte</a>
-                <a id="logout-btn" class="menu-item connected-only" style="display:none;">Se déconnecter</a>
-            </div>
-        </div>
-    </div>
-
-    <nav class="bu-submenu">
-        <a href="catalogue.html">Catalogue</a>
-        <a href="reservation.html">Mes Réservations</a>
-        <a href="places.html">Réserver une Place</a>
-        <a href="services.html">Services</a>
-    </nav>
-</header>
+        if (header) {
+            header.insertAdjacentHTML('beforeend', subMenuHTML);
+        }
+    });
+</script>
 
 <main>
     <section class="hero-section">
