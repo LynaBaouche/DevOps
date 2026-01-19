@@ -60,4 +60,12 @@ public class Document {
 
     public Long getGroupId() { return groupId; }
     public void setGroupId(Long groupId) { this.groupId = groupId; }
+
+    public void setNomFichier(String nomFichier) {
+        this.nom = nomFichier;
+    }
+
+    public String getNomFichier() {
+        return nom;
+    }
 }
