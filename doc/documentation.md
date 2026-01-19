@@ -345,15 +345,15 @@ Le module **Documents partagés** permet aux étudiants de mutualiser leurs supp
 
 ![document_partagés.jpg](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
 ---
-
+![diag documents_partages.png](../src/main/resources/static/images/diag%20documents_partages.png)
 ## 4.10 Module Bibliothèque : Le Pixel
 Ce module centralise la gestion des ressources documentaires physiques et l'occupation des espaces de travail au sein de l'université Nanterre.
 
-### 4.10.1 Présentation Générale
+### 1 Présentation Générale
 L'interface d'accueil de la bibliothèque, nommée **Le Pixel**, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
 
 ![pixel_bu.jpg](../src/main/resources/static/images/pixel_bu.jpg)
-### 4.10.2 Catalogue & Réservation de Livres
+### 2 Catalogue & Réservation de Livres
 Le catalogue permet aux étudiants d'accéder à une base de **15 247 ouvrages**.
 
 * **Recherche & Filtrage :** Un moteur de recherche par titre, auteur ou ISBN ainsi qu'un filtrage par catégories thématiques facilitent la navigation.
@@ -362,7 +362,7 @@ Le catalogue permet aux étudiants d'accéder à une base de **15 247 ouvrages**
 
 ![catalogue.jpg](../src/main/resources/static/images/catalogue.jpg)
 
-### 4.10.3 Gestion Personnelle : Mes Réservations
+### 3 Gestion Personnelle : Mes Réservations
 Cette interface dédiée permet à l'étudiant de suivre son activité au sein de la bibliothèque de manière centralisée.
 
 * **Suivi :** Affichage récapitulatif de tous les livres réservés avec les dates de récupération prévues.
@@ -370,7 +370,7 @@ Cette interface dédiée permet à l'étudiant de suivre son activité au sein d
 
 ![mes_reservations.jpg](../src/main/resources/static/images/mes_reservations.jpg)
 
-### 4.10.4 Réservation d'Espaces (Places)
+### 4 Réservation d'Espaces (Places)
 Pour favoriser un environnement de travail adapté, l'application propose un système de réservation de places en temps réel.
 
 * **Types de zones :** Places individuelles, Salles de groupe, Box silencieux et Salles informatiques.
@@ -379,7 +379,7 @@ Pour favoriser un environnement de travail adapté, l'application propose un sys
 
 ![reserver_place.jpg](../src/main/resources/static/images/reserver_place.jpg)
 
-### 4.10.5 Services & Cartographie
+### 5 Services & Cartographie
 L'onglet Services propose des outils d'assistance pratique pour faciliter le quotidien de l'étudiant sur le campus.
 
 * **Plan Interactif :** Une carte visuelle permet de localiser les équipements essentiels tels que les **imprimantes** et les **scanners**.
@@ -393,7 +393,9 @@ Le fonctionnement de ces services repose sur l'architecture Spring Boot suivante
 * **`LivreController`** : Gère l'affichage, le filtrage et la recherche dans la base de données du catalogue.
 * **`ReservationController`** : Traite la logique métier des flux d'emprunt et d'annulation des ouvrages.
 * **`SalleController`** : Administre les réservations des espaces physiques et vérifie les contraintes horaires.
----
+
+![bu diagram.png](../src/main/resources/static/images/bu%20diagram.png)
+
 ### 4.7 Petites Annonces
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
 
@@ -629,7 +631,7 @@ Ce module est principalement informationnel et repose sur une structure optimis�
 | Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
 | Agenda (Mensuel / Hebdo / Proches)                      |      ✅       |          ⬜          |      ✅      |      ⬜       |
 | Proches                                                 |      ✅       |          ⬜          |      ⬜      |      ⬜       |
-| Messagerie                                              |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Messagerie                                              |      ⬜       |          ✅          |      ⬜      |      ✅       |
 | Groupes & Publications                                  |      ✅       |          ⬜          |      ⬜      |      ⬜       |
 | Recettes                                                |      ✅       |          ⬜          |      ⬜      |      ⬜       |
 | Système de notifications                                |      ⬜       |          ⬜          |      ✅      |      ⬜       |
@@ -643,22 +645,27 @@ Ce module est principalement informationnel et repose sur une structure optimis�
 
 ## 6. Tests effectués
 
-| Test                         | Type        | Argument Clé                                                                                          |
-|------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
-| Agenda                       | Intégration | Valider la requête SQL (IN) et le croisement de données.                                              |
-| Agenda                       | Unitaire    | Vérification de la logique métier (création, récupération, suppression des événements et gestion de l’agenda partagé). |
-| Groupe                       | Unitaire    | Tester l'algorithme pur (Logique Java), rapidité, isolation (pas besoin de BDD).                      |
-| Lien                         | Intégration | Valider l'effet de bord (1 action = 2 conséquences en BDD) et la communication entre services.        |
-| Messagerie (MessageService)	 | Unitaire    | 	Garantir la sécurité critique (seul l'auteur peut supprimer son message) et les mocks de notification. |
-| Messagerie (Conversation)	   | Unitaire	   | Vérifier la logique conditionnelle : retourner l'ID existant (BDD) OU générer un ID temporaire (Algo) si c'est une nouvelle discussion.|
-| Messagerie & Proches         | Intégration | Valider la cohérence du scénario complet (Ajout Ami $\rightarrow$ Chat) et le bon fonctionnement de la requête SQL native complexe (Aperçus avec jointures). |
-| Système de notifications     | Unitaire    |Vérification de la création des notifications, de l’état lue / non lue et du calcul du nombre de notifications non lues|
-| Système de notifications     | Intégration |Validation du scénario complet via l’API REST (création des notifications lors d’actions, récupération, lecture et mise à jour du badge).|
-| Annonces                     | Unitaire    |Vérifie la logique métier : récupération, filtrage, création, suppression et incrément des vues en isolation via les mocks, sans accès à la BDD.|
-| Annonces                     | Intégration |Valide le fonctionnement complet via l’API REST : création, filtrage, récupération par utilisateur, incrément des vues, suppression et génération des notifications en BDD.|
-| Authentification             | Unitaire    |Vérifie la logique métier : création de compte, gestion des doublons, connexion avec vérification du mot de passe et mise à jour de la dernière connexion en isolation via les mocks.|
-| Athentification              | Intégration | Valide le fonctionnement complet via l’API REST : inscription, mise à jour du profil, login, persistance en base et cryptage des mots de passe.|
+| Test                             | Type        | Argument Clé                                                                                                                                                                                          |
+|----------------------------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Agenda                           | Intégration | Valider la requête SQL (IN) et le croisement de données.                                                                                                                                              |
+| Agenda                           | Unitaire    | Vérification de la logique métier (création, récupération, suppression des événements et gestion de l’agenda partagé).                                                                                |
+| Groupe                           | Unitaire    | Tester l'algorithme pur (Logique Java), rapidité, isolation (pas besoin de BDD).                                                                                                                      |
+| Lien                             | Intégration | Valider l'effet de bord (1 action = 2 conséquences en BDD) et la communication entre services.                                                                                                        |
+| Messagerie (MessageService)	     | Unitaire    | 	Garantir la sécurité critique (seul l'auteur peut supprimer son message) et les mocks de notification.                                                                                               |
+| Messagerie (Conversation)	       | Unitaire	   | Vérifier la logique conditionnelle : retourner l'ID existant (BDD) OU générer un ID temporaire (Algo) si c'est une nouvelle discussion.                                                               |
+| Messagerie & Proches             | Intégration | Valider la cohérence du scénario complet (Ajout Ami $\rightarrow$ Chat) et le bon fonctionnement de la requête SQL native complexe (Aperçus avec jointures).                                          |
+| Système de notifications         | Unitaire    | Vérification de la création des notifications, de l’état lue / non lue et du calcul du nombre de notifications non lues                                                                               |
+| Système de notifications         | Intégration | Validation du scénario complet via l’API REST (création des notifications lors d’actions, récupération, lecture et mise à jour du badge).                                                             |
+| Annonces                         | Unitaire    | Vérifie la logique métier : récupération, filtrage, création, suppression et incrément des vues en isolation via les mocks, sans accès à la BDD.                                                      |
+| Annonces                         | Intégration | Valide le fonctionnement complet via l’API REST : création, filtrage, récupération par utilisateur, incrément des vues, suppression et génération des notifications en BDD.                           |
+| Authentification                 | Unitaire    | Vérifie la logique métier : création de compte, gestion des doublons, connexion avec vérification du mot de passe et mise à jour de la dernière connexion en isolation via les mocks.                 |
+| Athentification                  | Intégration | Valide le fonctionnement complet via l’API REST : inscription, mise à jour du profil, login, persistance en base et cryptage des mots de passe.                                                       |
+| Catalogue (reserver livre)       | Unitaire    | Vérifie que le service refuse une réservation si le livre est déjà pris ou inexistant, sans impacter la base de données.                                                                              |
+| Catalogue & Recherche            | Intégration | Garantit que la recherche par mots-clés fonctionne et que le cycle de vie d'un livre (affichage → réservation → mise à jour du statut) est parfaitement géré entre le Back-end et la base de données. |
+| Services BU (Salles & Documents) | Intégration | Valide l'intégrité des réservations de places (JSON) et le traitement des fichiers (Upload/Download de PDF)                                                                                           |
+
 ## 7. Guide d'Installation & Déploiement
+
 
 ### Prérequis
 * Java 17 ou 21 installé.

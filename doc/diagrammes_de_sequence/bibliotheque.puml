@@ -5,7 +5,7 @@ skinparam SequenceMessageAlignment center
 title Flux du Module Bibliothèque - EtudLife
 
 actor "Étudiant" as User
-box "Frontend" #LightBlue
+box "Frontend" #Lightgrey
     participant "bibliotheque.html\ncatalogue.html\nplaces.html" as UI
 end box
 
