@@ -170,6 +170,7 @@ package com.etudlife {
 			+getCategorie(): String
 			+setCategorie(categorie: String)
 			+isDisponible(): boolean
+			+setDisponible(b: boolean)
 			+getTitre(): String
 			+setTitre(titre: String)
 		}
