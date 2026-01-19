@@ -1,0 +1,51 @@
+@startuml
+skinparam style strictuml
+skinparam SequenceMessageAlignment center
+
+title Flux du Module Bibliothèque - EtudLife
+
+actor "Étudiant" as User
+box "Frontend" #LightBlue
+    participant "bibliotheque.html\ncatalogue.html\nplaces.html" as UI
+end box
+
+box "Backend (Spring Boot)" #LightYellow
+    participant "Livre/Salle/Resa\nControllers" as API
+    participant "Services" as Service
+end box
+
+database "MySQL" as DB
+
+== Flux 1 : Recherche dans le Catalogue (Pixel Search) ==
+
+User -> UI : Saisit un titre ou auteur
+UI -> API : GET /api/livres/search?query=...
+API -> DB : SELECT * FROM livres WHERE...
+DB --> API : Résultats (15 247 ouvrages)
+API --> UI : JSON (Liste des livres + Statuts)
+UI --> User : Affiche les résultats filtrés
+
+== Flux 2 : Réservation d'un Livre ==
+
+User -> UI : Clique sur "Réserver"
+UI -> API : POST /api/reservation (idUser, idLivre, date)
+activate API
+API -> DB : INSERT INTO reservation\nUPDATE livre SET status='Réservé'
+DB --> API : Confirmation
+API --> UI : HTTP 200 OK
+deactivate API
+UI --> User : Notification de succès (Toast)
+
+== Flux 3 : Réservation d'une Place (Individuelle ou Groupe) ==
+
+User -> UI : Remplit le formulaire\n(Zone, Heure, Nb personnes)
+UI -> API : POST /api/salles/reserver (JSON)
+activate API
+API -> API : Vérification durée (< 5h)
+API -> DB : INSERT INTO reservation_salle
+DB --> API : Confirmation
+API --> UI : HTTP 200 OK (QR Code généré)
+deactivate API
+UI --> User : Affiche le récapitulatif & QR Code
+
+@enduml

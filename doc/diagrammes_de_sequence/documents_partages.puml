@@ -1,0 +1,22 @@
+@startuml
+actor Etudiant
+participant "Ressources.html" as UI
+participant "DocumentController" as API
+database "Dossier /uploads" as FS
+
+== Consultation ==
+Etudiant -> UI : Clique sur "Tous les documents"
+UI -> API : GET /api/documents/all
+API -> FS : Liste les fichiers
+FS --> API : Fichiers (PDF, ZIP, PPTX)
+API --> UI : JSON List
+UI --> Etudiant : Affiche la liste des documents
+
+== Upload ==
+Etudiant -> UI : Sélectionne un fichier & "Ajouter"
+UI -> API : POST /api/documents/upload
+API -> FS : Enregistre le nouveau fichier
+FS --> API : Succès
+API --> UI : HTTP 201 Created
+UI -> UI : showNotification("Document ajouté")
+@enduml
