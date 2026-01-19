@@ -14,15 +14,20 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const header = document.querySelector('.main-header');
-        const currentPath = window.location.pathname; // Détecte la page actuelle
-
         if (header) {
+            // Détection de la page actuelle
+            const path = window.location.pathname;
+            const isCatalogue = path.includes('catalogue.html');
+            const isReservation = path.includes('reservation.html');
+            const isPlaces = path.includes('places.html');
+            const isServices = path.includes('services.html');
+
             const subMenuHTML = `
                 <nav class="bu-submenu">
-                    <a href="catalogue.html" class="${currentPath.includes('catalogue') ? 'active' : ''}">Catalogue</a>
-                    <a href="reservation.html" class="${currentPath.includes('reservation') ? 'active' : ''}">Mes Réservations</a>
-                    <a href="places.html" class="${currentPath.includes('places') ? 'active' : ''}">Réserver une Place</a>
-                    <a href="services.html" class="${currentPath.includes('services') ? 'active' : ''}">Services</a>
+                    <a href="catalogue.html" class="${isCatalogue ? 'active' : ''}">Catalogue</a>
+                    <a href="reservation.html" class="${isReservation ? 'active' : ''}">Mes Réservations</a>
+                    <a href="places.html" class="${isPlaces ? 'active' : ''}">Réserver une Place</a>
+                    <a href="services.html" class="${isServices ? 'active' : ''}">Services</a>
                 </nav>`;
             header.insertAdjacentHTML('beforeend', subMenuHTML);
         }
