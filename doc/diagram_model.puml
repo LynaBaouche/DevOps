@@ -192,6 +192,8 @@ package com.etudlife {
 			+setId(id: Long)
 			+getNom(): String
 			+setNom(nom: String)
+			+getNomFichier(): String
+			+setNomFichier(nomFichier: String)
 			+getTaille(): long
 			+setTaille(taille: long)
 			+getType(): String
