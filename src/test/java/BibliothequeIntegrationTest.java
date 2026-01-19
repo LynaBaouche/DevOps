@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 @SpringBootTest(classes = EtudlifeApp.class)
@@ -105,5 +106,27 @@ public class BibliothequeIntegrationTest {
         mockMvc.perform(get("/api/salles/utilisateur/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+    @Autowired
+    private CatalogueRepository catalogueRepository; // Ajoute ça avec les autres Autowired
+
+    @Test
+    public void testRechercheLivres() throws Exception {
+        // On nettoie avant de tester
+        catalogueRepository.deleteAll();
+
+        // On crée un livre spécifique au catalogue général
+        CatalogueLivre livre = new CatalogueLivre();
+        livre.setTitre("Maîtriser Jenkins");
+        livre.setAuteur("Dihia");
+        livre.setCategorie("DevOps");
+        catalogueRepository.save(livre);
+
+        // On teste si la loupe trouve bien "Jenkins"
+        mockMvc.perform(get("/api/livres/search-global")
+                        .param("query", "Jenkins"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].titre", is("Maîtriser Jenkins")));
     }
 }

@@ -26,4 +26,6 @@ public class CatalogueLivre {
 
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) { this.categorie = categorie; }
+
+    public void setDisponible(boolean b) {this.disponible= disponible;}
 }
