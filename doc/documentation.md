@@ -580,12 +580,12 @@ Le système repose sur une architecture optimisée pour la réactivité :
 
 Le module **Campus** regroupe les informations pratiques pour aider les étudiants à se repérer et à se déplacer à l'Université Paris Nanterre.
 
-### 4.10.1 Présentation Générale
+### 1 Présentation Générale
 La page propose une immersion visuelle avec un bandeau d'accueil et affiche les chiffres clés du campus : 35 000 étudiants, 10 UFR répartis sur 32 hectares, et une desserte par 4 grandes lignes de transport.
 
 ![campus.jpg](../src/main/resources/static/images/campus.jpg)
 
-### 4.10.2 Principaux Bâtiments
+### 2 Principaux Bâtiments
 Une grille interactive permet de situer les bâtiments selon les filières d'études :
 * **Bâtiment ALLAIS :** Informatique et MIAGE.
 * **Bâtiment VEIL :** Lettres et Langues.
@@ -594,18 +594,19 @@ Une grille interactive permet de situer les bâtiments selon les filières d'ét
 * **Bibliothèque (B.U) :** Espaces de révision et travail de groupe.
 
 
-### 4.10.3 Transports et Accès
+### 3 Transports et Accès
 Récapitulatif des options pour se rendre sur le campus avec le temps de marche estimé :
 * **RER A / Ligne L :** Gare de Nanterre Université (3 min).
 * **Bus :** Lignes 159, 304, 367 (1 min).
 * **Vélib :** Station disponible directement sur le site.
 
-![trasnport.jpg](../src/main/resources/static/images/trasnport.jpg)
-### 4.10.4 Informations Pratiques
+### 4 Informations Pratiques
 Synthèse des services utiles au quotidien :
 * **Horaires :** Ouverture de 7h30 à 20h00 en semaine.
 * **Restauration :** Localisation des CROUS et cafétérias.
 * **Services :** Accès au WiFi, espaces de coworking et centre médical.
+
+![trasnport.jpg](../src/main/resources/static/images/trasnport.jpg)
 
 ### Architecture Technique
 Ce module repose sur :
