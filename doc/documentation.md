@@ -1,6 +1,6 @@
 # Dossier Technique & Manuel Utilisateur
 ## Projet DevOps - Application EtudLife
-**Version :** v0.3.0
+**Verson :** v0.3.0
 
 **Auteurs :**
 * Lyna Baouche
@@ -323,9 +323,74 @@ Aperçu de la page complète des recettes
 ![recette_favoris.png](images/recette_favoris.png)
 ---
 
+## 4.6 Module Ressources : Partage de Documents
+Le module **Documents partagés** permet aux étudiants de mutualiser leurs supports de cours. Il repose sur un stockage physique de fichiers sécurisé sur le serveur.
 
-### 4.6 Ressources: Partage de Documents
-* Upload et gestion de fichiers (PDF, DOCX).
+#### Règles Métiers :
+* **Accès Authentifié :** Seuls les utilisateurs connectés peuvent consulter, uploader ou télécharger des documents.
+* **Intégrité des fichiers :** Chaque fichier uploadé est renommé avec un **timestamp unique** (ex: `1764151397017_cours.pdf`) pour éviter les écrasements en cas de noms identiques.
+* **Persistance Hybride :** Le chemin relatif du fichier est stocké en base de données MySQL, tandis que le fichier binaire est conservé dans le dossier `/uploads` du serveur.
+
+#### Fonctionnalités :
+* **Consultation :** Liste dynamique de tous les documents disponibles avec affichage du type de fichier (PDF, ZIP, etc.).
+* **Upload :** Formulaire de dépôt permettant d'ajouter un nouveau document depuis un poste local.
+* **Download :** Lien direct permettant la récupération des ressources partagées par la communauté.
+
+#### Classes Impliquées :
+* `DocumentController` : Exposition des points d'entrée (endpoints) d'upload et de téléchargement.
+* `DocumentService` : Logique de gestion des flux de fichiers, renommage et stockage disque.
+* `Document` : Entité JPA stockant le nom original, le nom généré et le chemin serveur.
+
+![document_partagés.jpg](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
+---
+
+## 4.10 Module Bibliothèque : Le Pixel
+Ce module centralise la gestion des ressources documentaires physiques et l'occupation des espaces de travail au sein de l'université Nanterre.
+
+### 4.10.1 Présentation Générale
+L'interface d'accueil de la bibliothèque, nommée **Le Pixel**, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
+
+![pixel_bu.jpg](../src/main/resources/static/images/pixel_bu.jpg)
+### 4.10.2 Catalogue & Réservation de Livres
+Le catalogue permet aux étudiants d'accéder à une base de **15 247 ouvrages**.
+
+* **Recherche & Filtrage :** Un moteur de recherche par titre, auteur ou ISBN ainsi qu'un filtrage par catégories thématiques facilitent la navigation.
+* **Statut en temps réel :** L'état de chaque livre (**Disponible**, **Emprunté** ou **Réservé**) est affiché instantanément via des badges de couleur.
+* **Action :** Un bouton "Réserver" permet d'ouvrir une interface de confirmation pour initier l'emprunt d'un ouvrage disponible.
+
+![catalogue.jpg](../src/main/resources/static/images/catalogue.jpg)
+
+### 4.10.3 Gestion Personnelle : Mes Réservations
+Cette interface dédiée permet à l'étudiant de suivre son activité au sein de la bibliothèque de manière centralisée.
+
+* **Suivi :** Affichage récapitulatif de tous les livres réservés avec les dates de récupération prévues.
+* **Annulation :** Possibilité d'annuler une réservation active d'un simple clic en cas de changement de programme, libérant ainsi l'ouvrage pour les autres usagers.
+
+![mes_reservations.jpg](../src/main/resources/static/images/mes_reservations.jpg)
+
+### 4.10.4 Réservation d'Espaces (Places)
+Pour favoriser un environnement de travail adapté, l'application propose un système de réservation de places en temps réel.
+
+* **Types de zones :** Places individuelles, Salles de groupe, Box silencieux et Salles informatiques.
+* **Règle métier :** Pour garantir une rotation équitable, une réservation ne peut excéder **5 heures consécutives**.
+* **Validation :** La saisie du numéro étudiant et du nom complet est requise pour assurer la traçabilité et la sécurité des espaces.
+
+![reserver_place.jpg](../src/main/resources/static/images/reserver_place.jpg)
+
+### 4.10.5 Services & Cartographie
+L'onglet Services propose des outils d'assistance pratique pour faciliter le quotidien de l'étudiant sur le campus.
+
+* **Plan Interactif :** Une carte visuelle permet de localiser les équipements essentiels tels que les **imprimantes** et les **scanners**.
+* **Navigation Fluide :** Des boutons de raccourcis permettent de basculer rapidement vers le catalogue de livres ou le formulaire de réservation de place.
+
+![service_bu.jpg](../src/main/resources/static/images/service_bu.jpg)
+
+### Classes Impliquées (Backend)
+Le fonctionnement de ces services repose sur l'architecture Spring Boot suivante :
+
+* **`LivreController`** : Gère l'affichage, le filtrage et la recherche dans la base de données du catalogue.
+* **`ReservationController`** : Traite la logique métier des flux d'emprunt et d'annulation des ouvrages.
+* **`SalleController`** : Administre les réservations des espaces physiques et vérifie les contraintes horaires.
 ---
 ### 4.7 Petites Annonces
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
@@ -508,28 +573,74 @@ Le système repose sur une architecture optimisée pour la réactivité :
 * **Polling Dynamique** : Le frontend interroge périodiquement le serveur pour récupérer les nouveaux messages sans recharger la page (`getNewMessagesAfter`), garantissant une expérience proche du temps réel.
 * **SQL Natif Optimisé** : Une requête complexe avec jointures est utilisée pour construire l'aperçu des conversations (récupération du dernier message et du bon interlocuteur en une seule requête) afin d'assurer de hautes performances.
 ---
+## 4.10 Module Campus : Vie Universitaire
 
+Le module **Campus** regroupe les informations pratiques pour aider les étudiants à se repérer et à se déplacer à l'Université Paris Nanterre.
+
+### 4.10.1 Présentation Générale
+La page propose une immersion visuelle avec un bandeau d'accueil et affiche les chiffres clés du campus : 35 000 étudiants, 10 UFR répartis sur 32 hectares, et une desserte par 4 grandes lignes de transport.
+
+![campus.jpg](../src/main/resources/static/images/campus.jpg)
+
+### 4.10.2 Principaux Bâtiments
+Une grille interactive permet de situer les bâtiments selon les filières d'études :
+* **Bâtiment ALLAIS :** Informatique et MIAGE.
+* **Bâtiment VEIL :** Lettres et Langues.
+* **Bâtiments ROUCH / RAMNOUX :** Droit, Économie et Gestion.
+* **Bâtiments ZAZZO / LEFEBVRE :** Psychologie et Sociologie.
+* **Bibliothèque (B.U) :** Espaces de révision et travail de groupe.
+
+
+### 4.10.3 Transports et Accès
+Récapitulatif des options pour se rendre sur le campus avec le temps de marche estimé :
+* **RER A / Ligne L :** Gare de Nanterre Université (3 min).
+* **Bus :** Lignes 159, 304, 367 (1 min).
+* **Vélib :** Station disponible directement sur le site.
+
+![trasnport.jpg](../src/main/resources/static/images/trasnport.jpg)
+### 4.10.4 Informations Pratiques
+Synthèse des services utiles au quotidien :
+* **Horaires :** Ouverture de 7h30 à 20h00 en semaine.
+* **Restauration :** Localisation des CROUS et cafétérias.
+* **Services :** Accès au WiFi, espaces de coworking et centre médical.
+
+### Architecture Technique
+Ce module repose sur :
+* **`campus.html`** : Structure de la page.
+* **`style.css`** : Mise en page responsive (Grilles et icônes).
+* **Iframe Google Maps** : Carte interactive pour la localisation.
+
+### Architecture Technique & Classes Impliquées
+Ce module est principalement informationnel et repose sur une structure optimisée pour la navigation et la performance :
+
+* **`campus.html`** : Structure principale de la page utilisant des composants CSS modulaires.
+* **`header.js`** : Assure la cohérence de la barre de navigation globale et le maintien de la session utilisateur.
+* **`style.css`** : Gère la mise en page responsive (Flexbox et CSS Grid) pour l'affichage des bâtiments et des statistiques.
+* **Intégration Iframe** : Appel à un service externe de cartographie pour la donnée géographique dynamique.
 ## 5. Matrice de Responsabilités & Réalisations
 
 | Fonctionnalité                                          | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
 |---------------------------------------------------------|:------------:|:-------------------:|:-----------:|:------------:|
-| Architecture Backend                                    | ✅ | ✅ | ✅ | ⬜ |
-| Gestion BDD                                             | ⬜ | ✅ | ⬜ | ⬜ |
-| Gestion des Releases & CI/CD                            | ✅ | ⬜ | ⬜ | ⬜ |
-| Documentation & UML                                     | ✅ | ✅ | ✅ | ⬜ |
-| Organisation & Pilotage Agile                           | ✅ | ✅ | ✅ | ⬜ |
-| Agenda (Mensuel / Hebdo / Proches)                      | ✅ | ⬜ | ✅ | ⬜ |
-| Proches                                                 | ✅ | ⬜ | ⬜ | ⬜ |
-| Messagerie                                              | ⬜ | ✅ | ⬜ | ⬜ |
-| Groupes & Publications                                  | ✅ | ⬜ | ⬜ | ⬜ |
-| Recettes                                                | ✅ | ⬜ | ⬜ | ⬜ |
-| Système de notifications                                | ⬜ | ⬜ | ✅ | ⬜ |
-| Annonces                                                | ⬜ | ⬜ | ✅ | ⬜ |
-| Favoris annonce                                         | ⬜ | ⬜ | ✅ | ⬜ |
-| Compte Utilisateur : Inscription, Connexion et Sécurité | ⬜ | ⬜ | ✅ | ⬜ |
-| Modification du profil                                  | ⬜ | ⬜ | ✅ | ⬜ |
-| Recommandation intelligente de groupes                  | ✅ | ⬜ | ⬜ | ⬜ |
-| Tests Postman                                           | ✅ | ✅ | ✅ | ✅ |
+| Architecture Backend                                    |      ✅       |          ✅          |      ✅      |      ✅       |
+| Gestion BDD                                             |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Gestion des Releases & CI/CD                            |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Documentation & UML                                     |      ✅       |          ✅          |      ✅      |      ✅       |
+| Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
+| Agenda (Mensuel / Hebdo / Proches)                      |      ✅       |          ⬜          |      ✅      |      ⬜       |
+| Proches                                                 |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Messagerie                                              |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Groupes & Publications                                  |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Recettes                                                |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Système de notifications                                |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Annonces                                                |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Favoris annonce                                         |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Compte Utilisateur : Inscription, Connexion et Sécurité |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Modification du profil                                  |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Recommandation intelligente de groupes                  |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Documents partagés                                      |      ⬜       |          ⬜          |      ⬜      |      ✅       |
+| Bibiliothèque                                           |      ⬜       |          ⬜          |      ⬜      |      ✅       |
+| Tests Postman                                           |      ✅       |          ✅          |      ✅      |      ✅       |
+
 ## 6. Tests effectués
 
 | Test                         | Type        | Argument Clé                                                                                            |
