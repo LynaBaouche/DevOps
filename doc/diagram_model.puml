@@ -163,6 +163,17 @@ package com.etudlife {
 			+setTitre(titre: String)
 		}
 
+		class com.etudlife.model.CatalogueLivre {
+			--
+			+getAuteur(): String
+			+setAuteur(auteur: String)
+			+getCategorie(): String
+			+setCategorie(categorie: String)
+			+isDisponible(): boolean
+			+getTitre(): String
+			+setTitre(titre: String)
+		}
+
 		class com.etudlife.model.Reservation {
 			--
 			+getDateRecuperation(): LocalDate
@@ -569,6 +580,9 @@ package com.etudlife {
 		class com.etudlife.controller.LivreController {
 			--
 			+getAllLivres(): List<LivreBu>
+			..
+			+search(query: String): List<CatalogueLivre>
+			+searchInGlobalCatalogue(query: String): List<CatalogueLivre>
 		}
 
 		class com.etudlife.controller.PostController {
@@ -649,6 +663,11 @@ package com.etudlife {
 			--
 			+findByAuteurIdOrderByDateCreationDesc(auteurId: Long): List<Post>
 			+findByGroupeIdOrderByDateCreationDesc(groupeId: Long): List<Post>
+		}
+
+		interface com.etudlife.repository.CatalogueRepository {
+			--
+			+findByTitreContainingIgnoreCaseOrAuteurContainingIgnoreCaseOrCategorieContainingIgnoreCase(titre: String, auteur: String, categorie: String): List<CatalogueLivre>
 		}
 
 		interface com.etudlife.repository.NotificationRepository {
@@ -733,6 +752,7 @@ com.etudlife.controller.CompteController --* com.etudlife.service.CompteService
 com.etudlife.controller.CompteController --* com.etudlife.repository.CompteRepository
 com.etudlife.controller.SalleController --* com.etudlife.repository.ReservationSalleRepository
 com.etudlife.controller.LivreController --* com.etudlife.repository.LivreBuRepository
+com.etudlife.controller.LivreController --* com.etudlife.repository.CatalogueRepository
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
 com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
 
