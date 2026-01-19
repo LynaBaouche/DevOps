@@ -110,7 +110,7 @@ gradlew.bat bootRun
 ```
 3. ** Via Votre IDE :**
 - Ouvrez le projet dans votre IDE habituel (ex : IntelliJ IDEA).
-- Exécutez la classe principale `com.etudlife.EtudLifeApplication`.
+- Exécutez la classe principale `com.etudlife.EtudlifeApp`.
 - Assurez-vous que les variables d'environnement sont bien configurées.
 
 
@@ -134,7 +134,7 @@ Voici quelques endpoints clés de l'API REST :
 | Lyna Baouche        | [@LynaBaouche](https://github.com/LynaBaouche) | 42008865     |
 | Alicya-Pearl Marras | [@alicyap](https://github.com/alicyap)     | 44015522        |
 | Kenza Menad         | [@kenza-menad](https://github.com/kenza-menad) | 44014761             |
-| Dyhia Sellah        | [@DyhiaSellah1](https://github.com/DyhiaSellah1)      | 44015522             |
+| Dyhia Sellah        | [@DyhiaSellah1](https://github.com/DyhiaSellah1)      | 41008767             |
 ---
 
 > Projet académique open-source — *EtudLife* © 2025
