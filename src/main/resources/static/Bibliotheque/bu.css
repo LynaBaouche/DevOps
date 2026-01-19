@@ -252,40 +252,149 @@ body {
     border-radius: 8px;
 }
 
-
-/* ===========================================
-   MODAL + TOAST
-=========================================== */
-
+/* Fond noir transparent derrière la pop-up */
 .modal-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.4);
-    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75); /* Fond très sombre */
+    display: none; /* Caché par défaut */
     align-items: center;
     justify-content: center;
-    z-index: 50;
+    z-index: 9999;
 }
 
+/* La boîte blanche du formulaire */
 .modal {
-    background: #ffffff;
-    border-radius: 16px;
-    width: 460px;
-    padding: 18px 20px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-}
-
-.modal-header {
+    background: #ffffff !important;
+    width: 400px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    border: none;
 }
 
-.modal-close {
-    background: none;
+/* Titre "Réserver un ouvrage" */
+.modal-title {
+    color: #00768d; /* Bleu EtudLife */
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+/* Style des labels et de l'input date */
+.modal-body label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+#dateRecuperation {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Empêche le débordement */
+}
+
+/* Zone des boutons en bas */
+.modal-footer {
+    display: flex;
+    justify-content: center; /* Centre les boutons comme sur ton image */
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Bouton Annuler (Gris) */
+.btn-secondary {
+    background-color: #f0f4f9;
+    color: #5f6368;
     border: none;
-    font-size: 22px;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1; /* Même largeur */
+}
+
+/* Bouton Confirmer (Jaune EtudLife) */
+.btn-primary-modal {
+    background-color: #e8bc44; /* Le jaune de ton image */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1; /* Même largeur */
+}
+/* --- Bouton Annuler (Gris clair) --- */
+.btn-secondary {
+    background-color: #f0f4f9;
+    color: #5f6368;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+/* --- Bouton Confirmer (Jaune EtudLife) --- */
+.btn-primary-modal {
+    background-color: #e8bc44; /* Le jaune doré de ton bouton */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.1s, background 0.2s;
+}
+
+.btn-primary-modal:hover {
+    background-color: #d4a733;
+    transform: translateY(-1px);
+}
+
+/* --- Focus sur le champ date (Optionnel pour le style) --- */
+#dateRecuperation:focus {
+    border-color: #00768d;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 118, 141, 0.2);
+}
+/* --- Boutons du formulaire --- */
+
+.btn-primary-modal {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+    padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
@@ -300,8 +409,6 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.16);
     display: none;
 }
-
-
 /* ===========================================
    RÉSERVER UNE PLACE (CARDS)
 =========================================== */

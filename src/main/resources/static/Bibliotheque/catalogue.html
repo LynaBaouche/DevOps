@@ -39,9 +39,12 @@
 
     <!-- Recherche -->
     <div class="search-area">
-        <input type="text" class="search-input" id="searchInput"
-               placeholder="Rechercher un livre, auteur, ISBN…">
-        <select class="category-select">
+        <div style="display: flex; flex: 1; align-items: center; background: white; border-radius: 8px; padding-right: 10px;">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Rechercher un livre, auteur, ISBN…">
+            <button id="searchButton" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">🔍</button>
+        </div>
+        <select class="category-select" id="categorySelect">
             <option>Toutes les catégories</option>
         </select>
         <button class="btn-filtres">Filtres avancés</button>
@@ -60,17 +63,17 @@
 
 </main>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="bookModalOverlay">
+<div class="modal-overlay" id="bookModalOverlay" style="display: none;">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Réserver un ouvrage</div>
+            <h3 class="modal-title">Réserver un ouvrage</h3>
             <button class="modal-close" id="bookModalClose">&times;</button>
         </div>
-        <div class="modal-body" id="bookModalBody"></div>
-        <div class="modal-footer">
+        <div class="modal-body" id="bookModalBody">
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
             <button class="btn-secondary" id="bookModalCancel">Annuler</button>
-            <button class="btn-primary-modal" id="bookModalConfirm">Confirmer</button>
+            <button class="btn-primary" id="bookModalConfirm">Confirmer</button>
         </div>
     </div>
 </div>
