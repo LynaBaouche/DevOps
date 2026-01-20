@@ -225,7 +225,6 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 
 #### Classes Impliquées :
-
 *`CompteController` (exposition des endpoints REST)
 * `CompteService` (logique métier d’authentification)
 * `CompteRepository` (accès aux données utilisateurs)
