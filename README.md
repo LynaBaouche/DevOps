@@ -41,8 +41,9 @@
 **Backend :**
 - **Langage :** Java 17
 - **Framework :** Spring Boot 3.x (Spring Web, Spring Data JPA, Validation)
-- **Base de données :** MySQL (hébergée sur AlwaysData / ou locale)
+- **Base de données :** MySQL (hébergée sur AlwaysData)
 - **Services Métiers :**
+- Exemples : 
     - `CompteService` (Auth & Gestion utilisateurs)
     - `EvenementService` (Agenda & Partage)
     - `GroupeService` & `PostService` (Communauté)
@@ -72,7 +73,7 @@
 |--------|------------------|--------------|
 | **Java** | 17 | Requis pour le Backend |
 | **Gradle** | 8.x | Outil de build (inclus via wrapper) |
-| **MySQL** | 8.0 | Base de données (Client ou Serveur) |
+| **MySQL** | 8.0 | Base de données  |
 | **Navigateur** | Récent | Pour l'interface utilisateur |
 
 ---
