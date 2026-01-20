@@ -5,7 +5,6 @@
 [![Java CI with Gradle](https://github.com/LynaBaouche/DevOps/actions/workflows/gradle.yml/badge.svg)](https://github.com/LynaBaouche/DevOps/actions/workflows/gradle.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=LynaBaouche_DevOps&metric=alert_status)](https://sonarcloud.io/dashboard?id=LynaBaouche_DevOps)
 ![Coverage](.github/badges/jacoco.svg)
-![Branches](.github/badges/branches.svg)
 > **Votre plateforme étudiante** — Centralisation des outils de vie universitaire : agenda partagé, groupes de travail, réseau social et partage de documents.
 
 ---
