@@ -156,8 +156,29 @@ le catalogue exhaustif (catalogue_general), utilisé pour la recherche documenta
 La réservation des places et salles est gérée par une entité autonome ReservationSalle, permettant de modéliser les flux physiques au sein de la bibliothèque indépendamment des ouvrages.
 
 
-* **Messagerie :**
-#### 5. Système de Notification
+#### 5. Module Messagerie Instantanée (Message)
+
+L'entité Message est l'unité atomique de ce module. Elle établit une double relation Many-to-One vers l'entité Compte :
+
+- sender : L'auteur du message.
+
+- receiver : Le destinataire unique (architecture 1-to-1).
+
+Cette structure permet une traçabilité complète des échanges et garantit l'intégrité référentielle des conversations.
+
+Virtualisation des Conversations (Data Projection) :
+
+Pour éviter la lourdeur d'une table "Conversation" physique à maintenir, le concept de conversation est généré dynamiquement.
+
+Optimisation SQL : Une requête native complexe (avec MAX(date) et GROUP BY) est utilisée pour projeter une vue synthétique "Aperçu". Elle agrège les messages pour n'afficher que le dernier échange et le contact correspondant en une seule transaction SGBD.
+
+Flux Temps Réel & Sécurité :
+
+* Persistance & Notification : L'insertion en base d'un message (save) est couplée à un système de notification pour alerter le destinataire.
+
+* Contrôle d'accès : La logique métier (Service Layer) verrouille les interactions : un message ne peut être envoyé que si un Lien de type "Proche" est validé entre les deux comptes.
+
+#### 6. Système de Notification
 * **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`, `ANNONCE`, `NEW_MESSAGE`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
 ### Diagramme de Classes Complet
 Le diagramme de classe étant complexe, nous recommandons de l'ouvrir dans un nouvel onglet :
