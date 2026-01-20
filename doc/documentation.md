@@ -418,8 +418,8 @@ Le module **Petites Annonces** permet aux étudiants de publier, consulter et g�
 #### Création d’une annonce
 Tout utilisateur authentifié peut créer une annonce.
 - Formulaire de création incluant :
-  -Entité Notification : Liée à un Compte (le destinataire), elle stocke le type d'action (FRIEND_ADDED, NEW_EVENT, ANNONCE, NEW_MESSAGE), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs. Titre
-  - Catégorie
+  - Titre
+  - Catégorie 
   - Prix
   - Ville
   - Description
