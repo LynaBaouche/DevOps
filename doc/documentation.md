@@ -16,39 +16,43 @@
 ---
 
 
+---
+
 ## 📑 Sommaire
 
 **1. Présentation Générale**
-* 1.1 Objectif du Projet
-* 1.2 Équipe & Contributeurs
-* 1.3 Gestion de Projet & DevOps
+* [1.1 Objectif du Projet](#11-objectif-du-projet)
+* [1.2 Équipe & Contributeurs](#12-équipe--contributeurs)
+* [1.3 Gestion de Projet & DevOps](#13-gestion-de-projet--devops)
 
 **2. Analyse Concurrentielle & UX**
-* 2.1 Étude de la concurrence
-* 2.2 Utilisabilité & Design
+* [2.1 Étude de la concurrence](#21-étude-de-la-concurrence)
+* [2.2 Utilisabilité & Design](#22-utilisabilité--design)
 
 **3. Architecture Technique**
-* 3.1 Stack Technologique
-* 3.2 Modélisation (UML) & Structure des Données
+* [3.1 Stack Technologique](#31-stack-technologique)
+* [3.2 Modélisation (UML) & Structure des Données](#32-modélisation-uml--structure-des-données)
 
 **4. Fonctionnalités Détaillées (User Guide)**
-* 4.1 Authentification & Sécurité
-* 4.2 Communauté : Groupes & Recommandations Intelligentes
-* 4.3 Réseau Social : Proches
-* 4.4 Organisation : Agenda Partagé
-* 4.5 Vie Quotidienne : Cuisine
-* 4.6 Ressources : Partage de Documents
-* 4.7 Petites Annonces
-* 4.8 Système de notifications
-* 4.9 Système de Messagerie Instantanée
-* 4.10 Module Bibliothèque
-* 4.11 Module Campus : Vie Universitaire
+* [4.1 Authentification & Sécurité](#41-authentification--sécurité)
+* [4.2 Communauté : Groupes & Recommandations Intelligentes](#42-communauté--groupes--recommandations-intelligentes)
+* [4.3 Réseau Social : Proches](#43-réseau-social--proches)
+* [4.4 Organisation : Agenda Partagé](#44-organisation--agenda-partagé)
+* [4.5 Vie Quotidienne : Cuisine](#45-vie-quotidienne--cuisine)
+* [4.6 Ressources : Partage de Documents](#46-ressources--partage-de-documents)
+* [4.7 Petites Annonces](#47-petites-annonces)
+* [4.8 Système de notifications](#48-système-de-notifications)
+* [4.9 Système de Messagerie Instantanée](#49-système-de-messagerie-instantanée)
+* [4.10 Module Bibliothèque](#410-module-bibliothèque)
+* [4.11 Module Campus : Vie Universitaire](#411-module-campus--vie-universitaire)
 
-**5. Matrice de Responsabilités & Réalisations**
+**5. [Matrice de Responsabilités & Réalisations](#5-matrice-de-responsabilités--réalisations)**
 
-**6. Tests effectués**
+**6. [Tests effectués](#6-tests-effectués)**
 
-**7. Guide d'Installation & Déploiement**
+**7. [Guide d'Installation & Déploiement](#7-guide-dinstallation--déploiement)**
+
+---
 
 ---
 
@@ -434,9 +438,9 @@ Le module **Documents partagés** permet aux étudiants de mutualiser leurs supp
 * `DocumentService` : Logique de gestion des flux de fichiers, renommage et stockage disque.
 * `Document` : Entité JPA stockant le nom original, le nom généré et le chemin serveur.
 
-![documents_partages.png](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
+![documents_partages.png](../src/main/resources/static/images/document_partages.jpg)
 ---
-![diag documents_partages.png](../src/main/resources/static/images/diag%20documents_partages.png)
+![diag documents_partages.png](../src/main/resources/static/images/diag_documents_partages.png)
 
 ### 4.7 Petites Annonces
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
