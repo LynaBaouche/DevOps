@@ -125,6 +125,21 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
 - Un système de **favoris d’annonces** permet de sauvegarder des annonces d’intérêt personnel.
 - La publication d’une annonce déclenche une notification automatique vers les proches de l’auteur.
 * **Document :**
+
+*  Stockage Hybride : le document utilise un système mixte. L'entité en base de données stocke les métadonnées (nom original, type MIME, uploader), tandis que le fichier physique est écrit sur le disque serveur via un flux MultipartFile.
+
+  Sécurisation : Implémentation d'un algorithme de renommage systématique par timestamping pour garantir l'unicité des fichiers sur le système de fichiers, évitant ainsi tout conflit de nom lors de la mutualisation des ressources entre étudiants.
+* **Bibliothèque**  :
+
+* Gestion Multi-Tables : Le système sépare le fond de roulement (table livre_bu) du catalogue exhaustif (catalogue_general). Cela permet d'optimiser les performances de recherche sur les ouvrages existants tout en gardant une table légère pour la gestion des stocks.
+
+* Algorithme d'Emprunt : La réservation d'un ouvrage déclenche une transaction JPA atomique :
+
+  Création d'une entité Reservation (idUser, idLivre, dateRecuperation).
+
+  Mutation de l'attribut disponible du livre de 1 (true) à 0 (false) pour mettre à jour l'interface utilisateur en temps réel.
+
+* Réservation d'Espaces (ReservationSalle) : Entité autonome gérant les flux physiques au sein de la bibliothèque.
 * **Messagerie :**
 #### 5. Système de Notification
 * **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`, `ANNONCE`, `NEW_MESSAGE`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
@@ -346,55 +361,6 @@ Le module **Documents partagés** permet aux étudiants de mutualiser leurs supp
 ![document_partagés.jpg](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
 ---
 ![diag documents_partages.png](../src/main/resources/static/images/diag%20documents_partages.png)
-## 4.10 Module Bibliothèque : Le Pixel
-Ce module centralise la gestion des ressources documentaires physiques et l'occupation des espaces de travail au sein de l'université Nanterre.
-
-### 1 Présentation Générale
-L'interface d'accueil de la bibliothèque, nommée **Le Pixel**, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
-
-![pixel_bu.jpg](../src/main/resources/static/images/pixel_bu.jpg)
-### 2 Catalogue & Réservation de Livres
-Le catalogue permet aux étudiants d'accéder à une base de **15 247 ouvrages**.
-
-* **Recherche & Filtrage :** Un moteur de recherche par titre, auteur ou ISBN ainsi qu'un filtrage par catégories thématiques facilitent la navigation.
-* **Statut en temps réel :** L'état de chaque livre (**Disponible**, **Emprunté** ou **Réservé**) est affiché instantanément via des badges de couleur.
-* **Action :** Un bouton "Réserver" permet d'ouvrir une interface de confirmation pour initier l'emprunt d'un ouvrage disponible.
-
-![catalogue.jpg](../src/main/resources/static/images/catalogue.jpg)
-
-### 3 Gestion Personnelle : Mes Réservations
-Cette interface dédiée permet à l'étudiant de suivre son activité au sein de la bibliothèque de manière centralisée.
-
-* **Suivi :** Affichage récapitulatif de tous les livres réservés avec les dates de récupération prévues.
-* **Annulation :** Possibilité d'annuler une réservation active d'un simple clic en cas de changement de programme, libérant ainsi l'ouvrage pour les autres usagers.
-
-![mes_reservations.jpg](../src/main/resources/static/images/mes_reservations.jpg)
-
-### 4 Réservation d'Espaces (Places)
-Pour favoriser un environnement de travail adapté, l'application propose un système de réservation de places en temps réel.
-
-* **Types de zones :** Places individuelles, Salles de groupe, Box silencieux et Salles informatiques.
-* **Règle métier :** Pour garantir une rotation équitable, une réservation ne peut excéder **5 heures consécutives**.
-* **Validation :** La saisie du numéro étudiant et du nom complet est requise pour assurer la traçabilité et la sécurité des espaces.
-
-![reserver_place.jpg](../src/main/resources/static/images/reserver_place.jpg)
-
-### 5 Services & Cartographie
-L'onglet Services propose des outils d'assistance pratique pour faciliter le quotidien de l'étudiant sur le campus.
-
-* **Plan Interactif :** Une carte visuelle permet de localiser les équipements essentiels tels que les **imprimantes** et les **scanners**.
-* **Navigation Fluide :** Des boutons de raccourcis permettent de basculer rapidement vers le catalogue de livres ou le formulaire de réservation de place.
-
-![service_bu.jpg](../src/main/resources/static/images/service_bu.jpg)
-
-### Classes Impliquées (Backend)
-Le fonctionnement de ces services repose sur l'architecture Spring Boot suivante :
-
-* **`LivreController`** : Gère l'affichage, le filtrage et la recherche dans la base de données du catalogue.
-* **`ReservationController`** : Traite la logique métier des flux d'emprunt et d'annulation des ouvrages.
-* **`SalleController`** : Administre les réservations des espaces physiques et vérifie les contraintes horaires.
-
-![bu diagram.png](../src/main/resources/static/images/bu%20diagram.png)
 
 ### 4.7 Petites Annonces
 Le module **Petites Annonces** permet aux étudiants de publier, consulter et gérer des annonces afin de favoriser l’entraide au sein de la communauté étudiante (logement, cours particuliers, emplois, services, objets).
@@ -576,7 +542,57 @@ Le système repose sur une architecture optimisée pour la réactivité :
 * **Polling Dynamique** : Le frontend interroge périodiquement le serveur pour récupérer les nouveaux messages sans recharger la page (`getNewMessagesAfter`), garantissant une expérience proche du temps réel.
 * **SQL Natif Optimisé** : Une requête complexe avec jointures est utilisée pour construire l'aperçu des conversations (récupération du dernier message et du bon interlocuteur en une seule requête) afin d'assurer de hautes performances.
 ---
-## 4.10 Module Campus : Vie Universitaire
+## 4.10 Module Bibliothèque
+Ce module centralise la gestion des ressources documentaires physiques et l'occupation des espaces de travail au sein de l'université Nanterre.
+
+### 1 Présentation Générale
+L'interface d'accueil de la bibliothèque, nommée **Le Pixel**, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
+
+![interface_bu.jpg](../src/main/resources/static/images/interface_bu.jpg)
+### 2 Catalogue & Réservation de Livres
+Le catalogue permet aux étudiants d'accéder à une base des ouvrages existants.
+
+* **Recherche & Filtrage :** Un moteur de recherche par titre, auteur ou ISBN ainsi qu'un filtrage par catégories thématiques facilitent la navigation.
+* **Statut en temps réel :** L'état de chaque livre (**Disponible**, **Emprunté** ou **Réservé**) est affiché instantanément via des badges de couleur.
+* **Action :** Un bouton "Réserver" permet d'ouvrir une interface de confirmation pour initier l'emprunt d'un ouvrage disponible.
+
+![catalogue.jpg](../src/main/resources/static/images/catalogue.jpg)
+
+### 3 Gestion Personnelle : Mes Réservations
+Cette interface dédiée permet à l'étudiant de suivre son activité au sein de la bibliothèque de manière centralisée.
+
+* **Suivi :** Affichage récapitulatif de tous les livres réservés avec les dates de récupération prévues.
+* **Annulation :** Possibilité d'annuler une réservation active d'un simple clic en cas de changement de programme, libérant ainsi l'ouvrage pour les autres usagers.
+
+![mes_reservations.jpg](../src/main/resources/static/images/mes_reservations.jpg)
+
+### 4 Réservation d'Espaces (Places)
+Pour favoriser un environnement de travail adapté, l'application propose un système de réservation de places en temps réel.
+
+* **Types de zones :** Places individuelles, Salles de groupe, Box silencieux et Salles informatiques.
+* **Règle métier :** Pour garantir une rotation équitable, une réservation ne peut excéder **5 heures consécutives**.
+* **Validation :** La saisie du numéro étudiant et du nom complet est requise pour assurer la traçabilité et la sécurité des espaces.
+
+![reserver_place.jpg](../src/main/resources/static/images/reserver_place.jpg)
+
+### 5 Services & Cartographie
+L'onglet Services propose des outils d'assistance pratique pour faciliter le quotidien de l'étudiant sur le campus.
+
+* **Plan Interactif :** Une carte visuelle permet de localiser les équipements essentiels tels que les **imprimantes** et les **scanners**.
+* **Navigation Fluide :** Des boutons de raccourcis permettent de basculer rapidement vers le catalogue de livres ou le formulaire de réservation de place.
+
+![service_bu.jpg](../src/main/resources/static/images/service_bu.jpg)
+
+### Classes Impliquées (Backend)
+Le fonctionnement de ces services repose sur l'architecture Spring Boot suivante :
+
+* **`LivreController`** : Gère l'affichage, le filtrage et la recherche dans la base de données du catalogue.
+* **`ReservationController`** : Traite la logique métier des flux d'emprunt et d'annulation des ouvrages.
+* **`SalleController`** : Administre les réservations des espaces physiques et vérifie les contraintes horaires.
+
+![bu diagram.png](../src/main/resources/static/images/bu%20diagram.png)
+
+## 4.11 Module Campus : Vie Universitaire
 
 Le module **Campus** regroupe les informations pratiques pour aider les étudiants à se repérer et à se déplacer à l'Université Paris Nanterre.
 
@@ -587,11 +603,7 @@ La page propose une immersion visuelle avec un bandeau d'accueil et affiche les 
 
 ### 2 Principaux Bâtiments
 Une grille interactive permet de situer les bâtiments selon les filières d'études :
-* **Bâtiment ALLAIS :** Informatique et MIAGE.
-* **Bâtiment VEIL :** Lettres et Langues.
-* **Bâtiments ROUCH / RAMNOUX :** Droit, Économie et Gestion.
-* **Bâtiments ZAZZO / LEFEBVRE :** Psychologie et Sociologie.
-* **Bibliothèque (B.U) :** Espaces de révision et travail de groupe.
+* Bâtiment ALLAIS, Bâtiment VEIL, .. etc
 
 
 ### 3 Transports et Accès
