@@ -3,6 +3,7 @@ import com.etudlife.model.Groupe;
 import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.GroupeRepository;
 import com.etudlife.service.GroupeService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,4 +52,11 @@ public class GroupeServiceTest {
         assertTrue(resultats.contains(g2));
         assertFalse(resultats.contains(g3));
     }
+    @Test
+    public void testAjouterMembre_GroupeInconnu() {
+
+        Optional<Groupe> resultat = groupeService.ajouterMembre(999L, 1L);
+        assertTrue(resultat.isEmpty());
+    }
+
 }

@@ -2,6 +2,7 @@ package com.etudlife.controller;
 
 import com.etudlife.model.Recette;
 import com.etudlife.service.RecetteService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +23,14 @@ public class RecetteController {
     @GetMapping("/semaine")
     public ResponseEntity<Map<String, Map<String, Recette>>> getMenuSemaine() {
         return ResponseEntity.ok(service.getMenuDeLaSemaine());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Recette> getRecetteById(@PathVariable Long id) {
+        try {
+            Recette recette = service.getRecetteById(id);
+            return ResponseEntity.ok(recette);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build(); // Renvoie 404 si pas trouvé
+        }
     }
 }

@@ -65,7 +65,9 @@ public class RecetteService {
 
         return saved;
     }
-
-
+    public Recette getRecetteById(Long id) {
+        return recetteRepository.findById(id)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Recette introuvable"));
+    }
 
 }
