@@ -142,13 +142,13 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 (messagerie, annonces, agenda, documents, groupes) est strictement restreint.
 
 #### Règles Métiers :
-    * Accès restreint : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
-    * Email universitaire obligatoire : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
-    * Email unique : une adresse email ne peut être associée qu’à un seul compte.
-    * Mot de passe sécurisé: le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
-    * Validation serveur : toutes les règles de sécurité sont appliquées côté backend.
-    * Sécurité des mots de passe : aucun mot de passe n’est stocké en clair.
-    * Traçabilité de connexion : la dernière activité de l’utilisateur est enregistrée.
+* Accès restreint : seuls les utilisateurs authentifiés peuvent accéder à la plateforme.
+* Email universitaire obligatoire : l’inscription est autorisée uniquement avec une adresse se terminant par `@parisnanterre.fr`.
+* Email unique : une adresse email ne peut être associée qu’à un seul compte.
+* Mot de passe sécurisé: le mot de passe doit contenir des caractères autres que des lettres (chiffres et/ou caractères spéciaux).
+* Validation serveur : toutes les règles de sécurité sont appliquées côté backend.
+* Sécurité des mots de passe : aucun mot de passe n’est stocké en clair.
+* Traçabilité de connexion : la dernière activité de l’utilisateur est enregistrée.
 
 
 #### Fonctionnalités :
@@ -174,11 +174,11 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 #### Classes Impliquées :
 
-    *`CompteController` (exposition des endpoints REST)
-    * `CompteService` (logique métier d’authentification)
-    * `CompteRepository` (accès aux données utilisateurs)
-    * `Compte` (entité utilisateur)
-    * `BCryptPasswordEncoder` (hashage des mots de passe)
+*`CompteController` (exposition des endpoints REST)
+* `CompteService` (logique métier d’authentification)
+* `CompteRepository` (accès aux données utilisateurs)
+* `Compte` (entité utilisateur)
+* `BCryptPasswordEncoder` (hashage des mots de passe)
 
 
 #### Algorithme & Logique Backend :
@@ -416,7 +416,7 @@ Le module **Petites Annonces** permet aux étudiants de publier, consulter et g�
 #### Création d’une annonce
 Tout utilisateur authentifié peut créer une annonce.
 - Formulaire de création incluant :
-  - Titre
+  -Entité Notification : Liée à un Compte (le destinataire), elle stocke le type d'action (FRIEND_ADDED, NEW_EVENT, ANNONCE, NEW_MESSAGE), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs. Titre
   - Catégorie
   - Prix
   - Ville
@@ -504,7 +504,7 @@ Chaque notification contient :
 
 *  `NotificationController` (endpoints REST)
 * `NotificationService` (logique métier)
-*  `NotificationRepository` (accès aux données)
+*  `NEntité Notification : Liée à un Compte (le destinataire), elle stocke le type d'action (FRIEND_ADDED, NEW_EVENT, ANNONCE, NEW_MESSAGE), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.otificationRepository` (accès aux données)
 *  `Notification` (entité)
 *  `NotificationType` (énumération des types de notification)
 
