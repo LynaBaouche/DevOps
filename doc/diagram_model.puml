@@ -338,6 +338,7 @@ package com.etudlife {
 			+getAllRecettes(): List<Recette>
 			+getMenuDeLaSemaine(): Map<String,Map<String,Recette>>
 			..
+			+getRecetteById(id: Long): Recette
 			+save(recette: Recette, auteurId: Long, auteurNom: String, prochesIds: List<Long>): Recette
 		}
 
@@ -502,6 +503,8 @@ package com.etudlife {
 			+RecetteController(service: RecetteService)
 			..
 			+getMenuSemaine(): ResponseEntity<Map<String,Map<String,Recette>>>
+			..
+			+getRecetteById(id: Long): ResponseEntity<Recette>
 		}
 
 		class com.etudlife.controller.MessageController {
