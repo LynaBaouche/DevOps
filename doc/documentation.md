@@ -15,6 +15,43 @@
 
 ---
 
+
+## 📑 Sommaire
+
+**1. Présentation Générale**
+* 1.1 Objectif du Projet
+* 1.2 Équipe & Contributeurs
+* 1.3 Gestion de Projet & DevOps
+
+**2. Analyse Concurrentielle & UX**
+* 2.1 Étude de la concurrence
+* 2.2 Utilisabilité & Design
+
+**3. Architecture Technique**
+* 3.1 Stack Technologique
+* 3.2 Modélisation (UML) & Structure des Données
+
+**4. Fonctionnalités Détaillées (User Guide)**
+* 4.1 Authentification & Sécurité
+* 4.2 Communauté : Groupes & Recommandations Intelligentes
+* 4.3 Réseau Social : Proches
+* 4.4 Organisation : Agenda Partagé
+* 4.5 Vie Quotidienne : Cuisine
+* 4.6 Ressources : Partage de Documents
+* 4.7 Petites Annonces
+* 4.8 Système de notifications
+* 4.9 Système de Messagerie Instantanée
+* 4.10 Module Bibliothèque
+* 4.11 Module Campus : Vie Universitaire
+
+**5. Matrice de Responsabilités & Réalisations**
+
+**6. Tests effectués**
+
+**7. Guide d'Installation & Déploiement**
+
+---
+
 ## 1. Présentation Générale
 
 ### 1.1 Objectif du Projet
