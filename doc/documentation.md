@@ -12,6 +12,7 @@
 
 **Date :** 20 Janvier 2026
 </div>
+
 ---
 
 ## 1. Présentation Générale
@@ -396,7 +397,7 @@ Le module **Documents partagés** permet aux étudiants de mutualiser leurs supp
 * `DocumentService` : Logique de gestion des flux de fichiers, renommage et stockage disque.
 * `Document` : Entité JPA stockant le nom original, le nom généré et le chemin serveur.
 
-![document_partagés.jpg](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
+![document_partages.jpg](../src/main/resources/static/images/document_partag%C3%A9s.jpg)
 ---
 ![diag documents_partages.png](../src/main/resources/static/images/diag%20documents_partages.png)
 
