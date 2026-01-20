@@ -124,22 +124,38 @@ Le système de "Proches" n'est pas une simple liste, mais une entité dédiée p
     - supprimer leurs propres annonces.
 - Un système de **favoris d’annonces** permet de sauvegarder des annonces d’intérêt personnel.
 - La publication d’une annonce déclenche une notification automatique vers les proches de l’auteur.
-* **Document :**
 
-*  Stockage Hybride : le document utilise un système mixte. L'entité en base de données stocke les métadonnées (nom original, type MIME, uploader), tandis que le fichier physique est écrit sur le disque serveur via un flux MultipartFile.
 
-  Sécurisation : Implémentation d'un algorithme de renommage systématique par timestamping pour garantir l'unicité des fichiers sur le système de fichiers, évitant ainsi tout conflit de nom lors de la mutualisation des ressources entre étudiants.
-* **Bibliothèque**  :
+* **Documents Partagés  :**
 
-* Gestion Multi-Tables : Le système sépare le fond de roulement (table livre_bu) du catalogue exhaustif (catalogue_general). Cela permet d'optimiser les performances de recherche sur les ouvrages existants tout en gardant une table légère pour la gestion des stocks.
 
-* Algorithme d'Emprunt : La réservation d'un ouvrage déclenche une transaction JPA atomique :
+* *Stockage Database-Centric :*
+Le module Documents Partagés repose sur un stockage centralisé en base de données.
+L’entité Document persiste à la fois :
+les métadonnées du fichier (nom original, type MIME, date d’upload, identifiant de l’uploader),
+ainsi que le contenu binaire du fichier sous forme d’un champ LONGBLOB (byte[]).
+ - Ce choix garantit une application stateless, indépendante du système de fichiers local, facilitant le déploiement, la scalabilité et la portabilité de l’application dans un contexte DevOps.
+* Sécurisation et intégrité :
+  L’unicité des documents est assurée au niveau applicatif par l’identifiant unique généré en base de données.
+  Le type MIME est conservé afin de garantir un téléchargement sécurisé et conforme au format d’origine du fichier.
 
-  Création d'une entité Reservation (idUser, idLivre, dateRecuperation).
 
-  Mutation de l'attribut disponible du livre de 1 (true) à 0 (false) pour mettre à jour l'interface utilisateur en temps réel.
+* **Bibliothèque – Gestion des ouvrages et des espaces :**
 
-* Réservation d'Espaces (ReservationSalle) : Entité autonome gérant les flux physiques au sein de la bibliothèque.
+
+* Gestion Multi-Tables :
+  Le système distingue :
+le catalogue exhaustif (catalogue_general), utilisé pour la recherche documentaire, du stock réel (livre_bu), utilisé pour la gestion des ouvrages empruntables.
+  Cette séparation permet d’optimiser les performances de recherche tout en conservant une table légère pour la gestion des disponibilités.
+* Algorithme d’Emprunt :
+  La réservation d’un ouvrage est gérée au niveau du service métier et repose sur une transaction JPA atomique :
+  - Création d’une entité Reservation (idUser, idLivre, dateRecuperation).
+  - Mise à jour de l’attribut disponible du livre de true à false, garantissant la cohérence entre l’état de la base et l’affichage côté utilisateur après la réponse API.
+  
+* Réservation d’Espaces (ReservationSalle) :
+La réservation des places et salles est gérée par une entité autonome ReservationSalle, permettant de modéliser les flux physiques au sein de la bibliothèque indépendamment des ouvrages.
+
+
 * **Messagerie :**
 #### 5. Système de Notification
 * **Entité `Notification` :** Liée à un `Compte` (le destinataire), elle stocke le type d'action (`FRIEND_ADDED`, `NEW_EVENT`, `ANNONCE`, `NEW_MESSAGE`), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs.
@@ -340,7 +356,7 @@ Aperçu de la page complète des recettes
 ![recette_favoris.png](images/recette_favoris.png)
 ---
 
-## 4.6 Module Ressources : Partage de Documents
+## 4.6 Ressources : Partage de Documents
 Le module **Documents partagés** permet aux étudiants de mutualiser leurs supports de cours. Il repose sur un stockage physique de fichiers sécurisé sur le serveur.
 
 #### Règles Métiers :
