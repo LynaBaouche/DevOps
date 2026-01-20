@@ -219,13 +219,12 @@ Sans compte utilisateur valide et sans session active, l’accès aux fonctionna
 
 ##### Gestion du profil utilisateur
 - Chaque utilisateur dispose d’une page **Profil** accessible après authentification.
-- L’utilisateur peut modifier ses informations personnelles, notamment :numéro de téléphone, adresse, biographie...
+- L’utilisateur peut modifier ses informations personnelles, notamment :numéro de téléphone,nom, prénom biographie...
 - Les modifications sont effectuées via l’option **« Modifier le profil »**.
 - Les données mises à jour sont immédiatement persistées en base de données.
 
 
 #### Classes Impliquées :
-
 *`CompteController` (exposition des endpoints REST)
 * `CompteService` (logique métier d’authentification)
 * `CompteRepository` (accès aux données utilisateurs)
@@ -419,8 +418,8 @@ Le module **Petites Annonces** permet aux étudiants de publier, consulter et g�
 #### Création d’une annonce
 Tout utilisateur authentifié peut créer une annonce.
 - Formulaire de création incluant :
-  -Entité Notification : Liée à un Compte (le destinataire), elle stocke le type d'action (FRIEND_ADDED, NEW_EVENT, ANNONCE, NEW_MESSAGE), le message et un lien de redirection, permettant une interaction asynchrone entre les utilisateurs. Titre
-  - Catégorie
+  - Titre
+  - Catégorie 
   - Prix
   - Ville
   - Description
