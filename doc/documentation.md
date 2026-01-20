@@ -1,6 +1,8 @@
+<div align="center">
+
 # Dossier Technique & Manuel Utilisateur
 ## Projet DevOps - Application EtudLife
-**Verson :** v0.3.0
+**Verson :** v1.0.0
 
 **Auteurs :**
 * Lyna Baouche
@@ -8,8 +10,8 @@
 * Kenza Menad
 * Dyhia Sellah
 
-**Date :** 1er Janvier 2026
-
+**Date :** 20 Janvier 2026
+</div>
 ---
 
 ## 1. Présentation Générale
