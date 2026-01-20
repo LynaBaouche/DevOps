@@ -546,7 +546,7 @@ Le système repose sur une architecture optimisée pour la réactivité :
 Ce module centralise la gestion des ressources documentaires physiques et l'occupation des espaces de travail au sein de l'université Nanterre.
 
 ### 1 Présentation Générale
-L'interface d'accueil de la bibliothèque, nommée **Le Pixel**, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
+L'interface d'accueil de la bibliothèque, offre une vue d'ensemble et une navigation rapide vers les services essentiels : le catalogue, les réservations de places, le suivi personnel et les services annexes.
 
 ![interface_bu.jpg](../src/main/resources/static/images/interface_bu.jpg)
 ### 2 Catalogue & Réservation de Livres
@@ -608,9 +608,8 @@ Une grille interactive permet de situer les bâtiments selon les filières d'ét
 
 ### 3 Transports et Accès
 Récapitulatif des options pour se rendre sur le campus avec le temps de marche estimé :
-* **RER A / Ligne L :** Gare de Nanterre Université (3 min).
-* **Bus :** Lignes 159, 304, 367 (1 min).
-* **Vélib :** Station disponible directement sur le site.
+* RER A / Ligne L / Bus /Vélib
+* Un lien vers les horaires de ces ligne en temps réel.
 
 ### 4 Informations Pratiques
 Synthèse des services utiles au quotidien :
