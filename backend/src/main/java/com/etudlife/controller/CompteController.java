@@ -15,7 +15,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/comptes")
-@CrossOrigin(origins = "*")
 public class CompteController {
 
     private final CompteService compteService;
