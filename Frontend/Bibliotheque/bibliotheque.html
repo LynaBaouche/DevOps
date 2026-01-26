@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Bibliothèque Universitaire</title>
+    <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="bibliotheque.css">
+    <link rel="stylesheet" href="/Frontend/style.css">
+    <link rel="stylesheet" href="subheader.css">
+
+    <style>
+        /* Styles visuels "Le Pixel" */
+        .hero-section {
+            position: relative;
+            height: 450px;
+            background:url('../images/bu_pixel.jpg')  center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .pixel-brand {
+            color: #e61e2a;
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .search-box-pixel {
+            background: white;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 8px 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 2px solid #e61e2a;
+        }
+
+        .search-box-pixel input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .search-btn-pixel {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.5rem;
+            color: #e61e2a;
+            display: flex;
+            align-items: center;
+        }
+
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: -60px;
+            position: relative;
+            z-index: 3;
+            padding: 0 20px;
+        }
+
+        .nav-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+         .unread {
+             border-left
+
+        .nav-card:hover { transform: translateY(-10px); color: #e61e2a; }
+        <img src="../images/bu_pixel.jpg" height="630" width="882"/><img src="../images/bu_pixel.jpg" height="630"
+                                                                         width="882"/><img src="../images/bu_pixel.jpg"
+                                                                                           height="630" width="882"/></style>
+</head>
+<body>
+<script src="../header.js"></script>
+
+<script>
+    const userCheck = JSON.parse(localStorage.getItem("utilisateur"));
+    if (!userCheck) {
+        alert("⚠️ Vous devez vous connecter pour accéder à la bibliothèque.");
+        window.location.href = "../login.html";
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector('.main-header');
+        const currentPath = window.location.pathname.toLowerCase(); // Récupère l'URL actuelle
+
+        const subMenuHTML = `
+            <nav class="bu-submenu">
+                <a href="catalogue.html" class="${currentPath.includes('catalogue.html') ? 'active' : ''}">Catalogue</a>
+                <a href="reservation.html" class="${currentPath.includes('reservation.html') ? 'active' : ''}">Réservations</a>
+                <a href="places.html" class="${currentPath.includes('places.html') ? 'active' : ''}">Réserver une Place</a>
+                <a href="services.html" class="${currentPath.includes('services.html') ? 'active' : ''}">Services</a>
+            </nav>
+        `;
+
+        if (header) {
+            header.insertAdjacentHTML('beforeend', subMenuHTML);
+        }
+    });
+</script>
+
+<main>
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="pixel-brand">Bibliothèque universitaire</h1>
+            <div class="search-box-pixel">
+                <input type="text" id="mainPixelSearch" placeholder="Rechercher un livre, une revue, dans le catalogue...">
+                <button class="search-btn-pixel" onclick="executeSearch()">🔍</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="quick-nav-grid">
+        <a href="catalogue.html" class="nav-card">📚 Catalogue</a>
+        <a href="places.html" class="nav-card">📍 Réserver une Place</a>
+        <a href="reservation.html" class="nav-card">📖 Mes Réservations</a>
+        <a href="services.html" class="nav-card">🛠️ Services</a>
+    </div>
+
+    <div style="max-width: 1000px; margin: 60px auto; padding: 20px;">
+        <div style="background: #f8faff; border: 1px solid #e0e7ff; padding: 20px; border-radius: 12px;">
+            <h3 style="margin-top:0;">💡 Informations importantes</h3>
+            <ul style="color: #64748b; line-height: 1.6;">
+                <li>Les réservations de places se font en temps réel via l'onglet dédié.</li>
+                <li>Le catalogue contient plus de 50 000 références actualisées.</li>
+                <li>Tout emprunt non rendu à temps entraîne une suspension de compte temporaire.</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<script>
+    function executeSearch() {
+        const query = document.getElementById("mainPixelSearch").value;
+        if(query.trim() !== "") {
+            window.location.href = `catalogue.html?search=${encodeURIComponent(query)}`;
+        }
+    }
+    document.getElementById("mainPixelSearch").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") executeSearch();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Force le chargement des notifs
+        setTimeout(() => {
+            if (typeof fetchNotifications === 'function') fetchNotifications();
+        }, 500);
+    });
+</script>
+
+<script src="/app.js"></script>
+<script src="bibliotheque.js"></script>
+</body>
+</html>

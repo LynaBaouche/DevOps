@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # 1. Base de données
+  mysql:
+    image: mysql:8.0
+    container_name: etudlife-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: etudlife_db
+    ports:
+      - "3307:3306" # On map sur 3307 pour ne pas entrer en conflit si tu as déjà un MySQL local
+    volumes:
+      - mysql-data:/var/lib/mysql # Persistance des données (ne perd pas tout au reboot)
+    networks:
+      - etudlife-net
+
+  # 2. Cache & Messagerie
+  redis:
+    image: redis:alpine
+    container_name: etudlife-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - etudlife-net
+
+  # 3. Backend Spring Boot
+  backend:
+    build: ./backend # Chemin vers ton dossier backend
+    container_name: etudlife-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Configuration pour Docker (remplace localhost par le nom des services)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/etudlife_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      # Clés API (à mettre dans un fichier .env idéalement, mais ok ici pour dev)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVITIA_TOKEN: ${NAVITIA_TOKEN}
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - etudlife-net
+
+  # 4. Frontend React
+  frontend:
+    build: ./frontend # Chemin vers ton dossier frontend
+    container_name: etudlife-frontend
+    ports:
+      - "3000:80" # On accède via localhost:3000, qui redirige vers le port 80 de Nginx
+    depends_on:
+      - backend
+    networks:
+      - etudlife-net
+
+volumes:
+  mysql-data:
+
+networks:
+  etudlife-net:
+    driver: bridge

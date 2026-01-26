@@ -6,7 +6,7 @@ on:
       - master  # Ou 'main' selon le nom de votre branche principale
     paths:
       - 'src/main/java/**' # Se lance uniquement si on touche au code Java
-      - 'build.gradle'
+      - '../../backend/build.gradle'
 
 permissions:
   contents: write # Important pour pouvoir pusher le fichier modifié
