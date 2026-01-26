@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Copie du code et build
-COPY . .
+COPY ../frontend .
 RUN npm run build
 
 # --- Étape 2 : Serve (Nginx) ---
