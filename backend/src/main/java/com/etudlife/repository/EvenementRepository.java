@@ -1,0 +1,11 @@
+package com.etudlife.repository;
+
+import com.etudlife.model.Evenement;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface EvenementRepository extends JpaRepository<Evenement, Long> {
+    List<Evenement> findByUtilisateurId(Long utilisateurId);
+    // ✅ Pour récupérer les événements de plusieurs personnes (les proches)
+    List<Evenement> findByUtilisateurIdIn(List<Long> utilisateurIds);
+}
