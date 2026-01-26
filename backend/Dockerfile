@@ -1,24 +1,14 @@
-# --- Étape 1 : Build (Node.js) ---
-FROM node:18-alpine AS build
+# Build Spring Boot (Gradle)
+FROM gradle:8.6-jdk17-alpine AS build
 WORKDIR /app
+COPY build.gradle settings.gradle ./
+RUN gradle dependencies --no-daemon
+COPY src ./src
+RUN gradle bootJar --no-daemon -x test
 
-# Installation des dépendances
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copie du code et build
-COPY ../frontend .
-RUN npm run build
-
-# --- Étape 2 : Serve (Nginx) ---
-FROM nginx:alpine
-
-# On copie le dossier "dist" (ou "build" selon ton projet React) vers Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# (Optionnel) Config Nginx pour React Router (évite les erreurs 404 au refresh)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Runtime Java léger
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
