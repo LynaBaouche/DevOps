@@ -8,8 +8,9 @@ plugins {
 
 group = 'com.etudlife'
 version = '1.0.0'
-sourceCompatibility = '17'
-
+java {
+    sourceCompatibility = '17'
+}
 repositories {
     mavenCentral()
 }
