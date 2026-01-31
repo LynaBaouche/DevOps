@@ -29,9 +29,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and Test with Gradle
-        # 3. On injecte une fausse clé pour que le test Spring ne crashe pas
+
         env:
           RAPIDAPI_KEY: "test_key_dummy_value"
+          OPENAI_API_KEY: "dummy_key_openai"
+          NAVITIA_TOKEN: "dummy_key_navitia"
+
         run: ./gradlew build
 
       - name: Generate JaCoCo Badge
