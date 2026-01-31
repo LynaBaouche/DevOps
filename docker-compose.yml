@@ -44,7 +44,7 @@ services:
       SPRING_REDIS_PORT: 6379
       # Clés API (à mettre dans un fichier .env idéalement, mais ok ici pour dev)
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NAVITIA_TOKEN: ${NAVITIA_TOKEN}
+      RAPIDAPI_KEY: 7893a1fcfamshcdfc3809c33c039p1d0b99jsn952252ca00e5
     depends_on:
       mysql:
         condition: service_healthy
