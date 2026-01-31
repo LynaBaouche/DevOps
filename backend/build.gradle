@@ -39,6 +39,8 @@ dependencies {
 
     implementation 'org.springframework.security:spring-security-crypto'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+
 }
 
 classDiagram {

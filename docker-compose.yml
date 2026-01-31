@@ -45,6 +45,15 @@ services:
       # Clés API (à mettre dans un fichier .env idéalement, mais ok ici pour dev)
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVITIA_TOKEN: ${NAVITIA_TOKEN}
+      HF_API_TOKEN: ${HF_API_TOKEN}
+      # HuggingFace (obligatoire pour éviter le crash)
+      hf.api.url: "https://router.huggingface.co/hf-inference"
+      hf.model: "google/flan-t5-base"
+      hf.api.token: "${HF_API_TOKEN}"
+
+
+
+
     depends_on:
       mysql:
         condition: service_healthy
