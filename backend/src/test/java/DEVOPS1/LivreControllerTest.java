@@ -1,3 +1,4 @@
+package DEVOPS1;
 
 import com.etudlife.EtudlifeApp; // Ta classe principale
 import com.etudlife.model.LivreBu;
@@ -12,7 +13,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // AJOUT DE (classes = EtudlifeApp.class) ICI :
-@SpringBootTest(classes = EtudlifeApp.class)
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @AutoConfigureMockMvc
 public class LivreControllerTest {
 

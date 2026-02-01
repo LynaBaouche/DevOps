@@ -1,3 +1,4 @@
+package DEVOPS1;
 
 import com.etudlife.EtudlifeApp;
 import com.etudlife.model.Document;
@@ -15,7 +16,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(classes = EtudlifeApp.class)
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @AutoConfigureMockMvc
 public class DocumentIntegrationTest {
 

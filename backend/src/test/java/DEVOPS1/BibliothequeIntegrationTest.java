@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.EtudlifeApp;
 import com.etudlife.model.*;
 import com.etudlife.repository.*;
@@ -9,13 +11,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
-@SpringBootTest(classes = EtudlifeApp.class)
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @AutoConfigureMockMvc
 public class BibliothequeIntegrationTest {
 

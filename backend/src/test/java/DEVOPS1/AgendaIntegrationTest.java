@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.EtudlifeApp;
 import com.etudlife.model.Compte;
 import com.etudlife.model.Evenement;
@@ -15,7 +17,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = EtudlifeApp.class)
+// On ajoute la propriété manquante directement ici pour que Spring puisse démarrer
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @Transactional // Annule les modifications BDD après chaque test
 public class AgendaIntegrationTest {
 

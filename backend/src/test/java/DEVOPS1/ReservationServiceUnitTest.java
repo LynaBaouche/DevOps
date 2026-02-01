@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.model.LivreBu;
 import com.etudlife.model.Reservation;
 import com.etudlife.repository.LivreBuRepository;

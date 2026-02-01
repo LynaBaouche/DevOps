@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.repository.MessageRepository;
 import com.etudlife.service.ConversationService;
 import org.junit.jupiter.api.Test;

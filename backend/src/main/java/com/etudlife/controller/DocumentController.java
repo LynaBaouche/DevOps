@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/documents")
-@CrossOrigin
 public class DocumentController {
 
     private final DocumentService service;

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/livres") // Ton front appellera cette route
-@CrossOrigin
+
 public class LivreController {
 
     @Autowired
