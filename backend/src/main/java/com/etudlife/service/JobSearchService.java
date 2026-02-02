@@ -1,46 +1,71 @@
 package com.etudlife.service;
 
+import com.etudlife.dto.JobDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class JobSearchService {
+    private static final Logger log = LoggerFactory.getLogger(JobSearchService.class);
+    private final RestTemplate restTemplate;
 
-    private final String API_URL = "https://jsearch.p.rapidapi.com/search";
-
-    @Value("${RAPIDAPI_KEY}")
+    @Value("${RAPIDAPI_KEY:dummy}")
     private String apiKey;
 
-    public String searchJobs(String query) {
-        RestTemplate restTemplate = new RestTemplate();
+    // Le constructeur initialise le RestTemplate
+    public JobSearchService() {
+        this.restTemplate = new RestTemplate();
+    }
 
-        // Préparation des headers avec ta clé API récupérée de Docker
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-RapidAPI-Key", apiKey); // <-- Ta variable est injectée ici
-        headers.set("X-RapidAPI-Host", "jsearch.p.rapidapi.com");
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Utilisation de UriComponentsBuilder pour construire une URL propre (gère les espaces et caractères spéciaux)
-        // On ajoute "stage" et "France" à la requête pour être précis d'entrée de jeu
-        String url = UriComponentsBuilder.fromHttpUrl(API_URL)
-                .queryParam("query", query)
-                .queryParam("num_pages", "1")
-                .queryParam("country", "fr")  // <--- Ajoute ça pour la France
-                .queryParam("language", "fr") // <--- Ajoute ça pour le français
-                .toUriString();
-
+    public List<JobDTO> searchJobs(String query) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            return response.getBody();
+            log.info("Appel JSearch via RapidAPI pour : {}", query);
+
+            // 1. Configuration de l'URL (JSearch attend un paramètre 'query')
+            String url = "https://jsearch.p.rapidapi.com/search?query=" + query;
+
+            // 2. Configuration des Headers (Obligatoire pour RapidAPI)
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-RapidAPI-Key", apiKey);
+            headers.set("X-RapidAPI-Host", "jsearch.p.rapidapi.com");
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // 3. Appel API
+            ResponseEntity<JobResponseWrapper> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    JobResponseWrapper.class
+            );
+
+            if (responseEntity.getBody() != null && responseEntity.getBody().getData() != null) {
+                List<JobDTO> jobs = responseEntity.getBody().getData();
+                log.info("Recherche réussie : {} offres trouvées", jobs.size());
+                return jobs;
+            }
+
+            return Collections.emptyList();
+
         } catch (Exception e) {
-            // Log de l'erreur dans la console Docker pour debugger
-            System.err.println("Erreur JSearch: " + e.getMessage());
-            return "{\"error\": \"Impossible de récupérer les offres. Vérifiez votre clé API ou votre quota.\"}";
+            log.error("Erreur critique lors de l'appel JSearch : {}", e.getMessage());
+            return Collections.emptyList();
         }
+    }
+
+    /**
+     * Classe interne utilitaire pour mapper le format JSON de JSearch.
+     * JSearch renvoie : { "status": "OK", "data": [...] }
+     */
+    private static class JobResponseWrapper {
+        private List<JobDTO> data;
+
+        public List<JobDTO> getData() { return data; }
+        public void setData(List<JobDTO> data) { this.data = data; }
     }
 }
