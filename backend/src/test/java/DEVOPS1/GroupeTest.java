@@ -1,3 +1,4 @@
+package DEVOPS1;
 
 import com.etudlife.model.Compte;
 import com.etudlife.repository.CompteRepository;
@@ -32,7 +33,7 @@ import com.etudlife.model.Evenement;
 import com.etudlife.repository.EvenementRepository;
 import com.etudlife.service.EvenementService;
 import com.etudlife.service.LienService;
-import com.etudlife.model.Compte;
+
 import java.util.ArrayList;
 
 

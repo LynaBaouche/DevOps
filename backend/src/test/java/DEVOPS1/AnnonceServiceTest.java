@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.model.Annonce;
 import com.etudlife.repository.AnnonceRepository;
 import com.etudlife.service.AnnonceService;

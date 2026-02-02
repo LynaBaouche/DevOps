@@ -1,9 +1,10 @@
+package DEVOPS1;
+
 import com.etudlife.model.Compte;
 import com.etudlife.model.Groupe;
 import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.GroupeRepository;
 import com.etudlife.service.GroupeService;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

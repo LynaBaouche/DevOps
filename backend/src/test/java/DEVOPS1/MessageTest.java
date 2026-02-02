@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.model.Message;
 import com.etudlife.model.NotificationType;
 import com.etudlife.repository.MessageRepository;
@@ -8,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.EtudlifeApp;
 import com.etudlife.controller.CompteController;
 import com.etudlife.model.Compte;

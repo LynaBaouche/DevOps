@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.List;
 @RestController
 @RequestMapping("/api/reservation") // Correspond à l'URL dans ton catalogue.js
-@CrossOrigin
 public class ReservationController {
 
     @Autowired

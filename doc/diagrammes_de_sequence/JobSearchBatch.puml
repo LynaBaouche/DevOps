@@ -1,0 +1,44 @@
+@startuml
+title Diagramme de Séquence : Batch Automatisé (Nightly Job)
+
+participant "Spring Scheduler\n(Horloge Interne)" as Clock
+participant "JobScheduler" as Batch
+participant "CompteRepository" as RepoUser
+participant "JobSearchService" as Service
+participant "RapidAPI (JSearch)" as API
+database "Base de Données\n(MySQL)" as DB
+
+== Déclenchement Automatique (ex: 03h00) ==
+
+Clock -> Batch : @Scheduled (Trigger)
+activate Batch
+
+Batch -> RepoUser : findAll()
+activate RepoUser
+RepoUser --> Batch : Liste des Étudiants + Critères
+deactivate RepoUser
+
+loop Pour chaque étudiant
+    Batch -> Service : searchJobs(critères_étudiant)
+    activate Service
+
+    Service -> API : GET /search (Mots-clés, Ville)
+    activate API
+    API --> Service : Liste d'offres (JSON)
+    deactivate API
+
+    Service --> Batch : List<JobDTO>
+    deactivate Service
+
+    Batch -> Batch : Filtrer doublons / Pertinence
+
+    Batch -> DB : save(Notifications/Offres)
+    activate DB
+    DB --> Batch : Confirmation
+    deactivate DB
+end
+
+Batch -> Batch : Log du rapport final (Succès/Échec)
+deactivate Batch
+
+@enduml

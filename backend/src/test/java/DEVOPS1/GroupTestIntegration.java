@@ -1,5 +1,6 @@
-package com.etudlife;
+package DEVOPS1;
 
+import com.etudlife.EtudlifeApp;
 import com.etudlife.model.*;
 import com.etudlife.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,10 +22,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import static org.hamcrest.Matchers.is;
 import com.etudlife.service.NotificationService;
+import org.springframework.transaction.annotation.Transactional;
 
 
-@SpringBootTest(classes = EtudlifeApp.class)
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @AutoConfigureMockMvc
+@Transactional
 class GroupTestIntegration {
 
     @Autowired MockMvc mockMvc;
@@ -181,13 +191,23 @@ class GroupTestIntegration {
 
     @Test
     void getByUtilisateur_retourneSesAnnonces() throws Exception {
+        // 1. On crée d'abord un utilisateur pour avoir un ID valide
+        Compte user = new Compte("Test", "User", uniqueEmail("test.annonces@etu.fr"), "pass");
+        user = compteRepository.save(user); // La base génère l'ID ici
 
+        // 2. On crée l'annonce liée à cet utilisateur RÉEL
         Annonce a = new Annonce();
         a.setTitre("Annonce user");
-        a.setUtilisateurId(10L);
+        a.setUtilisateurId(user.getId()); // On utilise le vrai ID généré
+        a.setAuteur(user.getPrenom() + " " + user.getNom()); // Bonnes pratiques : remplir l'auteur
+        a.setCategorie("Divers");
+        a.setPrix("10");
+        a.setVille("Paris");
+        a.setDescription("Description test");
         annonceRepository.save(a);
 
-        mockMvc.perform(get("/api/annonces/utilisateur/10"))
+        // 3. On interroge l'API avec le vrai ID
+        mockMvc.perform(get("/api/annonces/utilisateur/" + user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].titre").value("Annonce user"));
     }

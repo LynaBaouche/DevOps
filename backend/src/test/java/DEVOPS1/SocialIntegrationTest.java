@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.EtudlifeApp;
 import com.etudlife.dto.ConversationPreviewDTO;
 import com.etudlife.model.Compte;
@@ -18,7 +20,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = EtudlifeApp.class)
+@SpringBootTest(
+        classes = EtudlifeApp.class,
+        properties = {
+                "RAPIDAPI_KEY=test_key_dummy",
+                "OPENAI_API_KEY=test_key_dummy",
+                "NAVITIA_TOKEN=test_key_dummy"
+        }
+)
 @Transactional
 public class SocialIntegrationTest {
 

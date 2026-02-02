@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/groupes")
-@CrossOrigin(origins = "*")
 public class GroupeController {
     @Autowired
     private final GroupeService groupeService;

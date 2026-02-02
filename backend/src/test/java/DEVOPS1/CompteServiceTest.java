@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.model.Compte;
 import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.GroupeRepository;

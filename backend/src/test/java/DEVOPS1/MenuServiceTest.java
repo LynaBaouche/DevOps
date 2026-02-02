@@ -1,3 +1,5 @@
+package DEVOPS1;
+
 import com.etudlife.model.Compte;
 import com.etudlife.model.Recette;
 import com.etudlife.repository.CompteRepository;
