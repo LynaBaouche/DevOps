@@ -1,0 +1,49 @@
+@startuml
+title Diagramme de Séquence : Recherche de Stages (Synchrone)
+
+actor "Étudiant" as User
+participant "Frontend (React)" as Front
+participant "JobController" as Ctrl
+participant "JobSearchService" as Service
+participant "RapidAPI (JSearch)" as API
+
+== Scénario de Recherche ==
+
+User -> Front : Saisit "Java" et "Paris"
+activate Front
+
+Front -> Ctrl : GET /api/jobs/search?query=Java&location=Paris
+activate Ctrl
+
+note right of Ctrl
+  Le contrôleur reçoit la requête
+  et délègue au service métier
+end note
+
+Ctrl -> Service : searchJobs("Java", "Paris")
+activate Service
+
+Service -> Service : Vérifier Clé API (RapidAPI_Key)
+
+alt Clé API Valide
+    Service -> API : GET /search (headers: X-RapidAPI-Key)
+    activate API
+    API --> Service : JSON Response (Liste d'offres)
+    deactivate API
+
+    Service -> Service : Parser le JSON -> List<JobDTO>
+    Service --> Ctrl : Retourne List<JobDTO>
+
+else Clé API Manquante / Erreur
+    Service --> Ctrl : Retourne Liste Vide ou Erreur
+end
+
+deactivate Service
+
+Ctrl --> Front : JSON (200 OK)
+deactivate Ctrl
+
+Front -> User : Affiche les cartes des offres de stage
+deactivate Front
+
+@enduml
