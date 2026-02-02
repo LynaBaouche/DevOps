@@ -26,10 +26,12 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+        working-directory: backend
 
 
       - name: Build with Gradle
         run: ./gradlew bootJar
+        working-directory: backend
       # 1. On installe Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -60,7 +62,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/libs/*.jar
+            backend/build/libs/*.jar
             Documentation_EtudLife.pdf
           draft: false
           prerelease: true
