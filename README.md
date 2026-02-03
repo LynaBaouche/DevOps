@@ -14,6 +14,7 @@
     - [📘 Sommaire](#-sommaire)
     - [🌍 Aperçu](#-aperçu)
     - [🏗️ Architecture](#️-architecture)
+    - [🏗️ Architecture Devops 2](#️-architecture-devops-2)
     - [🧭 Gestion de Projet & Suivi](...)
     - [⚙️ Prérequis](#️-prérequis)
     - [🧩 Installation et configuration](#-installation-et-configuration)
@@ -59,6 +60,21 @@
 - Voir le dossier `/docs` pour les diagrammes UML (PlantUML).
 
 ---
+## 🏗️ Architecture Devops 2
+
+**Infrastructure & DevOps :**
+- **Conteneurisation :** Docker & Docker Compose pour une isolation complète (Backend + MySQL).
+- **CI/CD :** GitHub Actions pour les tests, le build JAR et la génération de documentation PDF automatique.
+
+**Backend :**
+- **Langage :** Java 17
+- **Framework :** Spring Boot 3.x (Spring Web, Spring Data JPA, Validation)
+- **Base de données :** MySQL (Hébergée sur AlwaysData & Docker local)
+- **Services Métiers :**
+    - `JobSearchService` (Moteur de recherche d'offres via JSearch API)
+    - `AssistantIAService` (Conseils personnalisés via LLM )
+
+---
 ## 🧭 Gestion de Projet & Suivi
 
 -  **Jira** – Suivi des tickets, bugs et fonctionnalités :  
@@ -72,6 +88,7 @@
 
 | Outil | Version minimale | Description |
 |--------|------------------|--------------|
+| **Docker** | 20.x | Requis pour l'architecture conteneurisée |
 | **Java** | 17 | Requis pour le Backend |
 | **Gradle** | 8.x | Outil de build (inclus via wrapper) |
 | **MySQL** | 8.0 | Base de données  |
@@ -101,7 +118,10 @@ Note : Le fichier application.properties est configuré pour lire ces variables 
 ---
 ## 🚀 Lancer l'application
 Le frontend étant servi statiquement par Spring Boot, vous n'avez qu'une seule application à lancer.
-
+Méthode recommendée ( Docker ) 
+```bash
+docker-compose up --build
+```
 1. ** Via le terminal (Linux/Mac) :**
 ```bash
 ./gradlew bootRun
