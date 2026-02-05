@@ -39,6 +39,19 @@ dependencies {
 
     implementation 'org.springframework.security:spring-security-crypto'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+
+    // Appels HTTP vers Gemini (WebClient)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Lire les PDF
+    implementation 'org.apache.pdfbox:pdfbox:2.0.31'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.apache.commons:commons-pool2'
+
 }
 
 classDiagram {
