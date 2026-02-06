@@ -24,4 +24,8 @@ public class JobDTO {
 
     @JsonProperty("job_publisher")
     private String source;
+
+    public String getJobPublisher() {
+        return source;
+    }
 }

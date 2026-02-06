@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JobSearchService {
@@ -25,10 +26,11 @@ public class JobSearchService {
 
     public List<JobDTO> searchJobs(String query) {
         try {
-            log.info("Appel JSearch via RapidAPI pour : {}", query);
+            String enhancedQuery = query + " stage internship";
+            log.info("Appel JSearch via RapidAPI pour : {}", enhancedQuery);
 
             // 1. Configuration de l'URL (JSearch attend un paramètre 'query')
-            String url = "https://jsearch.p.rapidapi.com/search?query=" + query;
+            String url = "https://jsearch.p.rapidapi.com/search?query=" + enhancedQuery;
 
             // 2. Configuration des Headers (Obligatoire pour RapidAPI)
             HttpHeaders headers = new HttpHeaders();
@@ -45,9 +47,13 @@ public class JobSearchService {
             );
 
             if (responseEntity.getBody() != null && responseEntity.getBody().getData() != null) {
-                List<JobDTO> jobs = responseEntity.getBody().getData();
-                log.info("Recherche réussie : {} offres trouvées", jobs.size());
-                return jobs;
+                List<JobDTO> allJobs = responseEntity.getBody().getData();
+
+                List<JobDTO> filteredJobs = allJobs.stream()
+                        .filter(job -> isAllowedSource(job.getJobPublisher()))
+                        .collect(Collectors.toList());
+                log.info("Recherche réussie : {} offres trouvées", filteredJobs.size());
+                return filteredJobs;
             }
 
             return Collections.emptyList();
@@ -57,7 +63,11 @@ public class JobSearchService {
             return Collections.emptyList();
         }
     }
-
+    private boolean isAllowedSource(String publisher) {
+        if (publisher == null) return false;
+        String p = publisher.toLowerCase();
+        return p.contains("linkedin") || p.contains("indeed");
+    }
     /**
      * Classe interne utilitaire pour mapper le format JSON de JSearch.
      * JSearch renvoie : { "status": "OK", "data": [...] }
