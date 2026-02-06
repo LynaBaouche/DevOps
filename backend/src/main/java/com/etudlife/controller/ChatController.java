@@ -21,14 +21,14 @@ public class ChatController {
         this.sessions = sessions;
     }
 
-    // 1) créer une session
+    //  créer une session
     @PostMapping("/new-session")
     public ResponseEntity<?> newSession() {
         String sessionId = sessions.newSession();
         return ResponseEntity.ok(Map.of("sessionId", sessionId));
     }
 
-    // 2) récupérer historique
+    // récupérer historique
     @GetMapping("/history")
     public ResponseEntity<?> history(@RequestParam String sessionId) {
         return ResponseEntity.ok(Map.of(
@@ -37,14 +37,14 @@ public class ChatController {
         ));
     }
 
-    // 3) fermer le chat => supprimer en Redis
+    //  fermer le chat => supprimer en Redis
     @PostMapping("/close")
     public ResponseEntity<?> close(@RequestParam String sessionId) {
         sessions.delete(sessionId);
         return ResponseEntity.ok().build();
     }
 
-    // 4) envoyer un message
+    //  envoyer un message
     @PostMapping("/message")
     public ResponseEntity<?> message(@RequestBody ChatRequest req) {
         if (req == null || req.getQuestion() == null || req.getQuestion().isBlank()) {

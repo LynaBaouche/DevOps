@@ -21,16 +21,33 @@ public class ChatService {
 
     public ChatResponse ask(String sessionId, String question) {
 
-        // 1) stocker le message user dans Redis
+        //  stocker le message user dans Redis
         sessions.append(sessionId, "user", question);
 
-        // 2) récupérer un peu d’historique (ex: 10 derniers messages)
+        String q = (question == null) ? "" : question.trim();
+        String qNorm = q.toLowerCase();
+
+
+        if (qNorm.matches("^(ok\\s*)?(merci|mercii+|merci beaucoup|thx|thanks)(\\s*!*)?$")) {
+            String answer = "Pas de souci 🙂 Si vous avez besoin d’autre chose, n’hésitez pas.";
+            sessions.append(sessionId, "assistant", answer);
+            return new ChatResponse(true, sessionId, question, answer, "none");
+        }
+
+
+        if (qNorm.matches("^(bonjour|salut|hello|hey|bonsoir)(\\s*!*)?$")) {
+            String answer = "Bonjour, comment puis-je vous aider ?";
+            sessions.append(sessionId, "assistant", answer);
+            return new ChatResponse(true, sessionId, question, answer, "none");
+        }
+
+        //  récupérer un peu d’historique
         var lastMessages = sessions.history(sessionId, 10);
         String chatHistory = lastMessages.isEmpty()
                 ? "(vide)"
                 : String.join("\n", lastMessages);
 
-        // 3) RAG PDF (ton code existant)
+        // RAG PDF
         List<PdfKnowledgeBase.Chunk> hits = kb.search(question);
 
         String context = hits.isEmpty()
@@ -39,7 +56,7 @@ public class ChatService {
                 .map(c -> "SOURCE: " + c.source() + "\nEXTRAIT: " + c.text())
                 .collect(Collectors.joining("\n\n---\n\n"));
 
-        // 4) prompt avec historique + contexte
+        //  prompt avec historique + contexte
         String prompt =
                 "Tu es un assistant pour des étudiants. Réponds uniquement avec les infos du CONTEXTE.\n" +
                         "Si tu n'as pas l'information dans le CONTEXTE, ne mentionne pas de document, ne mentionne pas la charte.\n"
@@ -53,7 +70,7 @@ public class ChatService {
 
         String answer = gemini.generate(prompt);
 
-        // 5) stocker la réponse bot
+        // stocker la réponse bot
         sessions.append(sessionId, "assistant", answer);
 
         String sources = hits.stream()

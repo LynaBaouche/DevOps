@@ -50,6 +50,15 @@
 ![JobSearch-Diagramme_de_Séquence___Recherche_de_Stages__Synchrone_.png](diagrammes_de_sequence/JobSearch-Diagramme_de_S%C3%A9quence___Recherche_de_Stages__Synchrone_.png)
 ![JobSearchBatch-Diagramme_de_Séquence___Batch_Automatisé__Nightly_Job_.png](diagrammes_de_sequence/JobSearchBatch-Diagramme_de_S%C3%A9quence___Batch_Automatis%C3%A9__Nightly_Job_.png)
 
+2.1 Agent IA EtudLife
+---------------------------------------
+* L’Agent IA EtudLife est conçu comme un assistant conversationnel spécialisé, capable de répondre uniquement à partir des informations contenues dans des documents PDF officiels (règlements, chartes, documents universitaires).
+* L’agent ne répond jamais hors périmètre documentaire.
+* Les réponses sont générées à partir :
+    - d’une recherche d’extraits pertinents dans les PDF (RAG),
+    - puis d’un appel à l’API Gemini avec un prompt strict.
+* Les réponses sont transmises en streaming au frontend pour une meilleure expérience utilisateur.
+  ![agentia.png](diagrammes_de_sequence/agentia.png)
 ## 7. Guide d'Installation & Déploiement
 
 ### Prérequis

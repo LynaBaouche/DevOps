@@ -1,0 +1,83 @@
+@startuml
+title EtudLife Assistant (Agent IA) — Diagramme de séquence
+
+actor User as U
+participant "Front (chatbot.js)" as FE
+participant "ChatController\n(/api/chat/message)" as CC
+participant "ChatStreamController\n(/api/chat/stream)" as CSC
+participant "ChatStreamService" as CSS
+participant "ChatService" as CS
+participant "ChatSessionService\n(Redis)" as SESS
+participant "PdfKnowledgeBase\n(PDF RAG)" as KB
+participant "GeminiClient" as GEM
+
+== Ouverture (optionnel) ==
+U -> FE: Ouvre le widget
+FE -> FE: addStyles() + mount()
+FE -> FE: addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
+
+== Création de session (lazy) ==
+U -> FE: Saisit une question
+alt sessionId absent
+  FE -> CC: POST /api/chat/new-session
+  CC -> SESS: newSession()
+  SESS --> CC: sessionId
+  CC --> FE: { sessionId }
+  FE -> FE: sessionId = reçu
+end
+
+== Envoi du message (SSE) ==
+U -> FE: Clique "Envoyer"
+FE -> FE: addMessage(user, q)
+
+alt Salutation détectée côté front (ex: bonjour/salut)
+  FE -> FE: addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
+else Question normale
+  FE -> CSC: GET /api/chat/stream?question=q&sessionId=...
+  CSC -> CSS: streamAnswer(sessionId, q)
+
+  alt sessionId absent dans la requête SSE
+    CSS -> SESS: newSession()
+    SESS --> CSS: sessionId
+  end
+
+  CSS -> CS: ask(sessionId, q)
+
+  CS -> SESS: append(sessionId, "user", q)
+  CS -> SESS: history(sessionId, 10)
+  SESS --> CS: lastMessages
+  CS -> CS: chatHistory = join(lastMessages)
+
+  CS -> KB: search(q)
+  KB --> CS: hits (chunks PDF)
+
+  CS -> CS: context = concat(SOURCE+EXTRAIT from hits)
+  CS -> GEM: generate(prompt(history+context+question))
+  GEM --> CS: answer
+
+  CS -> SESS: append(sessionId, "assistant", answer)
+  CS -> CS: sources = distinct(hits.source)
+  CS --> CSS: ChatResponse(success, sessionId, q, answer, sources)
+
+  CSS -> CSS: head = "__SESSION__:" + sessionId
+  CSS --> CSC: Flux(head + chunksByWords(answer))
+  CSC --> FE: SSE event "chunk" (__SESSION__...)
+  FE -> FE: sessionId = reçu (mis à jour)
+
+  loop Pour chaque chunk
+    CSC --> FE: SSE event "chunk" (texte)
+    FE -> FE: bubble += chunk + " "
+  end
+
+  CSC --> FE: SSE event "done" ("[DONE]")
+  FE -> FE: es.close()
+end
+
+== Fermeture (clean) ==
+U -> FE: Quitte/ferme la page
+FE -> CC: POST (sendBeacon) /api/chat/close?sessionId=...
+CC -> SESS: delete(sessionId)
+SESS --> CC: OK
+CC --> FE: 200 OK
+
+@enduml
