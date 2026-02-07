@@ -8,7 +8,9 @@ import com.etudlife.service.ChatStreamService;
 
 @RestController
 @RequestMapping("/api/chat")
-public class ChatStreamController {
+public class
+
+ChatStreamController {
 
     private final ChatStreamService chatStreamService;
 
