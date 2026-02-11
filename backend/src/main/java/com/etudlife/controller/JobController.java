@@ -6,6 +6,7 @@ import com.etudlife.model.JobStatus;
 import com.etudlife.model.SavedJob;
 import com.etudlife.service.JobSearchService;
 import com.etudlife.service.SavedJobService;
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -57,4 +58,24 @@ public class JobController {
     public ResponseEntity<List<SavedJob>> getMyJobs(@RequestParam(required = false) JobStatus status) {
         return ResponseEntity.ok(savedJobService.getJobsByStatus(status));
     }
+    // Endpoint pour les statistiques (KPIs)
+    @GetMapping("/stats")
+    public ResponseEntity<StatsDTO> getJobStats() {
+        // On récupère tout
+        List<SavedJob> all = savedJobService.getJobsByStatus(null);
+
+        long countInteresse = all.stream().filter(j -> j.getStatus() == JobStatus.INTERESSE).count();
+        long countPostule = all.stream().filter(j -> j.getStatus() == JobStatus.POSTULE).count();
+        long countRefuse = all.stream().filter(j -> j.getStatus() == JobStatus.REFUSE).count();
+
+        return ResponseEntity.ok(new StatsDTO(countInteresse, countPostule, countRefuse));
+    }
+
+    @Data
+    static class StatsDTO {
+        private final long interesse;
+        private final long postule;
+        private final long refuse;
+    }
+
 }

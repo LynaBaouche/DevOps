@@ -4,57 +4,90 @@
     <meta charset="UTF-8">
     <title>Mes Candidatures | EtudLife</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/Annonce/annonces.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Design des KPIs (Indicateurs) */
+        .kpi-container {
+            display: flex; gap: 20px; justify-content: center; margin: 30px 0;
+        }
+        .kpi-card {
+            background: white; padding: 20px; border-radius: 15px; width: 150px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s; border: 1px solid #eee;
+        }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-number { font-size: 2em; font-weight: bold; display: block; margin-bottom: 5px; }
+        .kpi-label { font-size: 0.9em; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+        .kpi-blue { color: #3498db; border-bottom: 4px solid #3498db; }
+        .kpi-green { color: #2ecc71; border-bottom: 4px solid #2ecc71; }
+        .kpi-red { color: #e74c3c; border-bottom: 4px solid #e74c3c; }
+
+        /* Filtres */
+        .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .filter-btn {
+            padding: 10px 20px; border-radius: 25px; border: none; background: #f1f1f1; cursor: pointer; font-weight: bold; color: #555; transition: 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover { background: #333; color: white; }
+
+        /* Grille des offres */
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 20px; }
+
+        .card-job {
+            background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; position: relative; border-left: 5px solid #ddd;
+        }
+        .card-job.status-INTERESSE { border-left-color: #3498db; }
+        .card-job.status-POSTULE { border-left-color: #2ecc71; }
+        .card-job.status-REFUSE { border-left-color: #e74c3c; opacity: 0.6; }
+
+        .card-body { padding: 20px; flex-grow: 1; }
+        .card-actions {
+            padding: 15px; background: #f9f9f9; border-top: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.2em; transition: 0.2s; }
+        .btn-icon:hover { transform: scale(1.2); }
+    </style>
 </head>
 <body>
 
-<div class="annonces-content">
-    <button class="btn-blue" onclick="window.location.href='/JobSearch/search.html'" style="margin-bottom:20px;">
-        ← Retour à la recherche
-    </button>
-
-    <h1 class="title">📂 Mes Candidatures</h1>
-
-    <div class="filters">
-        <button onclick="loadMyJobs('')" class="filter active">Tout</button>
-        <button onclick="loadMyJobs('INTERESSE')" class="filter">❤️ Intéressé</button>
-        <button onclick="loadMyJobs('POSTULE')" class="filter">✅ Postulé</button>
-    </div>
-
-    <div id="my-jobs-container" class="annonces-grid" style="margin-top:20px;"></div>
+<div style="padding: 20px;">
+    <a href="/JobSearch/search.html" style="text-decoration: none; color: #333; font-weight: bold;">
+        <i class="fas fa-arrow-left"></i> Retour à la recherche
+    </a>
 </div>
 
-<script>
-    async function loadMyJobs(status) {
-        let url = "/api/jobs/my-jobs";
-        if (status) url += `?status=${status}`;
+<div class="container">
+    <h1 style="text-align:center; margin-bottom: 10px;">📊 Mon Tableau de Bord</h1>
 
-        const res = await fetch(url);
-        const jobs = await res.json();
+    <div class="kpi-container">
+        <div class="kpi-card kpi-blue">
+            <span class="kpi-number" id="count-interesse">-</span>
+            <span class="kpi-label">Intéressé</span>
+        </div>
+        <div class="kpi-card kpi-green">
+            <span class="kpi-number" id="count-postule">-</span>
+            <span class="kpi-label">Postulé</span>
+        </div>
+        <div class="kpi-card kpi-red">
+            <span class="kpi-number" id="count-refuse">-</span>
+            <span class="kpi-label">Refusé</span>
+        </div>
+    </div>
 
-        const container = document.getElementById('my-jobs-container');
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterJobs('ALL')">Tout voir</button>
+        <button class="filter-btn" onclick="filterJobs('INTERESSE')">❤️ À faire</button>
+        <button class="filter-btn" onclick="filterJobs('POSTULE')">✅ Postulé</button>
+        <button class="filter-btn" onclick="filterJobs('REFUSE')">🗑️ Corbeille</button>
+    </div>
 
-        if (jobs.length === 0) {
-            container.innerHTML = "<p>Aucune offre dans cette catégorie.</p>";
-            return;
-        }
+    <div id="my-jobs-container" class="jobs-grid">
+        <p style="text-align:center; width:100%;">Chargement...</p>
+    </div>
+</div>
 
-        container.innerHTML = jobs.map(job => `
-            <div class="card-pro" style="border-left: 5px solid ${job.status === 'POSTULE' ? '#4CAF50' : '#E91E63'}">
-                <div class="card-body">
-                    <span style="font-size:0.8em; color:gray;">${job.status}</span>
-                    <h3>${job.title}</h3>
-                    <p>🏢 ${job.company}</p>
-                    <p>📍 ${job.location || 'N/A'}</p>
-                    <br>
-                    <a href="${job.applyLink}" target="_blank" class="btn-details">Voir l'offre</a>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    loadMyJobs('');
-</script>
-
+<script src="/JobSearch/my-jobs.js"></script>
 </body>
 </html>
