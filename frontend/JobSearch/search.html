@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche de Stages | EtudLife</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/Annonce/annonces.css"> <style>
+    /* Petits ajustements spécifiques aux jobs */
+    .job-source-badge {
+        background-color: #0077b5; /* Bleu LinkedIn */
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .status-btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="annonces-content">
+    <h1 class="title">🎯 Chasseur de Stages</h1>
+
+    <div class="annonce-top-actions">
+        <button class="action-btn primary" onclick="window.location.href='/Jobs/my-jobs.html'">
+            📂 Mes candidatures suivies
+        </button>
+    </div>
+
+    <div class="search-bar" style="display:flex; gap:10px; margin-bottom: 30px;">
+        <input type="text" id="jobQuery" placeholder="Ex: Développeur Java" value="Stage">
+        <input type="text" id="jobLocation" placeholder="Ex: Paris" style="width: 150px;">
+        <button class="btn-blue" onclick="searchJobs()">Rechercher</button>
+    </div>
+
+    <div id="jobs-container" class="annonces-grid">
+        <p>Lancez une recherche pour voir les offres LinkedIn / Indeed...</p>
+    </div>
+</div>
+
+<script src="/JobSearch/jobs.js"></script>
+</body>
+</html>

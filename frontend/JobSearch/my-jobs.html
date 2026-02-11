@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Candidatures | EtudLife</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/Annonce/annonces.css">
+</head>
+<body>
+
+<div class="annonces-content">
+    <button class="btn-blue" onclick="window.location.href='/JobSearch/search.html'" style="margin-bottom:20px;">
+        ← Retour à la recherche
+    </button>
+
+    <h1 class="title">📂 Mes Candidatures</h1>
+
+    <div class="filters">
+        <button onclick="loadMyJobs('')" class="filter active">Tout</button>
+        <button onclick="loadMyJobs('INTERESSE')" class="filter">❤️ Intéressé</button>
+        <button onclick="loadMyJobs('POSTULE')" class="filter">✅ Postulé</button>
+    </div>
+
+    <div id="my-jobs-container" class="annonces-grid" style="margin-top:20px;"></div>
+</div>
+
+<script>
+    async function loadMyJobs(status) {
+        let url = "/api/jobs/my-jobs";
+        if (status) url += `?status=${status}`;
+
+        const res = await fetch(url);
+        const jobs = await res.json();
+
+        const container = document.getElementById('my-jobs-container');
+
+        if (jobs.length === 0) {
+            container.innerHTML = "<p>Aucune offre dans cette catégorie.</p>";
+            return;
+        }
+
+        container.innerHTML = jobs.map(job => `
+            <div class="card-pro" style="border-left: 5px solid ${job.status === 'POSTULE' ? '#4CAF50' : '#E91E63'}">
+                <div class="card-body">
+                    <span style="font-size:0.8em; color:gray;">${job.status}</span>
+                    <h3>${job.title}</h3>
+                    <p>🏢 ${job.company}</p>
+                    <p>📍 ${job.location || 'N/A'}</p>
+                    <br>
+                    <a href="${job.applyLink}" target="_blank" class="btn-details">Voir l'offre</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    loadMyJobs('');
+</script>
+
+</body>
+</html>
