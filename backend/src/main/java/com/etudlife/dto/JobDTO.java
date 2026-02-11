@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true) // Ignore les 50 autres champs de l'API
 public class JobDTO {
+    @JsonProperty("job_id")
+    private String jobId;
     @JsonProperty("job_title")
     private String title;
 
@@ -24,4 +26,8 @@ public class JobDTO {
 
     @JsonProperty("job_publisher")
     private String source;
+
+    public String getJobPublisher() {
+        return source;
+    }
 }

@@ -1,12 +1,15 @@
 package com.etudlife.service;
 
 import com.etudlife.dto.JobDTO;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URLEncoder; // IMPORTANT
+import java.nio.charset.StandardCharsets; // IMPORTANT
 import java.util.Collections;
 import java.util.List;
 
@@ -18,53 +21,48 @@ public class JobSearchService {
     @Value("${RAPIDAPI_KEY:dummy}")
     private String apiKey;
 
-    // Le constructeur initialise le RestTemplate
     public JobSearchService() {
         this.restTemplate = new RestTemplate();
     }
 
     public List<JobDTO> searchJobs(String query) {
         try {
-            log.info("Appel JSearch via RapidAPI pour : {}", query);
 
-            // 1. Configuration de l'URL (JSearch attend un paramètre 'query')
-            String url = "https://jsearch.p.rapidapi.com/search?query=" + query;
+            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
 
-            // 2. Configuration des Headers (Obligatoire pour RapidAPI)
+            String url = "https://jsearch.p.rapidapi.com/search"
+                    + "?query=" + encodedQuery
+                    + "&country=fr"
+                    + "&language=fr";
+
+
+            log.info("Appel JSearch pour : '{}' (URL: {})", query, url);
+
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-RapidAPI-Key", apiKey);
             headers.set("X-RapidAPI-Host", "jsearch.p.rapidapi.com");
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // 3. Appel API
-            ResponseEntity<JobResponseWrapper> responseEntity = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    JobResponseWrapper.class
+            ResponseEntity<JobResponseWrapper> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, JobResponseWrapper.class
             );
 
-            if (responseEntity.getBody() != null && responseEntity.getBody().getData() != null) {
-                List<JobDTO> jobs = responseEntity.getBody().getData();
-                log.info("Recherche réussie : {} offres trouvées", jobs.size());
+            if (response.getBody() != null && response.getBody().getData() != null) {
+                List<JobDTO> jobs = response.getBody().getData();
+                log.info("✅ Succès : {} offres trouvées.", jobs.size());
                 return jobs;
             }
 
             return Collections.emptyList();
 
         } catch (Exception e) {
-            log.error("Erreur critique lors de l'appel JSearch : {}", e.getMessage());
+            log.error("❌ Erreur API : ", e);
             return Collections.emptyList();
         }
     }
 
-    /**
-     * Classe interne utilitaire pour mapper le format JSON de JSearch.
-     * JSearch renvoie : { "status": "OK", "data": [...] }
-     */
     private static class JobResponseWrapper {
         private List<JobDTO> data;
-
         public List<JobDTO> getData() { return data; }
         public void setData(List<JobDTO> data) { this.data = data; }
     }
