@@ -320,4 +320,27 @@ function ajouterNotificationMenu(message) {
         const badge = document.querySelector('.notification-badge');
         if (badge) badge.style.display = 'block';
     }
+
 }
+// ===============================
+// EtudLife Chatbot (global)
+// ===============================
+(function () {
+    function injectChatbot() {
+        if (document.getElementById("etudlife-chatbot-loader")) return;
+
+        if (!document.body) {
+            setTimeout(injectChatbot, 50);
+            return;
+        }
+
+        const s = document.createElement("script");
+        s.id = "etudlife-chatbot-loader";
+        s.src = "/chatbot.js";
+        s.defer = true;
+        document.body.appendChild(s);
+    }
+
+    injectChatbot();
+    window.addEventListener("load", injectChatbot);
+})();

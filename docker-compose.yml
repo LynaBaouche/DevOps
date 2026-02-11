@@ -40,11 +40,16 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/etudlife_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+     # SPRING_REDIS_HOST: redis
+      #SPRING_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
       # Clés API (à mettre dans un fichier .env idéalement, mais ok ici pour dev)
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
     depends_on:
       mysql:
         condition: service_healthy
