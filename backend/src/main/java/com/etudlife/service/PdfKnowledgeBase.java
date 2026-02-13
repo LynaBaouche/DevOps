@@ -1,21 +1,17 @@
 package com.etudlife.service;
 
-
-
+import jakarta.annotation.PostConstruct;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.*;
-import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class PdfKnowledgeBase {
@@ -31,7 +27,8 @@ public class PdfKnowledgeBase {
 
     private final List<Chunk> chunks = new ArrayList<>();
 
-    public record Chunk(String source, String text) {}
+    // docType : "SITE" ou "REGLEMENT"
+    public record Chunk(String source, String text, String docType) {}
 
     @PostConstruct
     public void load() {
@@ -40,13 +37,17 @@ public class PdfKnowledgeBase {
             Resource[] pdfs = resolver.getResources(folder + "/*.pdf");
 
             for (Resource pdf : pdfs) {
-                String name = pdf.getFilename() == null ? "unknown.pdf" : pdf.getFilename();
+                String name = (pdf.getFilename() == null) ? "unknown.pdf" : pdf.getFilename();
+                String type = detectDocType(name); // ✅ calculé 1 seule fois par pdf
+
                 String fullText = extractText(pdf);
                 List<String> splitted = splitIntoChunks(fullText, chunkSizeChars);
 
                 for (String c : splitted) {
                     String cleaned = c.replaceAll("\\s+", " ").trim();
-                    if (!cleaned.isBlank()) chunks.add(new Chunk(name, cleaned));
+                    if (!cleaned.isBlank()) {
+                        chunks.add(new Chunk(name, cleaned, type));
+                    }
                 }
             }
 
@@ -56,53 +57,79 @@ public class PdfKnowledgeBase {
         }
     }
 
+    // ✅ garde la méthode simple (AUTO)
     public List<Chunk> search(String question) {
+        return search(question, "AUTO");
+    }
+
+    // ✅ recherche filtrée par mode : AUTO | SITE | REGLEMENT
+    public List<Chunk> search(String question, String mode) {
+        String m = (mode == null) ? "AUTO" : mode.trim().toUpperCase(Locale.ROOT);
+        if (!m.equals("SITE") && !m.equals("REGLEMENT") && !m.equals("AUTO")) {
+            m = "AUTO";
+        }
+
+        // ✅ variable finale pour éviter: "Variable used in lambda..."
+        final String mFinal = m;
+
         List<String> qTokens = tokenize(question);
 
         return chunks.stream()
+                .filter(c -> mFinal.equals("AUTO") || c.docType().equalsIgnoreCase(mFinal))
                 .map(c -> new ScoredChunk(c, score(qTokens, tokenize(c.text()))))
                 .filter(s -> s.score > 0)
-                .sorted((a,b) -> Integer.compare(b.score, a.score))
+                .sorted((a, b) -> Integer.compare(b.score, a.score))
                 .limit(maxChunks)
                 .map(s -> s.chunk)
                 .collect(Collectors.toList());
     }
 
     private static class ScoredChunk {
-        Chunk chunk; int score;
-        ScoredChunk(Chunk c, int s){ this.chunk = c; this.score = s; }
+        Chunk chunk;
+        int score;
+
+        ScoredChunk(Chunk c, int s) {
+            this.chunk = c;
+            this.score = s;
+        }
     }
 
+    // Score simple = nb de mots communs
     private int score(List<String> q, List<String> t) {
-        // Score simple = nb de mots communs (tu peux améliorer après)
         Set<String> set = new HashSet<>(t);
         int s = 0;
-        for (String w : q) if (set.contains(w)) s++;
+        for (String w : q) {
+            if (set.contains(w)) s++;
+        }
         return s;
     }
 
     private List<String> tokenize(String s) {
-        return Arrays.stream(s.toLowerCase(Locale.ROOT)
-                        .replaceAll("[^a-zàâçéèêëîïôûùüÿñæœ0-9 ]", " ")
-                        .split("\\s+"))
+        if (s == null) return List.of();
+
+        return Arrays.stream(
+                        s.toLowerCase(Locale.ROOT)
+                                .replaceAll("[^a-zàâçéèêëîïôûùüÿñæœ0-9 ]", " ")
+                                .split("\\s+")
+                )
                 .filter(w -> w.length() >= 3)
                 .collect(Collectors.toList());
     }
 
+    // ✅ FIX: le nettoyage est appliqué (tu ne retournes plus getText(doc) 2 fois)
     private String extractText(Resource pdf) throws Exception {
         try (InputStream in = pdf.getInputStream(); PDDocument doc = PDDocument.load(in)) {
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setSortByPosition(true);
             String text = stripper.getText(doc);
-            text = text.replace("\uFFFD", ""); // enlève les caractères cassés
-
-            return stripper.getText(doc);
+            return text.replace("\uFFFD", "");
         }
     }
 
     private List<String> splitIntoChunks(String text, int size) {
         List<String> out = new ArrayList<>();
-        if (text == null) return out;
+        if (text == null || text.isBlank()) return out;
+
         int i = 0;
         while (i < text.length()) {
             int end = Math.min(i + size, text.length());
@@ -111,5 +138,16 @@ public class PdfKnowledgeBase {
         }
         return out;
     }
-}
 
+    private String detectDocType(String filename) {
+        if (filename == null) return "REGLEMENT";
+        String f = filename.toLowerCase(Locale.ROOT);
+
+        // ✅ mets ici des mots-clés qui matchent TON pdf fonctionnalités
+        if (f.contains("site") || f.contains("fonction") || f.contains("annonce")
+                || f.contains("guide") || f.contains("manuel") || f.contains("etudlife") || f.contains("etud life")) {
+            return "SITE";
+        }
+        return "REGLEMENT";
+    }
+}

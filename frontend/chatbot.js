@@ -2,6 +2,8 @@
 (function () {
     const API_BASE = "http://localhost:8080/api/chat";
     let sessionId = null;
+    let mode = "AUTO";
+
 
     function el(tag, attrs = {}, children = []) {
         const e = document.createElement(tag);
@@ -64,6 +66,27 @@
   max-width:80%; padding:10px 12px; border-radius:14px; font-size:14px; line-height:1.3;
   box-shadow:0 2px 8px rgba(0,0,0,.08); white-space:pre-wrap;
 }
+#chatbot-suggestions{
+  display:flex; gap:8px; padding:10px; border-top:1px solid #eee; background:#fff;
+}
+#chatbot-suggestions button{
+  flex:1;
+  border:1px solid #ddd;
+  background:#f8f8f8;
+  border-radius:12px;
+  padding:8px;
+  cursor:pointer;
+  font-size:12px;
+  color:#111;              /* ← AJOUT IMPORTANT */
+}
+
+#chatbot-suggestions button.active{
+  border-color: var(--etudlife-blue);
+  background:#eef5ff;
+  color:#1a3d6d;           /* ← couleur texte visible */
+  font-weight:600;
+}
+
 
 
 .chat-msg.user .chat-bubble{ background:var(--etudlife-blue); color:#fff; border-bottom-right-radius:6px; }
@@ -113,7 +136,7 @@
         const bubble = addMessage("bot", "");
         const stopDots = startDots(bubble);
 
-        const url = `${API_BASE}/stream?question=${encodeURIComponent(question)}&sessionId=${encodeURIComponent(sessionId)}`;
+        const url = `${API_BASE}/stream?question=${encodeURIComponent(question)}&sessionId=${encodeURIComponent(sessionId)}&mode=${encodeURIComponent(mode)}`;
         const es = new EventSource(url);
 
         let started = false;
@@ -158,13 +181,22 @@
             el("div", { id: "chatbot-header" }, [
                 el("div", {}, [
                     el("div", { class: "title" }, ["EtudLife Assistant"]),
-
                 ]),
                 el("button", { id: "chatbot-close", type: "button" }, ["✕"]),
             ])
         );
 
         panel.appendChild(el("div", { id: "chatbot-messages" }));
+
+        // ✅ 1) AJOUT : barre de choix du mode (SITE / REGLEMENT)
+        panel.appendChild(
+            el("div", { id: "chatbot-suggestions" }, [
+                el("button", { type: "button", id: "btn-reg" }, ["📚 Règlement / examens"]),
+                el("button", { type: "button", id: "btn-site" }, ["💻 Fonctionnement du site"]),
+            ])
+        );
+
+        // input
         panel.appendChild(
             el("div", { id: "chatbot-input" }, [
                 el("input", { id: "chatbot-text", placeholder: "Écris ton message..." }),
@@ -175,8 +207,30 @@
         document.body.appendChild(btn);
         document.body.appendChild(panel);
 
-        addMessage("bot", "Bonjour, Comment puis-je vous aider ?");
+        addMessage("bot", "Bonjour, comment puis-je vous aider ?");
 
+        // ✅ 2) AJOUT : gestion des clics sur les boutons
+        const btnReg = document.getElementById("btn-reg");
+        const btnSite = document.getElementById("btn-site");
+
+        function setMode(newMode) {
+            mode = newMode; // "REGLEMENT" ou "SITE"
+
+            btnReg.classList.toggle("active", mode === "REGLEMENT");
+            btnSite.classList.toggle("active", mode === "SITE");
+
+            // ✅ (optionnel) suggestions affichées
+            if (mode === "REGLEMENT") {
+                addMessage("bot", "vous pouvez me poser toutes les questions concernant le réglementaire de l'université Paris Nanterre : retard à un examen, fraude, plagiat, bizutage, examens en ligne.");
+            } else {
+                addMessage("bot", "Vous pouvez me poser toutes les questions concernant le fonctionnement du site EtudLife");
+            }
+        }
+
+        btnReg.addEventListener("click", () => setMode("REGLEMENT"));
+        btnSite.addEventListener("click", () => setMode("SITE"));
+
+        // ouvrir/fermer
         btn.addEventListener("click", () => {
             panel.style.display = panel.style.display === "flex" ? "none" : "flex";
             if (panel.style.display === "flex") panel.style.flexDirection = "column";
@@ -200,11 +254,11 @@
             const greetings = ["bonjour", "salut", "hello", "hey", "bonsoir"];
 
             if (greetings.includes(normalized)) {
-                addMessage("bot", "Bonjour, Comment puis-je vous aider ?");
+                addMessage("bot", "Bonjour, comment puis-je vous aider ?");
                 return;
             }
 
-            await streamMessage(q);
+            await streamMessage(q); // ⚠️ streamMessage doit envoyer mode dans l’URL SSE (je te rappelle juste après)
         }
 
         sendBtn.addEventListener("click", onSend);
@@ -217,6 +271,7 @@
             navigator.sendBeacon(`${API_BASE}/close?sessionId=${encodeURIComponent(sessionId)}`);
         });
     }
+
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", mount);

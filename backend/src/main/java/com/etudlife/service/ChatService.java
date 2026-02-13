@@ -19,7 +19,8 @@ public class ChatService {
         this.sessions = sessions;
     }
 
-    public ChatResponse ask(String sessionId, String question) {
+    public ChatResponse ask(String sessionId, String question, String mode)
+    {
 
         //  stocker le message user dans Redis
         sessions.append(sessionId, "user", question);
@@ -48,7 +49,26 @@ public class ChatService {
                 : String.join("\n", lastMessages);
 
         // RAG PDF
-        List<PdfKnowledgeBase.Chunk> hits = kb.search(question);
+        String m = normalizeMode(mode);
+
+// AUTO -> on décide selon la question
+        if (m.equals("AUTO")) {
+            m = looksLikeSiteQuestion(qNorm) ? "SITE" : "REGLEMENT";
+        }
+
+// Recherche filtrée
+        List<PdfKnowledgeBase.Chunk> hits = kb.search(question, m);
+
+// Fallback : si rien trouvé dans ce mode, tente l'autre mode
+        if (hits.isEmpty()) {
+            String other = m.equals("SITE") ? "REGLEMENT" : "SITE";
+            List<PdfKnowledgeBase.Chunk> hits2 = kb.search(question, other);
+            if (!hits2.isEmpty()) {
+                hits = hits2;
+                m = other;
+            }
+        }
+
 
         String context = hits.isEmpty()
                 ? "Aucun extrait pertinent trouvé dans les PDFs."
@@ -58,15 +78,20 @@ public class ChatService {
 
         //  prompt avec historique + contexte
         String prompt =
-                "Tu es un assistant pour des étudiants. Réponds uniquement avec les infos du CONTEXTE.\n" +
-                        "Si tu n'as pas l'information dans le CONTEXTE, ne mentionne pas de document, ne mentionne pas la charte.\n"
-                        +
-                        "Si le contexte ne contient pas la réponse, réponds simplement: \"Désolé, je n’ai pas d’information sur ce sujet.\".\n\n"
-                        +
+                "Tu es un assistant pour des étudiants.\n" +
+                        "Réponds uniquement avec les informations présentes dans le CONTEXTE.\n" +
+                        "Si le CONTEXTE ne contient pas la réponse, réponds exactement : \"Désolé, je n’ai pas d’information sur ce sujet.\".\n" +
+                        "Ne mentionne jamais la charte ni le document source.\n" +
+                        "Rédige toujours la réponse sous forme d’un paragraphe fluide.\n" +
+                        "N’utilise pas de listes, pas de puces, pas d’astérisques, pas de tirets.\n" +
+                        "Ne fais pas de retour à la ligne entre chaque phrase.\n\n" +
+                        "Tu peux reformuler la question pour chercher l'information la plus proche dans le CONTEXTE.\n"+
+
                         "HISTORIQUE:\n" + chatHistory + "\n\n" +
                         "CONTEXTE:\n" + context + "\n\n" +
                         "QUESTION: " + question + "\n\n" +
                         "RÉPONSE:";
+
 
         String answer = gemini.generate(prompt);
 
@@ -81,4 +106,27 @@ public class ChatService {
 
         return new ChatResponse(true, sessionId, question, answer, sources);
     }
+    private String normalizeMode(String mode) {
+        if (mode == null) return "AUTO";
+        String m = mode.trim().toUpperCase();
+        if (m.equals("SITE") || m.equals("REGLEMENT") || m.equals("AUTO")) return m;
+        return "AUTO";
+    }
+
+    private boolean looksLikeSiteQuestion(String qNorm) {
+        return qNorm.contains("annonce")
+                || qNorm.contains("favori")
+                || qNorm.contains("profil")
+                || qNorm.contains("compte")
+                || qNorm.contains("connexion")
+                || qNorm.contains("connecter")
+                || qNorm.contains("déconnexion")
+                || qNorm.contains("deconnecter")
+                || qNorm.contains("mot de passe")
+                || qNorm.contains("inscription")
+                || qNorm.contains("publier")
+                || qNorm.contains("supprimer")
+                || qNorm.contains("modifier");
+    }
+
 }

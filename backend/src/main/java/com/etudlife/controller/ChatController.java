@@ -6,6 +6,7 @@ import com.etudlife.service.ChatService;
 import com.etudlife.service.ChatSessionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.etudlife.dto.ChatRequest;
 
 import java.util.Map;
 
@@ -16,9 +17,11 @@ public class ChatController {
     private final ChatService chatService;
     private final ChatSessionService sessions;
 
+
     public ChatController(ChatService chatService, ChatSessionService sessions) {
         this.chatService = chatService;
         this.sessions = sessions;
+
     }
 
     //  créer une session
@@ -56,7 +59,9 @@ public class ChatController {
             sessionId = sessions.newSession();
         }
 
-        ChatResponse res = chatService.ask(sessionId, req.getQuestion());
+        ChatResponse res = chatService.ask(sessionId, req.getQuestion(), req.getMode());
         return ResponseEntity.ok(res);
     }
+
+
 }
