@@ -1,21 +1,17 @@
 package com.etudlife.service;
 
-
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-
 
 @Component
 public class PdfKnowledgeBase {
@@ -29,9 +25,18 @@ public class PdfKnowledgeBase {
     @Value("${knowledge.maxChunks:4}")
     private int maxChunks;
 
+    // Utilisation d'une seule liste "chunks"
     private final List<Chunk> chunks = new ArrayList<>();
 
+    // Définition du Record avec Majuscule
     public record Chunk(String source, String text) {}
+
+    // MÉTHODE QUE LE CHATSERVICE APPELLE
+    public List<Chunk> searchInFile(String query, String fileName) {
+        return this.search(query).stream()
+                .filter(c -> c.source().equalsIgnoreCase(fileName))
+                .collect(Collectors.toList());
+    }
 
     @PostConstruct
     public void load() {
@@ -49,7 +54,6 @@ public class PdfKnowledgeBase {
                     if (!cleaned.isBlank()) chunks.add(new Chunk(name, cleaned));
                 }
             }
-
             System.out.println("✅ Loaded PDF chunks: " + chunks.size());
         } catch (Exception e) {
             System.err.println("❌ PDF load error: " + e.getMessage());
@@ -58,11 +62,10 @@ public class PdfKnowledgeBase {
 
     public List<Chunk> search(String question) {
         List<String> qTokens = tokenize(question);
-
         return chunks.stream()
                 .map(c -> new ScoredChunk(c, score(qTokens, tokenize(c.text()))))
                 .filter(s -> s.score > 0)
-                .sorted((a,b) -> Integer.compare(b.score, a.score))
+                .sorted((a, b) -> Integer.compare(b.score, a.score))
                 .limit(maxChunks)
                 .map(s -> s.chunk)
                 .collect(Collectors.toList());
@@ -74,7 +77,6 @@ public class PdfKnowledgeBase {
     }
 
     private int score(List<String> q, List<String> t) {
-        // Score simple = nb de mots communs (tu peux améliorer après)
         Set<String> set = new HashSet<>(t);
         int s = 0;
         for (String w : q) if (set.contains(w)) s++;
@@ -93,9 +95,6 @@ public class PdfKnowledgeBase {
         try (InputStream in = pdf.getInputStream(); PDDocument doc = PDDocument.load(in)) {
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setSortByPosition(true);
-            String text = stripper.getText(doc);
-            text = text.replace("\uFFFD", ""); // enlève les caractères cassés
-
             return stripper.getText(doc);
         }
     }
@@ -111,5 +110,10 @@ public class PdfKnowledgeBase {
         }
         return out;
     }
+    public String retrieveContext(String question) {
+        List<Chunk> hits = this.search(question);
+        return hits.stream()
+                .map(Chunk::text)
+                .collect(Collectors.joining("\n---\n"));
+    }
 }
-
