@@ -31,22 +31,17 @@ services:
 
   # 3. Backend Spring Boot
   backend:
-    build: ./backend # Chemin vers ton dossier backend
+    build: ./backend
     container_name: etudlife-backend
     ports:
       - "8080:8080"
     environment:
-      # Configuration pour Docker (remplace localhost par le nom des services)
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/etudlife_db?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-     # SPRING_REDIS_HOST: redis
-      #SPRING_REDIS_PORT: 6379
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-alicyapearl.alwaysdata.net:3306/alicyapearl_devops?useSSL=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: 390464_devops
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-
-      # Clés API (à mettre dans un fichier .env idéalement, mais ok ici pour dev)
-
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
 
@@ -54,7 +49,7 @@ services:
       mysql:
         condition: service_healthy
       redis:
-          condition: service_started
+        condition: service_started
     networks:
       - etudlife-net
 
