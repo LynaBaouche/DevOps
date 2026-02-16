@@ -6,17 +6,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class ChatService {
 
     private final PdfKnowledgeBase kb;
     private final GeminiClient gemini;
     private final ChatSessionService sessions;
+    private final SavedJobService savedJobService;
 
-    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions) {
+    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions, SavedJobService savedJobService, SavedJobService savedJobService1) {
         this.kb = kb;
         this.gemini = gemini;
         this.sessions = sessions;
+        this.savedJobService = savedJobService1;
+
     }
 
     public ChatResponse ask(String sessionId, String question, String mode)
@@ -128,5 +132,13 @@ public class ChatService {
                 || qNorm.contains("supprimer")
                 || qNorm.contains("modifier");
     }
+
+
+    private boolean isInterestedJobsIntent(String qNorm) {
+        return (qNorm.contains("liste") || qNorm.contains("affiche") || qNorm.contains("donne"))
+                && (qNorm.contains("offre") || qNorm.contains("annonce") || qNorm.contains("job") || qNorm.contains("candidature"))
+                && (qNorm.contains("intéress") || qNorm.contains("interess") || qNorm.contains("favori") || qNorm.contains("sauvegard"));
+    }
+
 
 }
