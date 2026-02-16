@@ -41,6 +41,12 @@ public class SavedJobService {
         savedJob.setApplyLink(dto.getApplyLink());
         savedJob.setStatus(dto.getStatus()); // Ex: INTERESSE, POSTULE
 
+        String link = dto.getApplyLink();
+        if (link != null && link.length() > 250) {
+            link = link.substring(0, 250); // On coupe à 250 caractères max
+        }
+        savedJob.setApplyLink(link);
+
         savedJobRepository.save(savedJob);
     }
 
