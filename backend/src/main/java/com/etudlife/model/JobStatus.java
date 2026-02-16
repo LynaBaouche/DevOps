@@ -4,4 +4,5 @@ public enum JobStatus {
     INTERESSE,
     POSTULE,
     REFUSE,
+    SUGGESTION // Batch
 }

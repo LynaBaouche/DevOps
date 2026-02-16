@@ -4,6 +4,7 @@ const API_JOBS = "/api/jobs";
 async function searchJobs() {
     const query = document.getElementById('jobQuery').value;
     const location = document.getElementById('jobLocation').value;
+    const frequency = document.getElementById('jobFrequency').value;
     const container = document.getElementById('jobs-container');
 
     container.innerHTML = '<p style="text-align:center">Recherche en cours... ⏳</p>';
@@ -18,13 +19,46 @@ async function searchJobs() {
         if (!jobs || jobs.length === 0) {
             container.innerHTML = '<p style="text-align:center">Aucune offre trouvée.</p>';
             return;
+        } else {
+            displayJobs(jobs);
         }
 
-        displayJobs(jobs);
+        // Sauvegarde pour le BATCH (en silencieux)
+        // On ne le fait que si ce n'est pas "Désactivé"
+        if (frequency !== "Désactivé") {
+            await savePreferences(query, location, frequency);
+        }
 
     } catch (err) {
         console.error(err);
         container.innerHTML = '<p style="color:red; text-align:center">Erreur technique lors de la recherche.</p>';
+    }
+}
+
+async function savePreferences(motsCles, localisation, frequence) {
+    try {
+        const payload = {
+            motsCles: motsCles,
+            localisation: localisation,
+            frequence: frequence,
+            remunerationMin: null // On peut ajouter ce champ plus tard si besoin
+        };
+
+        const res = await fetch('/api/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            console.log("✅ Préférences de batch sauvegardées !");
+            const btn = document.querySelector('.btn-blue');
+            const oldText = btn.innerText;
+            btn.innerText = "Recherche + Batch OK ✅";
+            setTimeout(() => btn.innerText = oldText, 2000);
+        }
+    } catch (err) {
+        console.error("Erreur sauvegarde batch", err);
     }
 }
 
