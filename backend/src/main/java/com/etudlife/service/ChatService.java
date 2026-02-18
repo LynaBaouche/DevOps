@@ -41,7 +41,16 @@ public class ChatService {
 
 
         if (qNorm.matches("^(bonjour|salut|hello|hey|bonsoir)(\\s*!*)?$")) {
-            String answer = "Bonjour, comment puis-je vous aider ?";
+            String answer = "Bienvenue sur EtudLife !\n\n" +
+            "EtudLife est votre plateforme étudiante pour :\n" +
+                    " Gérer votre agenda et celui de vos proches\n" +
+                    " Échanger via la messagerie\n" +
+                    " Publier ou consulter des annonces\n" +
+                    " Postuler à des offres de stage ou d’alternance\n" +
+                    " Réserver des livres et des salles à la bibliothèque\n" +
+                    "️ Organiser votre quotidien avec des recettes étudiantes\n\n" +
+                    "Je peux également répondre à vos questions concernant le règlement intérieur et la charte de l’Université Paris Nanterre.\n\n" +
+                    "Comment puis-je vous aider aujourd’hui ?";
             sessions.append(sessionId, "assistant", answer);
             return new ChatResponse(true, sessionId, question, answer, "none");
         }
@@ -74,11 +83,17 @@ public class ChatService {
         }
 
 
-        String context = hits.isEmpty()
-                ? "Aucun extrait pertinent trouvé dans les PDFs."
-                : hits.stream()
+        // ✅ Si rien trouvé : on force une réponse “safe” et on n'appelle pas Gemini
+        if (hits.isEmpty()) {
+            String answer = "Désolé, je n’ai pas d’information sur ce sujet.";
+            sessions.append(sessionId, "assistant", answer);
+            return new ChatResponse(true, sessionId, question, answer, "none");
+        }
+
+        String context = hits.stream()
                 .map(c -> "SOURCE: " + c.source() + "\nEXTRAIT: " + c.text())
                 .collect(Collectors.joining("\n\n---\n\n"));
+
 
         //  prompt avec historique + contexte
         String prompt =

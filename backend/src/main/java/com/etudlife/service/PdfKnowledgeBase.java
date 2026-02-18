@@ -143,11 +143,21 @@ public class PdfKnowledgeBase {
         if (filename == null) return "REGLEMENT";
         String f = filename.toLowerCase(Locale.ROOT);
 
-        // ✅ mets ici des mots-clés qui matchent TON pdf fonctionnalités
-        if (f.contains("site") || f.contains("fonction") || f.contains("annonce")
-                || f.contains("guide") || f.contains("manuel") || f.contains("etudlife") || f.contains("etud life")) {
+        // ✅ Si le nom indique clairement du règlement → REGLEMENT
+        if (f.contains("reglement") || f.contains("règlement")
+                || f.contains("charte") || f.contains("examen") || f.contains("examens")
+                || f.contains("fraude") || f.contains("plagiat") || f.contains("bizutage")) {
+            return "REGLEMENT";
+        }
+
+        // ✅ Si le nom indique clairement un guide du site → SITE
+        if (f.contains("site") || f.contains("fonction") || f.contains("fonctionnement")
+                || f.contains("guide") || f.contains("manuel") || f.contains("tuto")) {
             return "SITE";
         }
+
+        // ✅ Par défaut : REGLEMENT (plus safe pour ton cas)
         return "REGLEMENT";
     }
+
 }

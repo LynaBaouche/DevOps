@@ -98,19 +98,53 @@
 
 #chatbot-send{ width:44px; border:none; border-radius:12px; background:var(--etudlife-blue); color:#fff; cursor:pointer; }
 #chatbot-send:hover{ background:var(--etudlife-blue-dark); }
+.chat-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  margin-right:8px;
+  flex:0 0 36px;
+}
+
+.chat-msg.bot{
+  align-items:flex-start;
+}
+
+.chat-msg.bot .chat-bubble{
+  margin-top:2px;
+}
+.chatbot-msg, .message, .bot-message, .msg-bubble {
+  white-space: pre-line;
+}
+
 `;
         document.head.appendChild(style);
     }
 
     function addMessage(role, text) {
         const messages = document.getElementById("chatbot-messages");
-        const row = el("div", { class: `chat-msg ${role === "user" ? "user" : "bot"}` });
+        const isUser = role === "user";
+
+        const row = el("div", { class: `chat-msg ${isUser ? "user" : "bot"}` });
+
+        // ✅ Avatar seulement pour le bot
+        if (!isUser) {
+            const avatar = el("img", {
+                class: "chat-avatar",
+                src: "images/etudlife.png",
+                alt: "Bot"
+            });
+            row.appendChild(avatar);
+        }
+
         const bubble = el("div", { class: "chat-bubble" }, [text]);
+
         row.appendChild(bubble);
         messages.appendChild(row);
         messages.scrollTop = messages.scrollHeight;
         return bubble;
     }
+
 
     function startDots(bubble) {
         let i = 0;
@@ -207,7 +241,19 @@
         document.body.appendChild(btn);
         document.body.appendChild(panel);
 
-        addMessage("bot", "Bonjour, comment puis-je vous aider ?");
+        addMessage("bot",
+            "Bienvenue sur EtudLife !\n\n" +
+            "EtudLife est votre plateforme étudiante pour :\n" +
+            "- Gérer votre agenda et celui de vos proches\n" +
+            "- Échanger via la messagerie\n" +
+            "- Publier ou consulter des annonces\n" +
+            "- Postuler à des offres de stage ou d’alternance\n" +
+            "- Réserver des livres et des salles à la bibliothèque\n" +
+            "️- Organiser votre quotidien avec des recettes étudiantes\n\n" +
+            "- Je peux aussi répondre à vos questions sur le règlement intérieur et la charte de l’Université Paris Nanterre.\n\n" +
+            "Que souhaitez-vous faire ?"
+        );
+
 
         // ✅ 2) AJOUT : gestion des clics sur les boutons
         const btnReg = document.getElementById("btn-reg");

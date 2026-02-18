@@ -13,7 +13,11 @@
       <schema-mapping />
     </data-source>
     <data-source name="alicyapearl_devops@mysql-alicyapearl.alwaysdata.net" uuid="4597e35c-0842-453f-8347-3cb6bcb5633c">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL">
+        <extra-name-characters>$</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <user-name>390464_devops</user-name>
       <schema-mapping />
     </data-source>
@@ -21,7 +25,6 @@
       <database-info product="MySQL" version="8.0.45" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-j-9.5.0 (Revision: a7b3c94f50efbddb9f0dd69b3e0d1aaa25305cd6)" dbms="MYSQL" exact-version="8.0.45" exact-driver-version="9.5">
         <extra-name-characters>$</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
-        <jdbc-catalog-is-schema>true</jdbc-catalog-is-schema>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
