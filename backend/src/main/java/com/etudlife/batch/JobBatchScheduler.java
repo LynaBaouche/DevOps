@@ -32,8 +32,8 @@ public class JobBatchScheduler {
 
     // 🕒 Se lance tous les jours à 2h00 du matin
     // Cron: Secondes Minutes Heures JourMois Mois JourSemaine
-   // @Scheduled(cron = "0 0 2 * * ?")
-   // @Scheduled(fixedRate = 60000) // Pour tests : toutes les minutes
+    @Scheduled(cron = "0 0 2 * * ?")
+    // En cas de test immédiat, remplacer par : @Scheduled(fixedRate = 60000) (Toutes les minutes)
     public void runNightlyBatch() {
         log.info("🌙 Début du Batch de nuit...");
 

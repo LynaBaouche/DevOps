@@ -29,6 +29,7 @@ public class SavedJob {
     private String applyLink;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private JobStatus status; // LE champ important
     public LocalDateTime getDateSauvegarde() { return dateSauvegarde; }
     public void setDateSauvegarde(LocalDateTime dateSauvegarde) { this.dateSauvegarde = dateSauvegarde; }

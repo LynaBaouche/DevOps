@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-253.29346.240">
+  <component name="dataSourceStorageLocal" created-in="IU-253.30387.90">
     <data-source name="etudlife_db@localhost" uuid="5bb5cf03-9dbf-4619-aaf6-d4f0b0361ab4">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
       <secret-storage>master_key</secret-storage>
@@ -13,7 +13,11 @@
       <schema-mapping />
     </data-source>
     <data-source name="alicyapearl_devops@mysql-alicyapearl.alwaysdata.net" uuid="4597e35c-0842-453f-8347-3cb6bcb5633c">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL">
+        <extra-name-characters>$</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <user-name>390464_devops</user-name>
       <schema-mapping />
     </data-source>

@@ -19,6 +19,12 @@ public class JobPreferenceController {
         this.compteRepository = compteRepository;
     }
 
+    // Endpoint de test pour vérifier que le serveur Render est bien réveillé
+    @GetMapping
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("Serveur réveillé et opérationnel !");
+    }
+
     @PostMapping
     public ResponseEntity<?> savePreferences(@RequestBody JobPreference pref) {
         // Pour l'instant, on lie au premier compte trouvé (Mode démo)
