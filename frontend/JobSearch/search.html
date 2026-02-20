@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Recherche de Stages | EtudLife</title>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/Annonce/annonces.css"> <style>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../Annonce/annonces.css">
+    <link rel="stylesheet" href="../header.css">
+    <style>
+
     /* Petits ajustements spécifiques aux jobs */
     .job-source-badge {
         background-color: #0077b5; /* Bleu LinkedIn */
@@ -24,6 +27,7 @@
 </style>
 </head>
 <body>
+<script src="../header.js"></script>
 
 <div class="annonces-content">
     <h1 class="title">🎯 Chasseur de Stages</h1>
@@ -34,9 +38,17 @@
         </button>
     </div>
 
-    <div class="search-bar" style="display:flex; gap:10px; margin-bottom: 30px;">
+    <div class="search-bar" style="display:flex; gap:10px; margin-bottom: 30px; align-items: center;">
+
         <input type="text" id="jobQuery" placeholder="Ex: Développeur Java" value="Stage">
+
         <input type="text" id="jobLocation" placeholder="Ex: Paris" style="width: 150px;">
+
+        <select id="jobFrequency" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <option value="Quotidien">🔔 Quotidien</option>
+            <option value="Hebdomadaire">📅 Hebdo</option>
+            <option value="Désactivé">🔕 Pas d'alarmes</option>
+        </select>
         <button class="btn-blue" onclick="searchJobs()">Rechercher</button>
     </div>
 
@@ -45,6 +57,6 @@
     </div>
 </div>
 
-<script src="/JobSearch/jobs.js"></script>
+<script src="../JobSearch/jobs.js"></script>
 </body>
 </html>

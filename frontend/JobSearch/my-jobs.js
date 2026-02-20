@@ -33,7 +33,7 @@ async function loadStats() {
 }
 
 // 4. Filtrer l'affichage
-function filterJobs(status) {
+/*function filterJobs(status) {
     // Gestion des boutons actifs
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active'); // L'événement click met le bouton en actif
@@ -75,7 +75,7 @@ function filterJobs(status) {
             </div>
         </div>
     `).join('');
-}
+}*/
 
 // 5. Mettre à jour le statut (ex: Intéressé -> Postulé)
 async function updateStatus(jobId, newStatus) {
@@ -106,4 +106,78 @@ function confirmDelete(jobId) {
     if (confirm("Êtes-vous sûr de vouloir retirer cette offre ? Elle ira dans la corbeille.")) {
         updateStatus(jobId, 'REFUSE');
     }
+}
+
+function filterJobs(status) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    // Astuce : on cible le bouton cliqué via event.target ou on gère la classe autrement
+    // Pour faire simple ici, assure-toi que tes boutons ont bien onclick="filterJobs('...')"
+
+    let filtered = allMyJobs;
+
+    if (status !== 'ALL') {
+        filtered = allMyJobs.filter(job => job.status === status);
+    }
+
+    const container = document.getElementById('my-jobs-container');
+    container.innerHTML = "";
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center; width:100%; padding:40px; color:#666;">Aucune offre ici pour le moment. 😴</div>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(job => {
+        // SI C'EST UNE SUGGESTION (ROBOT), ON AFFICHE UNE CARTE SPÉCIALE
+        if (job.status === 'SUGGESTION') {
+            return `
+            <div class="card-job" style="border-left: 5px solid #9b59b6;">
+                <div class="card-body">
+                    <span style="background:#9b59b6; color:white; padding:2px 8px; border-radius:10px; font-size:0.7em; float:right;">NOUVEAU</span>
+                    <h3>${job.title}</h3>
+                    <h4 style="color:#666;">${job.company}</h4>
+                    <p>📍 ${job.location}</p>
+                    <p style="font-size:0.9em; margin-top:5px; color:#888;">Trouvé par votre assistant 🤖</p>
+                    <a href="${job.applyLink}" target="_blank" style="color:#3498db; text-decoration:none; display:block; margin-top:10px;">
+                        Voir l'annonce <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <div class="card-actions" style="justify-content:space-around;">
+                    <button class="btn-icon" style="color:#e74c3c;" onclick="updateStatus('${job.externalJobId}', 'REFUSE')" title="Refuser">
+                        <i class="fas fa-times-circle"></i> Non merci
+                    </button>
+                    <button class="btn-icon" style="color:#2ecc71;" onclick="updateStatus('${job.externalJobId}', 'INTERESSE')" title="Garder">
+                        <i class="fas fa-heart"></i> Garder
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        // SINON, AFFICHAGE STANDARD (Ton code actuel)
+        return `
+        <div class="card-job status-${job.status}">
+            <div class="card-body">
+                <h3>${job.title}</h3>
+                <h4 style="color:#666;">${job.company}</h4>
+                <p>📍 ${job.location}</p>
+                <a href="${job.applyLink}" target="_blank" style="color:#3498db; text-decoration:none; display:block; margin-top:10px;">
+                    Voir l'offre originale <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+            <div class="card-actions">
+                ${job.status !== 'POSTULE' ? `
+                <button class="btn-icon" style="color:#2ecc71;" title="J'ai postulé" 
+                    onclick="updateStatus('${job.externalJobId}', 'POSTULE')">
+                    <i class="fas fa-check-circle"></i> J'ai postulé
+                </button>` : '<span style="color:#2ecc71; font-weight:bold;">Candidature envoyée !</span>'}
+
+                ${job.status !== 'REFUSE' ? `
+                <button class="btn-icon" style="color:#e74c3c;" title="Supprimer" 
+                    onclick="confirmDelete('${job.externalJobId}')">
+                    <i class="fas fa-trash"></i>
+                </button>` : ''}
+            </div>
+        </div>
+        `;
+    }).join('');
 }

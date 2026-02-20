@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Mes Candidatures | EtudLife</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Design des KPIs (Indicateurs) */
@@ -51,9 +52,9 @@
     </style>
 </head>
 <body>
-
+<script src="../header.js"></script>
 <div style="padding: 20px;">
-    <a href="/JobSearch/search.html" style="text-decoration: none; color: #333; font-weight: bold;">
+    <a href="../JobSearch/search.html" style="text-decoration: none; color: #333; font-weight: bold;">
         <i class="fas fa-arrow-left"></i> Retour à la recherche
     </a>
 </div>
@@ -72,11 +73,15 @@
         </div>
         <div class="kpi-card kpi-red">
             <span class="kpi-number" id="count-refuse">-</span>
-            <span class="kpi-label">Refusé</span>
+            <span class="kpi-label">Corbeille</span>
         </div>
     </div>
 
     <div class="filters">
+        <button class="filter-btn" onclick="filterJobs('SUGGESTION')" style="border: 2px solid #9b59b6; color: #9b59b6;">
+            🤖 Suggestions
+        </button>
+
         <button class="filter-btn active" onclick="filterJobs('ALL')">Tout voir</button>
         <button class="filter-btn" onclick="filterJobs('INTERESSE')">❤️ À faire</button>
         <button class="filter-btn" onclick="filterJobs('POSTULE')">✅ Postulé</button>
@@ -88,6 +93,6 @@
     </div>
 </div>
 
-<script src="/JobSearch/my-jobs.js"></script>
+<script src="../JobSearch/my-jobs.js"></script>
 </body>
 </html>
