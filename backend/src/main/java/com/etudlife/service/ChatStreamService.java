@@ -19,30 +19,24 @@ public class ChatStreamService {
         this.sessions = sessions;
     }
 
-    public Flux<String> streamAnswer(String sessionId, String question) {
-
-        // 1) crée une session si besoin
+    public Flux<String> streamAnswer(String sessionId, String question, String mode) {
         if (sessionId == null || sessionId.isBlank()) {
             sessionId = sessions.newSession();
         }
 
-        // 2) appelle ton pipeline normal
-        ChatResponse res = chatService.ask(sessionId, question);
+        ChatResponse res = chatService.ask(sessionId, question, mode);
         String full = (res.getResponse() == null) ? "" : res.getResponse();
 
-        // (Optionnel) si tu veux que le front récupère la sessionId via SSE:
-        // on envoie un “event” spécial au début (simple et pratique)
         String sid = sessionId;
         Flux<String> head = Flux.just("__SESSION__:" + sid);
 
-        // 3) chunking
         List<String> chunks = chunkByWords(full, 2);
-
         Flux<String> body = Flux.fromIterable(chunks)
                 .delayElements(Duration.ofMillis(35));
 
         return head.concatWith(body);
     }
+
 
     private List<String> chunkByWords(String text, int wordsPerChunk) {
         String[] words = text.split("\\s+");

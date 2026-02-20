@@ -21,11 +21,13 @@ ChatStreamController {
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> stream(
             @RequestParam("question") String question,
-            @RequestParam(value = "sessionId", required = false) String sessionId
+            @RequestParam(value = "sessionId", required = false) String sessionId,
+            @RequestParam(value = "mode", required = false) String mode
     ) {
-        return chatStreamService.streamAnswer(sessionId, question)
+        return chatStreamService.streamAnswer(sessionId, question, mode)
                 .map(chunk -> ServerSentEvent.builder(chunk).event("chunk").build())
                 .concatWithValues(ServerSentEvent.builder("[DONE]").event("done").build());
     }
+
 
 }
