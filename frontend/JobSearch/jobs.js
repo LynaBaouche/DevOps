@@ -1,14 +1,32 @@
 const API_JOBS = "/api/jobs";
-let currentJobsCache = []; // 🧠 On stocke les offres ici pour éviter les bugs de guillemets
+const API_PREF = "https://etudlife-backend.onrender.com/api/preferences"; // Serveur distant pour le batch
+let currentJobsCache = [];
 
 // 1. Fonction de recherche
 async function searchJobs() {
     const query = document.getElementById('jobQuery').value;
     const location = document.getElementById('jobLocation').value;
+    const frequency = document.getElementById('jobFrequency').value;
     const container = document.getElementById('jobs-container');
 
     container.innerHTML = '<p style="text-align:center">Recherche en cours... ⏳</p>';
-
+    // --- Sauvegarde automatique de la préférence pour le batch ---
+    try {
+        await fetch(API_PREF, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                motsCles: query,
+                localisation: location,
+                frequence: frequency,
+                compte: { id: 1 } // ID par défaut pour les tests
+            })
+        });
+        console.log("✅ Préférence enregistrée pour le batch de 02h00");
+    } catch (err) {
+        console.error("❌ Erreur sauvegarde batch:", err);
+    }
+    // --- Recherche des offres ---
     try {
         let url = `${API_JOBS}/search?query=${encodeURIComponent(query)}`;
         if(location) url += `&location=${encodeURIComponent(location)}`;
@@ -21,7 +39,7 @@ async function searchJobs() {
             return;
         }
 
-        // ✅ ON SAUVEGARDE LES OFFRES DANS LE CACHE GLOBAL
+        // SAUVEGARDE LES OFFRES DANS LE CACHE GLOBAL
         currentJobsCache = jobs;
         displayJobs(jobs);
 
