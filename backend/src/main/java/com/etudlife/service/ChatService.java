@@ -33,6 +33,11 @@ public class ChatService {
         String qNorm = q.toLowerCase();
 
 
+        // FORCE "sourcee.pdf" si on parle d'annonce, de compte, de menu ou de bouton
+        String fileName = (qNorm.contains("annonce") || qNorm.contains("étape") || qNorm.contains("créer") || qNorm.contains("compte"))
+                ? "sourcee.pdf"
+                : "charte.pdf";
+
         if (qNorm.matches("^(ok\\s*)?(merci|mercii+|merci beaucoup|thx|thanks)(\\s*!*)?$")) {
             String answer = "Pas de souci 🙂 Si vous avez besoin d’autre chose, n’hésitez pas.";
             sessions.append(sessionId, "assistant", answer);
@@ -70,7 +75,8 @@ public class ChatService {
         }
 
 // Recherche filtrée
-        List<PdfKnowledgeBase.Chunk> hits = kb.search(question, m);
+        // Appelle bien searchInFile avec ce fileName
+        List<PdfKnowledgeBase.Chunk> hits = kb.searchInFile(question, fileName);
 
 // Fallback : si rien trouvé dans ce mode, tente l'autre mode
         if (hits.isEmpty()) {

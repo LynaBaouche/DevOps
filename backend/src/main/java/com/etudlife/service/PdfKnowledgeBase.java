@@ -159,5 +159,11 @@ public class PdfKnowledgeBase {
         // ✅ Par défaut : REGLEMENT (plus safe pour ton cas)
         return "REGLEMENT";
     }
+    // À ajouter dans PdfKnowledgeBase.java
+    public List<Chunk> searchInFile(String query, String fileName) {
+        return this.search(query).stream()
+                .filter(c -> c.source().equalsIgnoreCase(fileName))
+                .collect(Collectors.toList());
+    }
 
 }
