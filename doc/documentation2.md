@@ -52,6 +52,7 @@
 ---------------------------------------
 
 2.2 Agent IA EtudLife
+---------------------------------------
 
 * L’Agent IA EtudLife transforme l’application en assistant intelligent contextuel pour les étudiants.
 
