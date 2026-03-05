@@ -3,7 +3,7 @@ name: Release & Documentation PDF
 on:
   push:
     tags:
-      - 'v*' # Se déclenche sur les tags comme v-alpha.0, v1.0, etc.
+      - 'v*'
 
 permissions:
   contents: write
@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "body { font-family: 'Helvetica', 'Arial', 'Noto Color Emoji', sans-serif; }" > style.css
    
-          md-to-pdf doc/documentation.md --stylesheet style.css --launch-options '{"args": ["--no-sandbox"]}'
+          md-to-pdf doc/documentation2.md --stylesheet style.css --launch-options '{"args": ["--no-sandbox"]}'
        
           mv doc/documentation.pdf Documentation_EtudLife.pdf
 
