@@ -67,4 +67,48 @@ class SavedJobServiceTest {
         assertEquals(250, savedJob.getApplyLink().length()); // Vérifie la coupure à 250 caractères
         assertEquals(JobStatus.INTERESSE, savedJob.getStatus());
     }
+    @Test
+    void testGetJobsByStatus_WithSpecificStatus_ShouldFilterCorrectly() {
+        // Arrange
+        SavedJob job1 = new SavedJob();
+        job1.setStatus(JobStatus.INTERESSE);
+
+        when(savedJobRepository.findByCompteAndStatus(mockCompte, JobStatus.INTERESSE))
+                .thenReturn(List.of(job1));
+
+        // Act
+        List<SavedJob> result = savedJobService.getJobsByStatus(JobStatus.INTERESSE);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(JobStatus.INTERESSE, result.get(0).getStatus());
+        verify(savedJobRepository).findByCompteAndStatus(mockCompte, JobStatus.INTERESSE);
+    }
+
+    @Test
+    void testSaveOrUpdate_WhenJobAlreadyExists_ShouldUpdateExistingRecord() {
+        // Arrange : L'utilisateur a déjà "Liké" l'offre en base de données
+        SavedJob existingJob = new SavedJob();
+        existingJob.setExternalJobId("job_456");
+        existingJob.setStatus(JobStatus.INTERESSE);
+
+        when(savedJobRepository.findByCompteAndExternalJobId(mockCompte, "job_456"))
+                .thenReturn(Optional.of(existingJob));
+
+        // Nouvelle action : L'utilisateur clique sur "J'ai postulé"
+        SavedJobRequestDTO updateRequest = new SavedJobRequestDTO();
+        updateRequest.setExternalJobId("job_456");
+        updateRequest.setStatus(JobStatus.POSTULE);
+
+        // Act
+        savedJobService.saveOrUpdate(updateRequest);
+
+        // Assert : On vérifie que le statut a bien été modifié et sauvegardé
+        ArgumentCaptor<SavedJob> jobCaptor = ArgumentCaptor.forClass(SavedJob.class);
+        verify(savedJobRepository).save(jobCaptor.capture());
+
+        assertEquals(JobStatus.POSTULE, jobCaptor.getValue().getStatus());
+        // L'ID externe ne doit pas avoir changé
+        assertEquals("job_456", jobCaptor.getValue().getExternalJobId());
+    }
 }
