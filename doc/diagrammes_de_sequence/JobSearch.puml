@@ -1,49 +1,95 @@
 @startuml
-title Diagramme de Séquence : Recherche de Stages (Synchrone)
+title Diagramme de Séquence : Recherche et Suivi de Stages (ATS)
 
 actor "Étudiant" as User
-participant "Frontend (React)" as Front
+participant "Frontend (jobs.js)" as Front
 participant "JobController" as Ctrl
-participant "JobSearchService" as Service
+participant "JobSearchService" as SearchAPI
+participant "SavedJobService" as SaveService
 participant "RapidAPI (JSearch)" as API
+database "Base de Données" as DB
 
-== Scénario de Recherche ==
+== 1. Scénario de Recherche ==
 
-User -> Front : Saisit "Java" et "Paris"
+User -> Front : Saisit mots-clés (ex: "Java") et ville (ex: "Paris")
 activate Front
 
 Front -> Ctrl : GET /api/jobs/search?query=Java&location=Paris
 activate Ctrl
 
 note right of Ctrl
-  Le contrôleur reçoit la requête
-  et délègue au service métier
+  Le contrôleur sécurise la requête
+  en forçant la localisation "France"
+  pour éviter les résultats hors-périmètre.
 end note
+Ctrl -> Ctrl : Concatène "France" à la requête
 
-Ctrl -> Service : searchJobs("Java", "Paris")
-activate Service
+Ctrl -> SearchAPI : searchJobs("Java Paris France")
+activate SearchAPI
 
-Service -> Service : Vérifier Clé API (RapidAPI_Key)
+SearchAPI -> API : GET /search (headers: X-RapidAPI-Key)
+activate API
+API --> SearchAPI : JSON Response (Liste d'offres)
+deactivate API
 
-alt Clé API Valide
-    Service -> API : GET /search (headers: X-RapidAPI-Key)
-    activate API
-    API --> Service : JSON Response (Liste d'offres)
-    deactivate API
+SearchAPI -> SearchAPI : Mapper le JSON -> List<JobDTO>
+SearchAPI --> Ctrl : Retourne List<JobDTO>
+deactivate SearchAPI
 
-    Service -> Service : Parser le JSON -> List<JobDTO>
-    Service --> Ctrl : Retourne List<JobDTO>
-
-else Clé API Manquante / Erreur
-    Service --> Ctrl : Retourne Liste Vide ou Erreur
-end
-
-deactivate Service
-
-Ctrl --> Front : JSON (200 OK)
+Ctrl --> Front : Liste des offres (200 OK)
 deactivate Ctrl
 
+note left of Front
+  Le Frontend stocke les offres dans
+  un cache global (currentJobsCache)
+  pour sécuriser les futurs clics.
+end note
+Front -> Front : Sauvegarde dans currentJobsCache
+
 Front -> User : Affiche les cartes des offres de stage
+deactivate Front
+
+== 2. Scénario de Suivi (Sauvegarde / Candidature / Refus) ==
+
+User -> Front : Clique sur ❤️ (Sauvegarder), ✅ (Postuler) ou ❌ (Bannir)
+activate Front
+
+Front -> Front : Récupère les détails de l'offre depuis currentJobsCache via l'ID
+Front -> Ctrl : POST /api/jobs/save (Payload JSON avec statut)
+activate Ctrl
+
+Ctrl -> SaveService : saveOrUpdate(SavedJobRequestDTO)
+activate SaveService
+
+SaveService -> DB : Vérifie si l'offre existe déjà pour ce compte
+activate DB
+DB --> SaveService : Optional<SavedJob> (Vide ou Existant)
+deactivate DB
+
+note right of SaveService
+  Sécurisation Anti-Crash (DataTruncation) :
+  L'URL (applyLink) est tronquée à 250
+  caractères avant l'insertion en base.
+end note
+SaveService -> SaveService : link.substring(0, 250)
+
+SaveService -> DB : save(SavedJob) (Insert ou Update du statut)
+activate DB
+DB --> SaveService : Sauvegarde réussie
+deactivate DB
+
+SaveService --> Ctrl : Succès
+deactivate SaveService
+
+Ctrl --> Front : 200 OK
+deactivate Ctrl
+
+alt Statut = INTERESSE ou POSTULE
+    Front -> User : Animation du bouton (Devient Vert "👌")
+else Statut = REFUSE
+    Front -> User : Masque la carte de l'offre (Opacité puis Remove)
+end
+
 deactivate Front
 
 @enduml

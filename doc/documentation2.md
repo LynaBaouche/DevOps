@@ -44,10 +44,25 @@
 
 2.1 Chasseur d'offres de stages Feature
 ---------------------------------------
-* La fonctionnalité Chasseur de Stages transforme l'application en un agent proactif pour l'étudiant. Au lieu d'une recherche manuelle répétitive, le système automatise la veille technologique.
-* Les étudiants définissent leurs critères de recherche (secteur, localisation, durée, type de stage) une seule fois, et le système s'occupe du reste.
+**Fonctionnalités clés :**
+* **Recherche intelligente :** L'utilisateur peut rechercher des offres de stages par mots-clés et localisation. Le backend sécurise la requête en forçant la localisation "France" pour garantir la pertinence des résultats.
+* **Gestion des candidatures (ATS) :** L'étudiant peut sauvegarder une offre (statut `INTERESSE`), marquer qu'il a candidaté (statut `POSTULE`), ou masquer une offre non pertinente (statut `REFUSE`).
+* **Tableau de bord (KPIs) :** Une page dédiée "Mes candidatures" permet de visualiser les offres sauvegardées, de les filtrer par statut, et d'afficher des indicateurs clés (KPIs) en temps réel (ex: nombre d'offres postulées).
+* **Sécurisation des données :** Le système gère dynamiquement la taille des URLs provenant des plateformes externes (LinkedIn, Indeed) pour éviter les erreurs de base de données (Data Truncation).
 
-![JobSearch-Diagramme_de_Séquence___Recherche_de_Stages__Synchrone_.png](diagrammes_de_sequence/JobSearch-Diagramme_de_S%C3%A9quence___Recherche_de_Stages__Synchrone_.png)
+**Classes Impliquées :**
+* `JobController` : Expose les endpoints REST pour la recherche, la sauvegarde et les statistiques.
+* `JobSearchService` : Gère la communication HTTP avec l'API externe JSearch.
+* `SavedJobService` : Contient la logique métier d'insertion, de mise à jour des statuts et de sécurisation des données.
+![JobSearch.png](diagrammes_de_sequence/JobSearch.png)
+
+
+![img.png](images/img.png)
+![img_1.png](images/img_1.png)
+
+
+
+**Partie Batch ( Alicya) :**
 ![JobSearchBatch-Diagramme_de_Séquence___Batch_Automatisé__Nightly_Job_.png](diagrammes_de_sequence/JobSearchBatch-Diagramme_de_S%C3%A9quence___Batch_Automatis%C3%A9__Nightly_Job_.png)
 ---------------------------------------
 
@@ -106,17 +121,40 @@ En mode streaming, la réponse est découpée et envoyée progressivement via SS
 ![agent ia.PNG](images/agent%20ia.PNG)
 ![agentia1.PNG](images/agentia1.PNG)
 ![agentia2.PNG](images/agentia2.PNG)
-
 ---------------------------------------
-## 7. Guide d'Installation & Déploiement
+# **4. Tests effectués**
+### 4.1 Tests du module "Chasseur de Stages" (JobSearch)
+
+Pour garantir la fiabilité de la recherche et de la sauvegarde des offres de stages, nous avons mis en place une couverture de tests hybride (Unitaires et Intégration) via **JUnit 5** et **Mockito**. Cette couverture est automatisée via une pipeline CI (GitHub Actions).
+
+* **Tests Unitaires (Business Logic) :**
+    * `SavedJobServiceTest` : Validation des règles de gestion critiques et de la sécurisation des données. Le test vérifie notamment que les URLs d'offres excessivement longues provenant d'API externes sont correctement tronquées à 250 caractères maximum avant l'insertion en base, prévenant ainsi les erreurs critiques de type 500 (`DataTruncationException`).
+    * `JobSearchServiceTest` : Validation de la résilience du système. Nous testons le comportement de l'application en cas de défaillance de l'API externe (JSearch down ou timeout) pour s'assurer que l'application ne crashe pas et retourne un état propre (liste vide).
+
+* **Tests d'Intégration (API & Contrôleurs) :**
+    * `JobControllerIntegrationTest` : Utilisation de `@WebMvcTest` et `MockMvc` pour valider les endpoints REST.
+    * **Forçage Géographique :** Vérification que le contrôleur intercepte la requête utilisateur et ajoute automatiquement la chaîne `"France"` pour éviter les résultats hors-périmètre (ex: offres aux USA).
+    * **Calcul des KPIs :** Validation de la route `/api/jobs/stats` qui filtre le pipeline de données en base de données pour retourner le décompte exact des offres statuées (`INTERESSE`, `POSTULE`, `REFUSE`), garantissant l'exactitude du Dashboard utilisateur.
+---------------------------------------
+## 5. Guide d'Installation & Déploiement
 
 ### Prérequis
 
-* Java 17 ou 21 installé.
-* Accès Internet pour les dépendances Gradle.
+* **Docker et Docker Compose** installés sur la machine cible (recommandé pour l'architecture DevOps complète).
+* **Java 17 ou 21** (si exécution en local sans Docker).
+* Un fichier `.env` contenant les clés d'API nécessaires (`RAPIDAPI_KEY`, `DB_PASSWORD`, etc.).
 
-### Commandes de lancement
+### Commandes de lancement (Docker - Recommandé)
+
+Pour lancer l'infrastructure complète (Base de données + Backend Spring Boot + Frontend Nginx) :
 
 ```bash
-./gradlew bootRun
-```
+# 1. Cloner le projet et se rendre à la racine
+git clone [https://github.com/LynaBaouche/DevOps.git](https://github.com/LynaBaouche/DevOps.git)
+cd DevOps
+
+# 2. Lancer les conteneurs en tâche de fond
+docker-compose up --build -d
+
+# 3. Vérifier les logs du backend
+docker logs -f backend
