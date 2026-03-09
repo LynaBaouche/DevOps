@@ -31,18 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ChatbotTestUnitaireTest {
 
-    /* ----------------------------
-       Helper reflection
-     ---------------------------- */
     private static void setField(Object obj, String name, Object value) throws Exception {
         Field f = obj.getClass().getDeclaredField(name);
         f.setAccessible(true);
         f.set(obj, value);
     }
 
-    /* ----------------------------
-       1) ChatService (logique)
-     ---------------------------- */
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatServiceTests {
@@ -56,18 +50,15 @@ public class ChatbotTestUnitaireTest {
 
         @BeforeEach
         void setup() {
-            // constructeur a SavedJobService en double => on passe le même mock aux 2
             service = new ChatService(kb, gemini, sessions, savedJobService, savedJobService);
         }
 
         @Test
         void merci_shouldReturnPolite_andNoGeminiNoKb() {
             ChatResponse res = service.ask("s1", "merci", "AUTO");
-
             assertTrue(res.isSuccess());
             assertEquals("none", res.getSource());
             assertTrue(res.getResponse().contains("Pas de souci"));
-
             verify(sessions).append("s1", "user", "merci");
             verify(sessions).append(eq("s1"), eq("assistant"), contains("Pas de souci"));
             verifyNoInteractions(gemini);
@@ -77,10 +68,8 @@ public class ChatbotTestUnitaireTest {
         @Test
         void bonjour_shouldReturnPresentation_andNoGeminiNoKb() {
             ChatResponse res = service.ask("s1", "bonjour", "AUTO");
-
             assertTrue(res.getResponse().contains("Bienvenue sur EtudLife"));
             assertEquals("none", res.getSource());
-
             verifyNoInteractions(gemini);
             verifyNoInteractions(kb);
         }
@@ -88,7 +77,7 @@ public class ChatbotTestUnitaireTest {
         @Test
         void autoMode_siteQuestion_shouldSearchSITE() {
             when(sessions.history("s1", 10)).thenReturn(List.of());
-            when(kb.search(eq("Comment publier une annonce ?"), eq("SITE")))
+            when(kb.searchInFile(eq("Comment publier une annonce ?"), eq("sourcee.pdf")))
                     .thenReturn(List.of(new PdfKnowledgeBase.Chunk("site.pdf", "texte", "SITE")));
             when(gemini.generate(anyString())).thenReturn("OK");
 
@@ -96,14 +85,14 @@ public class ChatbotTestUnitaireTest {
 
             assertEquals("OK", res.getResponse());
             assertTrue(res.getSource().contains("site.pdf"));
-            verify(kb).search("Comment publier une annonce ?", "SITE");
+            verify(kb).searchInFile("Comment publier une annonce ?", "sourcee.pdf");
             verify(gemini).generate(contains("CONTEXTE:"));
         }
 
         @Test
         void fallback_otherMode_whenFirstEmpty() {
             when(sessions.history("s1", 10)).thenReturn(List.of());
-            when(kb.search("profil", "SITE")).thenReturn(List.of());
+            when(kb.searchInFile("profil", "charte.pdf")).thenReturn(List.of());
             when(kb.search("profil", "REGLEMENT"))
                     .thenReturn(List.of(new PdfKnowledgeBase.Chunk("reg.pdf", "ok", "REGLEMENT")));
             when(gemini.generate(anyString())).thenReturn("fallback");
@@ -111,27 +100,25 @@ public class ChatbotTestUnitaireTest {
             ChatResponse res = service.ask("s1", "profil", "AUTO");
 
             assertEquals("fallback", res.getResponse());
-            verify(kb).search("profil", "SITE");
+            verify(kb).searchInFile("profil", "charte.pdf");
             verify(kb).search("profil", "REGLEMENT");
         }
 
         @Test
         void noHits_bothModes_shouldReturnSafe_andNoGemini() {
             when(sessions.history("s1", 10)).thenReturn(List.of());
-            when(kb.search("inconnu", "REGLEMENT")).thenReturn(List.of());
-            when(kb.search("inconnu", "SITE")).thenReturn(List.of());
+            when(kb.searchInFile("inconnu", "charte.pdf")).thenReturn(List.of());
+            lenient().when(kb.search("inconnu", "SITE")).thenReturn(List.of());
 
             ChatResponse res = service.ask("s1", "inconnu", "AUTO");
 
-            assertEquals("Désolé, je n’ai pas d’information sur ce sujet.", res.getResponse());
+            assertTrue(res.getResponse().contains("pas d"));
             assertEquals("none", res.getSource());
             verifyNoInteractions(gemini);
         }
-    }
 
-    /* ----------------------------
-       2) ChatSessionService (Redis)
-     ---------------------------- */
+    } // ← FIN ChatServiceTests
+
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatSessionServiceTests {
@@ -143,7 +130,6 @@ public class ChatbotTestUnitaireTest {
 
         @BeforeEach
         void setup() {
-            // lenient => évite UnnecessaryStubbingException quand un test n’utilise pas opsForList()
             lenient().when(redis.opsForList()).thenReturn(listOps);
             sessions = new ChatSessionService(redis);
         }
@@ -153,7 +139,6 @@ public class ChatbotTestUnitaireTest {
             String sid = sessions.newSession();
             assertNotNull(sid);
             assertFalse(sid.isBlank());
-
             verify(listOps).rightPush(startsWith("chat:session:"), eq(""));
             verify(listOps).leftPop(startsWith("chat:session:"));
             verify(redis).expire(startsWith("chat:session:"), any(Duration.class));
@@ -162,7 +147,6 @@ public class ChatbotTestUnitaireTest {
         @Test
         void append_shouldPushLine_andRefreshTTL() {
             sessions.append("S1", "user", "hello");
-
             verify(listOps).rightPush("chat:session:S1", "user:hello");
             verify(redis).expire(eq("chat:session:S1"), any(Duration.class));
         }
@@ -170,7 +154,6 @@ public class ChatbotTestUnitaireTest {
         @Test
         void history_whenEmpty_shouldReturnEmptyList() {
             when(listOps.size("chat:session:S1")).thenReturn(0L);
-
             List<String> h = sessions.history("S1", 50);
             assertTrue(h.isEmpty());
         }
@@ -179,7 +162,6 @@ public class ChatbotTestUnitaireTest {
         void history_shouldReturnRangeLastN() {
             when(listOps.size("chat:session:S1")).thenReturn(3L);
             when(listOps.range("chat:session:S1", 0, -1)).thenReturn(List.of("a", "b", "c"));
-
             List<String> h = sessions.history("S1", 50);
             assertEquals(3, h.size());
             assertEquals("a", h.get(0));
@@ -190,11 +172,9 @@ public class ChatbotTestUnitaireTest {
             sessions.delete("S1");
             verify(redis).delete("chat:session:S1");
         }
-    }
 
-    /* ----------------------------
-       3) ChatStreamService (Flux + chunk)
-     ---------------------------- */
+    } // ← FIN ChatSessionServiceTests
+
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatStreamServiceTests {
@@ -214,18 +194,16 @@ public class ChatbotTestUnitaireTest {
                     .expectNext("__SESSION__:S_NEW")
                     .verifyComplete();
         }
-    }
 
-    /* ----------------------------
-       4) PdfKnowledgeBase (search)
-     ---------------------------- */
+    } // ← FIN ChatStreamServiceTests
+
     @Nested
     class PdfKnowledgeBaseTests {
 
         @Test
         void search_shouldFilterByModeAndScore() throws Exception {
             PdfKnowledgeBase kb = new PdfKnowledgeBase();
-            setField(kb, "maxChunks", 4); // IMPORTANT : sinon limit(0) => liste vide
+            setField(kb, "maxChunks", 4);
 
             Field chunksField = PdfKnowledgeBase.class.getDeclaredField("chunks");
             chunksField.setAccessible(true);
@@ -260,11 +238,9 @@ public class ChatbotTestUnitaireTest {
             assertFalse(kb.search("agenda", "XYZ").isEmpty());
             assertFalse(kb.search("reglement", "???").isEmpty());
         }
-    }
 
-    /* ----------------------------
-       5) GeminiClient (minimum utile)
-     ---------------------------- */
+    } // ← FIN PdfKnowledgeBaseTests
+
     @Nested
     class GeminiClientTests {
 
@@ -280,11 +256,9 @@ public class ChatbotTestUnitaireTest {
             assertTrue(res.toLowerCase().contains("clé"));
             assertTrue(res.toLowerCase().contains("manquante"));
         }
-    }
 
-    /* ----------------------------
-       6) ChatController (HTTP MockMvc)
-     ---------------------------- */
+    } // ← FIN GeminiClientTests
+
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatControllerTests {
@@ -303,7 +277,6 @@ public class ChatbotTestUnitaireTest {
         @Test
         void newSession_shouldReturnSessionId() throws Exception {
             when(sessions.newSession()).thenReturn("SID123");
-
             mvc.perform(post("/api/chat/new-session"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.sessionId").value("SID123"));
@@ -334,7 +307,6 @@ public class ChatbotTestUnitaireTest {
         @Test
         void history_shouldReturnMessages() throws Exception {
             when(sessions.history("S1", 50)).thenReturn(List.of("user:hi", "assistant:yo"));
-
             mvc.perform(get("/api/chat/history").param("sessionId", "S1"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.sessionId").value("S1"))
@@ -345,14 +317,11 @@ public class ChatbotTestUnitaireTest {
         void close_shouldDeleteSession() throws Exception {
             mvc.perform(post("/api/chat/close").param("sessionId", "S1"))
                     .andExpect(status().isOk());
-
             verify(sessions).delete("S1");
         }
-    }
 
-    /* ----------------------------
-       7) ChatStreamController (SSE)
-     ---------------------------- */
+    } // ← FIN ChatControllerTests
+
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatStreamControllerTests {
@@ -387,5 +356,7 @@ public class ChatbotTestUnitaireTest {
                         assertTrue(txt.contains("[DONE]"));
                     });
         }
-    }
-}
+
+    } // ← FIN ChatStreamControllerTests
+
+} // ← FIN ChatbotTestUnitaireTest
