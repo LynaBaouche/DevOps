@@ -40,10 +40,10 @@
 
 ## 2. Fonctionnalités Détaillées 
 
-
-
 2.1 Chasseur d'offres de stages Feature
 ---------------------------------------
+### 2.1.1 Recherche d'offres et suivi des candidatures
+
 **Fonctionnalités clés :**
 * **Recherche intelligente :** L'utilisateur peut rechercher des offres de stages par mots-clés et localisation. Le backend sécurise la requête en forçant la localisation "France" pour garantir la pertinence des résultats.
 * **Gestion des candidatures (ATS) :** L'étudiant peut sauvegarder une offre (statut `INTERESSE`), marquer qu'il a candidaté (statut `POSTULE`), ou masquer une offre non pertinente (statut `REFUSE`).
@@ -61,9 +61,37 @@
 ![img_1.png](images/img_1.png)
 
 
+### 2.1.2 Système de Batch Automatisé pour la recherche d'offres
+L'idée est simple : on ne veut pas que nos utilisateurs s'épuisent à faire la même recherche tous les jours. L'étudiant enregistre ses critères (ex: "Stage Web à Paris"), et c'est notre serveur qui bosse pour lui la nuit. Le lendemain, il découvre ses nouvelles Suggestions directement sur son tableau de bord.
 
-**Partie Batch ( Alicya) :**
-![JobSearchBatch-Diagramme_de_Séquence___Batch_Automatisé__Nightly_Job_.png](diagrammes_de_sequence/JobSearchBatch-Diagramme_de_S%C3%A9quence___Batch_Automatis%C3%A9__Nightly_Job_.png)
+Par conséquent, nous avons mis en place un job batch automatisé pour exécuter la recherche d'offres de stages chaque nuit à 2h du matin. Ce job utilise le même service `JobSearchService` que les requêtes utilisateur, garantissant ainsi une cohérence totale entre les résultats affichés et ceux récupérés automatiquement.
+
+**Logique Métier**
+
+![logique_batch.png](diagrammes_de_sequence/logique_batch.png)
+
+**Implémentation technique**
+
+![technique_batch.png](diagrammes_de_sequence/technique_batch.png)
+
+L'architecture est découpée proprement pour séparer les responsabilités :
+  * `JobPreference` & `JobPreferenceController` : L'entité qui mémorise ce que cherche l'étudiant (mots-clés, ville) et à quelle fréquence. Le contrôleur s'assure qu'on met à jour ces préférences au lieu de créer des doublons inutiles en base.
+  * `JobBatchScheduler` : C'est le chef d'orchestre annoté avec @Scheduled. Il boucle sur toutes les préférences actives, prépare les requêtes et filtre les résultats pour ne garder que le neuf.
+  * `JobSearchService` : Le composant d'intégration externe. Il possède une responsabilité unique : interroger l'API distante JSearch et formater les données brutes reçues en une liste structurée et exploitable d'offres d'emploi.
+  * `SavedJob` & `JobStatus` : Les offres trouvées par le batch atterrissent ici avec le statut spécial SUGGESTION. Petite astuce technique implémentée : on tronque les URL trop longues (applyLink) à 250 caractères pour éviter que la base de données ne plante lors de l'insertion.
+
+**Déploiement Cloud Conteneurisé et Planification Externe**
+
+Afin de garantir l'exécution asynchrone du traitement par lots (Batch) dans un environnement Cloud, nous avons conteneurisé notre backend (via **Docker**) et l'avons déployé sur la plateforme **Render**. Cependant, les instances de ce type de service sont sujettes à des mises en veille automatiques (Sleep Mode) après une période d'inactivité.
+Pour pallier cette contrainte et ne pas dépendre exclusivement du planificateur interne de Spring Boot (@Scheduled), qui s'arrêterait en cas de veille du conteneur, nous avons opté pour une architecture pilotée par des événements externes. 
+
+L'approche technique s'articule autour de deux axes :
+  * Exposition d'un Webhook sur le Conteneur : La logique de déclenchement du Batch a été encapsulée et exposée via une route HTTP spécifique (ex: `/api/test/batch/run`). Cela permet de rendre notre traitement interne accessible et exécutable à la demande, depuis l'extérieur du conteneur.
+  * Orchestration via un Cron Externe : L'ordonnancement temporel a été délégué à un service tiers spécialisé (tel que **cron-job.org**). Ce dernier est configuré pour émettre une requête HTTP automatisée (un "ping") vers l'endpoint de notre conteneur à une heure fixe (ex: 2h00 du matin).
+
+
+Résultat : Ce découplage entre la logique métier (embarquée dans le conteneur Spring Boot) et la planification (gérée par le Cron externe) assure une haute résilience. La requête HTTP réveille automatiquement notre conteneur déployé sur Render s'il était inactif, et déclenche le processus d'extraction. Les données sont ainsi systématiquement mises à jour et disponibles pour les étudiants dès leur connexion le lendemain matin.
+
 ---------------------------------------
 
 2.2 Agent IA EtudLife
@@ -142,7 +170,7 @@ En mode streaming, la réponse est découpée et envoyée progressivement via SS
 
 Avant d'effectuer la recherche RAG, le système vérifie si la question correspond à une intention liée aux offres d'emploi sauvegardées. Si c'est le cas, les offres sont récupérées depuis la base de données selon leur statut (INTERESSE ou POSTULE), dédoublonnées par identifiant externe, puis encodées dans un format structuré (JOB_ITEM). Ce format est interprété par le frontend pour afficher des cartes cliquables avec titre, localisation et lien de candidature, sans aucun appel à Gemini.
 
-![agentia.png](diagrammes_de_sequence/diagramme_sequence_agentia.png)
+![agentia.png](diagrammes_de_sequence/agentia.png)
 ![agent ia.PNG](images/agentia_page_principale.png)
 ![agentia1.PNG](images/agrntia_charte.png)
 ![agentia2.PNG](images/agentia_source.png)
@@ -152,7 +180,8 @@ Avant d'effectuer la recherche RAG, le système vérifie si la question correspo
 
 ---------------------------------------
 # **4. Tests effectués**
-### 4.1 Tests du module "Chasseur de Stages" (JobSearch)
+### 4.1 Tests du module "Chasseur de Stages"
+#### 4.1.1 Recherche de stages (JobSearch)
 
 Pour garantir la fiabilité de la recherche et de la sauvegarde des offres de stages, nous avons mis en place une couverture de tests hybride (Unitaires et Intégration) via **JUnit 5** et **Mockito**. Cette couverture est automatisée via une pipeline CI (GitHub Actions).
 
@@ -164,6 +193,23 @@ Pour garantir la fiabilité de la recherche et de la sauvegarde des offres de st
     * `JobControllerIntegrationTest` : Utilisation de `@WebMvcTest` et `MockMvc` pour valider les endpoints REST.
     * **Forçage Géographique :** Vérification que le contrôleur intercepte la requête utilisateur et ajoute automatiquement la chaîne `"France"` pour éviter les résultats hors-périmètre (ex: offres aux USA).
     * **Calcul des KPIs :** Validation de la route `/api/jobs/stats` qui filtre le pipeline de données en base de données pour retourner le décompte exact des offres statuées (`INTERESSE`, `POSTULE`, `REFUSE`), garantissant l'exactitude du Dashboard utilisateur.
+
+#### 4.1.2 Système de Batch Automatisé
+Afin de garantir la fiabilité du processus automatisé et d'optimiser l'utilisation de nos quotas d'API, nous avons mis en place une stratégie de validation rigoureuse reposant sur trois niveaux de tests :
+
+* **Test du Contrôleur (`JobPreferenceControllerTest`) :**
+  * Utilisation de Mockito pour simuler la base de données.
+  * Vérification stricte : si l'étudiant a déjà une alerte, on écrase l'ancienne au lieu d'en recréer une nouvelle (conservation de l'ID).
+
+* **Test Unitaire du Scheduler (`JobBatchSchedulerTest`) :**
+  * On isole complètement la logique du batch.
+  * On vérifie que la boucle tourne bien sur toutes les préférences et appelle le service de recherche avec les bons paramètres, sans jamais faire de vraie requête HTTP.
+  
+* **Test d'Intégration Complet (`BatchIntegrationTest`) :**
+  * Le test ultime avec @SpringBootTest et une base de données en mémoire (H2).
+  * On simule un compte, on simule une fausse réponse de l'API ("Stage Java"), on lance le Batch manuellement, et on vérifie que la base de données contient bien exactement une nouvelle ligne avec le statut SUGGESTION.
+
+  
 ---------------------------------------
 ## 5. Guide d'Installation & Déploiement
 
