@@ -60,14 +60,15 @@ public class ChatbotTestUnitaireTest {
 
         @BeforeEach
         void setup() {
-            service = new ChatService(kb, gemini, sessions, savedJobService, savedJobService);
+            // CORRECTION : un seul argument savedJobService au lieu de deux
+            service = new ChatService(kb, gemini, sessions, savedJobService);
         }
 
         // ── Salutations / Remerciements ──────────────────────────────────────
 
         @Test
         void merci_shouldReturnPolite_andNoGeminiNoKb() {
-            ChatResponse res = service.ask("s1", "merci", "AUTO");
+            ChatResponse res = service.ask("s1", "merci", "AUTO", 1L); // CORRECTION : 1L
             assertTrue(res.isSuccess());
             assertEquals("none", res.getSource());
             assertTrue(res.getResponse().contains("Pas de souci"));
@@ -79,7 +80,7 @@ public class ChatbotTestUnitaireTest {
 
         @Test
         void bonjour_shouldReturnPresentation_andNoGeminiNoKb() {
-            ChatResponse res = service.ask("s1", "bonjour", "AUTO");
+            ChatResponse res = service.ask("s1", "bonjour", "AUTO", 1L); // CORRECTION : 1L
             assertTrue(res.getResponse().contains("Bienvenue sur EtudLife"));
             assertEquals("none", res.getSource());
             verifyNoInteractions(gemini);
@@ -96,9 +97,10 @@ public class ChatbotTestUnitaireTest {
             job.setApplyLink("https://example.com/job1");
             job.setExternalJobId("ext-001");
 
-            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+            // CORRECTION : on mock avec 1L
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L)).thenReturn(List.of(job));
 
-            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO", 1L);
 
             assertTrue(res.isSuccess());
             assertEquals("saved-jobs", res.getSource());
@@ -112,9 +114,9 @@ public class ChatbotTestUnitaireTest {
 
         @Test
         void interestedJobsIntent_whenEmpty_shouldReturnMessage_andNoGemini() {
-            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of());
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L)).thenReturn(List.of());
 
-            ChatResponse res = service.ask("s1", "affiche mes offres intéressantes", "AUTO");
+            ChatResponse res = service.ask("s1", "affiche mes offres intéressantes", "AUTO", 1L);
 
             assertTrue(res.isSuccess());
             assertEquals("saved-jobs", res.getSource());
@@ -131,9 +133,9 @@ public class ChatbotTestUnitaireTest {
             job.setApplyLink("https://example.com/job2");
             job.setExternalJobId("ext-002");
 
-            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L)).thenReturn(List.of(job));
 
-            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO", 1L);
 
             assertTrue(res.getResponse().contains("Offre sans titre"));
             verifyNoInteractions(gemini);
@@ -147,9 +149,9 @@ public class ChatbotTestUnitaireTest {
             job.setApplyLink("https://example.com/job3");
             job.setExternalJobId("ext-003");
 
-            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L)).thenReturn(List.of(job));
 
-            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO", 1L);
 
             assertTrue(res.getResponse().contains("Localisation non précisée"));
             verifyNoInteractions(gemini);
@@ -163,9 +165,9 @@ public class ChatbotTestUnitaireTest {
             job.setApplyLink("https://example.com");
             job.setExternalJobId("ext-004");
 
-            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L)).thenReturn(List.of(job));
 
-            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO", 1L);
 
             assertTrue(res.getResponse().contains("JOB_TITLE:"));
             assertTrue(res.getResponse().contains("JOB_ITEM:"));
@@ -181,24 +183,24 @@ public class ChatbotTestUnitaireTest {
             job.setApplyLink("https://example.com/job4");
             job.setExternalJobId("ext-005");
 
-            when(savedJobService.getJobsByStatus(JobStatus.POSTULE)).thenReturn(List.of(job));
+            when(savedJobService.getJobsByStatus(JobStatus.POSTULE, 1L)).thenReturn(List.of(job));
 
-            ChatResponse res = service.ask("s1", "liste mes offres pour lesquelles j'ai postulé", "AUTO");
+            ChatResponse res = service.ask("s1", "liste mes offres pour lesquelles j'ai postulé", "AUTO", 1L);
 
             assertTrue(res.isSuccess());
             assertEquals("saved-jobs", res.getSource());
             assertTrue(res.getResponse().contains("JOB_ITEM:"));
             assertTrue(res.getResponse().contains("Alternance DevOps"));
-            verify(savedJobService).getJobsByStatus(JobStatus.POSTULE);
+            verify(savedJobService).getJobsByStatus(JobStatus.POSTULE, 1L);
             verifyNoInteractions(gemini);
             verifyNoInteractions(kb);
         }
 
         @Test
         void postuleIntent_whenEmpty_shouldReturnMessage() {
-            when(savedJobService.getJobsByStatus(JobStatus.POSTULE)).thenReturn(List.of());
+            when(savedJobService.getJobsByStatus(JobStatus.POSTULE, 1L)).thenReturn(List.of());
 
-            ChatResponse res = service.ask("s1", "mes candidatures postulées", "AUTO");
+            ChatResponse res = service.ask("s1", "mes candidatures postulées", "AUTO", 1L);
 
             assertEquals("saved-jobs", res.getSource());
             assertTrue(res.getResponse().contains("postulé") || res.getResponse().contains("aucune"));
@@ -214,7 +216,7 @@ public class ChatbotTestUnitaireTest {
                     .thenReturn(List.of(new PdfKnowledgeBase.Chunk("site.pdf", "texte", "SITE")));
             when(gemini.generate(anyString())).thenReturn("OK");
 
-            ChatResponse res = service.ask("s1", "Comment publier une annonce ?", "AUTO");
+            ChatResponse res = service.ask("s1", "Comment publier une annonce ?", "AUTO", 1L);
 
             assertEquals("OK", res.getResponse());
             assertTrue(res.getSource().contains("site.pdf"));
@@ -230,7 +232,7 @@ public class ChatbotTestUnitaireTest {
                     .thenReturn(List.of(new PdfKnowledgeBase.Chunk("reg.pdf", "ok", "REGLEMENT")));
             when(gemini.generate(anyString())).thenReturn("fallback");
 
-            ChatResponse res = service.ask("s1", "profil", "AUTO");
+            ChatResponse res = service.ask("s1", "profil", "AUTO", 1L);
 
             assertEquals("fallback", res.getResponse());
             verify(kb).searchInFile("profil", "charte.pdf");
@@ -243,7 +245,7 @@ public class ChatbotTestUnitaireTest {
             when(kb.searchInFile("inconnu", "charte.pdf")).thenReturn(List.of());
             lenient().when(kb.search("inconnu", "SITE")).thenReturn(List.of());
 
-            ChatResponse res = service.ask("s1", "inconnu", "AUTO");
+            ChatResponse res = service.ask("s1", "inconnu", "AUTO", 1L);
 
             assertTrue(res.getResponse().contains("pas d"));
             assertEquals("none", res.getSource());
@@ -269,7 +271,8 @@ public class ChatbotTestUnitaireTest {
         void setup() {
             compte = new Compte();
             compte.setId(1L);
-            when(compteRepository.findAll()).thenReturn(List.of(compte));
+            lenient().when(compteRepository.findById(1L)).thenReturn(Optional.of(compte));
+            lenient().when(compteRepository.findAll()).thenReturn(List.of(compte));
             service = new SavedJobService(savedJobRepository, compteRepository);
         }
 
@@ -282,7 +285,7 @@ public class ChatbotTestUnitaireTest {
             when(savedJobRepository.findByCompteAndStatus(compte, JobStatus.INTERESSE))
                     .thenReturn(List.of(j));
 
-            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE);
+            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE, 1L);
 
             assertEquals(1, result.size());
             assertEquals("ext-1", result.get(0).getExternalJobId());
@@ -295,7 +298,7 @@ public class ChatbotTestUnitaireTest {
 
             when(savedJobRepository.findByCompte(compte)).thenReturn(List.of(j1, j2));
 
-            List<SavedJob> result = service.getJobsByStatus(null);
+            List<SavedJob> result = service.getJobsByStatus(null, 1L);
 
             assertEquals(2, result.size());
         }
@@ -308,14 +311,18 @@ public class ChatbotTestUnitaireTest {
             when(savedJobRepository.findByCompteAndStatus(compte, JobStatus.INTERESSE))
                     .thenReturn(List.of(j1, j2));
 
-            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE);
+            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE, 1L);
 
+            // Remarque : Si ton service a une logique de déduplication, ce test est pertinent.
+            // S'il renvoie juste la liste, modifie l'assertion selon ton code métier réel.
+            // Pour l'instant je garde ta version initiale.
             assertEquals(1, result.size());
         }
 
         @Test
         void saveOrUpdate_newJob_shouldSaveCorrectly() {
             SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setCompteId(1L); // CORRECTION : On set le compteId sinon findById plante
             dto.setExternalJobId("ext-99");
             dto.setTitle("Stage ML");
             dto.setCompany("Google");
@@ -341,6 +348,7 @@ public class ChatbotTestUnitaireTest {
             existing.setStatus(JobStatus.INTERESSE);
 
             SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setCompteId(1L); // CORRECTION
             dto.setExternalJobId("ext-10");
             dto.setTitle("Stage DevOps");
             dto.setCompany("OVH");
@@ -363,6 +371,7 @@ public class ChatbotTestUnitaireTest {
             String longLink = "https://example.com/" + "a".repeat(300);
 
             SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setCompteId(1L); // CORRECTION
             dto.setExternalJobId("ext-long");
             dto.setTitle("Stage");
             dto.setCompany("Co");
@@ -454,12 +463,14 @@ public class ChatbotTestUnitaireTest {
         @Test
         void streamAnswer_shouldCreateSessionIfMissing_andEmitSessionHeader() {
             when(sessions.newSession()).thenReturn("S_NEW");
-            when(chatService.ask(eq("S_NEW"), eq("q"), any()))
+
+            // CORRECTION : mock de ask avec 4 paramètres (any() pour le compteId)
+            when(chatService.ask(eq("S_NEW"), eq("q"), any(), any()))
                     .thenReturn(new ChatResponse(true, "S_NEW", "q", "un deux trois quatre", "none"));
 
             ChatStreamService svc = new ChatStreamService(chatService, sessions);
 
-            StepVerifier.create(svc.streamAnswer(null, "q", "AUTO").take(1))
+            StepVerifier.create(svc.streamAnswer(null, "q", "AUTO", 1L).take(1))
                     .expectNext("__SESSION__:S_NEW")
                     .verifyComplete();
         }
@@ -469,12 +480,12 @@ public class ChatbotTestUnitaireTest {
             String jobResponse = "JOB_TITLE:Vos offres\nJOB_ITEM:Stage IA|Paris|https://example.com";
 
             when(sessions.newSession()).thenReturn("S1");
-            when(chatService.ask(eq("S1"), eq("mes offres"), any()))
+            when(chatService.ask(eq("S1"), eq("mes offres"), any(), any()))
                     .thenReturn(new ChatResponse(true, "S1", "mes offres", jobResponse, "saved-jobs"));
 
             ChatStreamService svc = new ChatStreamService(chatService, sessions);
 
-            StepVerifier.create(svc.streamAnswer(null, "mes offres", "AUTO"))
+            StepVerifier.create(svc.streamAnswer(null, "mes offres", "AUTO", 1L))
                     .expectNext("__SESSION__:S1")
                     .expectNext(jobResponse)
                     .verifyComplete();
@@ -588,7 +599,9 @@ public class ChatbotTestUnitaireTest {
         @Test
         void message_whenNoSessionId_shouldCreateNewSession() throws Exception {
             when(sessions.newSession()).thenReturn("SNEW");
-            when(chatService.ask(eq("SNEW"), eq("hello"), any()))
+
+            // CORRECTION : mock avec 4 paramètres
+            when(chatService.ask(eq("SNEW"), eq("hello"), any(), any()))
                     .thenReturn(new ChatResponse(true, "SNEW", "hello", "ok", "none"));
 
             mvc.perform(post("/api/chat/message")
@@ -603,7 +616,9 @@ public class ChatbotTestUnitaireTest {
         void message_withJobIntent_shouldReturnJobItems() throws Exception {
             String jobResp = "JOB_TITLE:Vos offres\nJOB_ITEM:Stage IA|Paris|https://example.com";
             when(sessions.newSession()).thenReturn("SJOB");
-            when(chatService.ask(eq("SJOB"), eq("liste mes offres intéressantes"), any()))
+
+            // CORRECTION : mock avec 4 paramètres
+            when(chatService.ask(eq("SJOB"), eq("liste mes offres intéressantes"), any(), any()))
                     .thenReturn(new ChatResponse(true, "SJOB",
                             "liste mes offres intéressantes", jobResp, "saved-jobs"));
 
@@ -644,7 +659,7 @@ public class ChatbotTestUnitaireTest {
 
         @Test
         void stream_shouldEmitChunks_andDoneEvent() {
-            when(chatStreamService.streamAnswer(any(), eq("q"), any()))
+            when(chatStreamService.streamAnswer(any(), eq("q"), any(), any()))
                     .thenReturn(Flux.just("__SESSION__:S1", "un", "deux"));
 
             ChatStreamController controller = new ChatStreamController(chatStreamService);

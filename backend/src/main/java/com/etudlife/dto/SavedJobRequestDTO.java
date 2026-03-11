@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class SavedJobRequestDTO {
+    private Long compteId;
     private String externalJobId;
     private String title;
     private String company;

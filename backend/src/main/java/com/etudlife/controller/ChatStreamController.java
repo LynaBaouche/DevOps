@@ -22,9 +22,10 @@ ChatStreamController {
     public Flux<ServerSentEvent<String>> stream(
             @RequestParam("question") String question,
             @RequestParam(value = "sessionId", required = false) String sessionId,
-            @RequestParam(value = "mode", required = false) String mode
+            @RequestParam(value = "mode", required = false) String mode,
+            @RequestParam(value = "compteId", required = false) Long compteId
     ) {
-        return chatStreamService.streamAnswer(sessionId, question, mode)
+        return chatStreamService.streamAnswer(sessionId, question, mode, compteId)
                 .map(chunk -> ServerSentEvent.builder(chunk).event("chunk").build())
                 .concatWithValues(ServerSentEvent.builder("[DONE]").event("done").build());
     }

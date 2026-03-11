@@ -11,6 +11,14 @@ async function searchJobs() {
 
     container.innerHTML = '<p style="text-align:center">Recherche en cours... ⏳</p>';
     // --- Sauvegarde automatique de la préférence pour le batch ---
+    // --- Sauvegarde automatique de la préférence pour le batch ---
+    const userStr = localStorage.getItem('utilisateur');
+    if (!userStr) {
+        alert("Vous devez être connecté pour effectuer cette action.");
+        return;
+    }
+    const userObj = JSON.parse(userStr);
+    const userId = userObj.id;
     try {
         await fetch(API_PREF, {
             method: 'POST',
@@ -19,7 +27,7 @@ async function searchJobs() {
                 motsCles: query,
                 localisation: location,
                 frequence: frequency,
-                compte: { id: 1 } // ID par défaut pour les tests
+                compte: { id: userId} // ID par défaut pour les tests
             })
         });
         console.log("✅ Préférence enregistrée pour le batch de 02h00");
@@ -97,10 +105,10 @@ function displayJobs(jobs) {
     }).join('');
 }
 
+
 // 3. Sauvegarde de l'offre
 async function saveJob(jobId, status, btnElement) {
     try {
-        // 🧠 ON RÉCUPÈRE L'OFFRE PROPREMENT DEPUIS LE CACHE
         const job = currentJobsCache.find(j => j.job_id === jobId);
 
         if (!job) {
@@ -108,7 +116,17 @@ async function saveJob(jobId, status, btnElement) {
             return;
         }
 
+        // 🛡️ CORRECTION ICI : On utilise la même clé que dans my-jobs.js
+        const userId = localStorage.getItem('userId');
+
+        if (!userId || userId === "null") {
+            alert("Vous n'êtes pas connecté. Redirection vers la page de connexion.");
+            window.location.href = "../login.html";
+            return;
+        }
+
         const payload = {
+            compteId: userId, // L'ID est passé correctement ici
             externalJobId: job.job_id,
             title: job.job_title,
             company: job.employer_name,
@@ -116,6 +134,8 @@ async function saveJob(jobId, status, btnElement) {
             applyLink: job.job_apply_link,
             status: status
         };
+
+        console.log("🚀 ENVOI AU BACKEND :", payload);
 
         const res = await fetch(`${API_JOBS}/save`, {
             method: 'POST',
@@ -133,7 +153,7 @@ async function saveJob(jobId, status, btnElement) {
             }, 2000);
         } else {
             console.error("Erreur serveur (500).");
-            alert("Erreur serveur : Le lien est peut-être trop long pour la base de données.");
+            alert("Erreur serveur lors de la sauvegarde.");
         }
     } catch (err) {
         console.error("Erreur JS:", err);

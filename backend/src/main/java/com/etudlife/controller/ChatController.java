@@ -59,7 +59,7 @@ public class ChatController {
             sessionId = sessions.newSession();
         }
 
-        ChatResponse res = chatService.ask(sessionId, req.getQuestion(), req.getMode());
+        ChatResponse res = chatService.ask(sessionId, req.getQuestion(), req.getMode(), req.getCompteId());
         return ResponseEntity.ok(res);
     }
 

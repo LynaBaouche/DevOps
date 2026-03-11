@@ -55,14 +55,14 @@ public class JobController {
     }
 
     @GetMapping("/my-jobs")
-    public ResponseEntity<List<SavedJob>> getMyJobs(@RequestParam(required = false) JobStatus status) {
-        return ResponseEntity.ok(savedJobService.getJobsByStatus(status));
+    public ResponseEntity<List<SavedJob>> getMyJobs(
+            @RequestParam(required = false) JobStatus status,
+            @RequestParam Long compteId) { // <-- Ajout du paramètre
+        return ResponseEntity.ok(savedJobService.getJobsByStatus(status, compteId));
     }
-    // Endpoint pour les statistiques (KPIs)
     @GetMapping("/stats")
-    public ResponseEntity<StatsDTO> getJobStats() {
-        // On récupère tout
-        List<SavedJob> all = savedJobService.getJobsByStatus(null);
+    public ResponseEntity<StatsDTO> getJobStats(@RequestParam Long compteId) { // <-- Ajout du paramètre
+        List<SavedJob> all = savedJobService.getJobsByStatus(null, compteId);
 
         long countInteresse = all.stream().filter(j -> j.getStatus() == JobStatus.INTERESSE).count();
         long countPostule = all.stream().filter(j -> j.getStatus() == JobStatus.POSTULE).count();

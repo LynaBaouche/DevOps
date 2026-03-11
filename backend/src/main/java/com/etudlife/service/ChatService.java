@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.etudlife.model.SavedJob;
 import com.etudlife.model.JobStatus;
-import java.util.List;
 
 @Service
 public class ChatService {
@@ -17,15 +16,15 @@ public class ChatService {
     private final ChatSessionService sessions;
     private final SavedJobService savedJobService;
 
-    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions, SavedJobService savedJobService, SavedJobService savedJobService1) {
+    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions, SavedJobService savedJobService) {
         this.kb = kb;
         this.gemini = gemini;
         this.sessions = sessions;
-        this.savedJobService = savedJobService1;
+        this.savedJobService = savedJobService;
 
     }
 
-    public ChatResponse ask(String sessionId, String question, String mode)
+    public ChatResponse ask(String sessionId, String question, String mode,Long compteId)
     {
 
         //  stocker le message user dans Redis
@@ -47,7 +46,7 @@ public class ChatService {
                 titre = "🎯 Vos offres intéressantes";
             }
 
-            List<SavedJob> jobs = savedJobService.getJobsByStatus(statusFiltre);
+            List<SavedJob> jobs = savedJobService.getJobsByStatus(statusFiltre, compteId);
 
             String answer;
             if (jobs.isEmpty()) {

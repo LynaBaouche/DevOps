@@ -25,9 +25,8 @@ public class SavedJobService {
 
     @Transactional
     public void saveOrUpdate(SavedJobRequestDTO dto) {
-        // NOTE: Pour le moment, on récupère le premier compte par défaut
-        // En attendant que ton système d'authentification soit totalement lié
-        Compte compte = compteRepository.findAll().get(0);
+        Compte compte = compteRepository.findById(dto.getCompteId())
+                .orElseThrow(() -> new RuntimeException("Compte introuvable avec l'ID: " + dto.getCompteId()));
 
         // On cherche si le job existe déjà pour cet utilisateur
         SavedJob savedJob = savedJobRepository.findByCompteAndExternalJobId(compte, dto.getExternalJobId())
@@ -51,8 +50,9 @@ public class SavedJobService {
         savedJobRepository.save(savedJob);
     }
 
-    public List<SavedJob> getJobsByStatus(JobStatus status) {
-        Compte compte = compteRepository.findAll().get(0);
+    public List<SavedJob> getJobsByStatus(JobStatus status, Long compteId) {
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("Compte introuvable"));
         List<SavedJob> jobs = (status == null)
                 ? savedJobRepository.findByCompte(compte)
                 : savedJobRepository.findByCompteAndStatus(compte, status);

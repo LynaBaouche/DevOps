@@ -1,4 +1,5 @@
 package DEVOPS2;
+
 import com.etudlife.controller.JobController;
 import com.etudlife.model.JobStatus;
 import com.etudlife.model.SavedJob;
@@ -14,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,38 +36,38 @@ class JobControllerIntegrationTest {
 
     @Test
     void testSearch_ShouldAppendFranceToQuery() throws Exception {
-        // Act
         mockMvc.perform(get("/api/jobs/search")
                         .param("query", "Développeur")
                         .param("location", "Paris"))
                 .andExpect(status().isOk());
 
-        // Assert : On vérifie que le contrôleur a bien ajouté "France" à la requête
         verify(jobSearchService).searchJobs("Développeur Paris France");
     }
 
     @Test
     void testGetJobStats_ShouldReturnCorrectKPIs() throws Exception {
-        // Arrange
         SavedJob job1 = new SavedJob(); job1.setStatus(JobStatus.INTERESSE);
         SavedJob job2 = new SavedJob(); job2.setStatus(JobStatus.POSTULE);
         SavedJob job3 = new SavedJob(); job3.setStatus(JobStatus.POSTULE);
 
-        when(savedJobService.getJobsByStatus(null)).thenReturn(List.of(job1, job2, job3));
+        // CORRECTION : Ajout de 1L
+        when(savedJobService.getJobsByStatus(null, 1L)).thenReturn(List.of(job1, job2, job3));
 
-        // Act & Assert
         mockMvc.perform(get("/api/jobs/stats")
+                        .param("compteId", "1") // CORRECTION : Le contrôleur exige maintenant ce paramètre
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.interesse").value(1))
                 .andExpect(jsonPath("$.postule").value(2))
                 .andExpect(jsonPath("$.refuse").value(0));
     }
+
     @Test
     void testSaveJobStatus_ShouldReturnHttp200() throws Exception {
-        // Arrange : Le Payload JSON envoyé par le Frontend (jobs.js)
+        // CORRECTION : Ajout de compteId: 1 dans le payload
         String jsonPayload = """
                 {
+                    "compteId": 1,
                     "externalJobId": "job_999",
                     "title": "Développeur Fullstack",
                     "company": "Tech Corp",
@@ -77,7 +77,6 @@ class JobControllerIntegrationTest {
                 }
                 """;
 
-        // Act & Assert : Simule la requête POST (Bouton ❤️)
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/jobs/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPayload))
@@ -86,12 +85,12 @@ class JobControllerIntegrationTest {
 
     @Test
     void testGetMyJobs_WithStatusFilter_ShouldReturnOk() throws Exception {
-        // Act & Assert : Simule le clic sur le filtre "✅ Postulé" dans le Dashboard
         mockMvc.perform(get("/api/jobs/my-jobs")
-                        .param("status", "POSTULE"))
+                        .param("status", "POSTULE")
+                        .param("compteId", "1")) // CORRECTION : Le contrôleur exige ce paramètre
                 .andExpect(status().isOk());
 
-        // Vérifie que le contrôleur a bien passé le paramètre au service
-        verify(savedJobService).getJobsByStatus(JobStatus.POSTULE);
+        // CORRECTION : Ajout de 1L
+        verify(savedJobService).getJobsByStatus(JobStatus.POSTULE, 1L);
     }
 }

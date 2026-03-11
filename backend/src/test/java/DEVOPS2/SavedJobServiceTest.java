@@ -77,7 +77,7 @@ class SavedJobServiceTest {
                 .thenReturn(List.of(job1));
 
         // Act
-        List<SavedJob> result = savedJobService.getJobsByStatus(JobStatus.INTERESSE);
+        List<SavedJob> result = savedJobService.getJobsByStatus(JobStatus.INTERESSE, mockCompte.getId());
 
         // Assert
         assertEquals(1, result.size());

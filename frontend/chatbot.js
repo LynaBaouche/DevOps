@@ -358,7 +358,11 @@
     // ── Send message ──────────────────────────────────────────────────────────
     async function sendMessage(question) {
         if (!sessionId) await newSession();
-
+        const userId = localStorage.getItem('userId');
+        if (!userId && (question.toLowerCase().includes("offre") || question.toLowerCase().includes("stage"))) {
+            addMessage("bot", "⚠️ Vous devez être connecté pour accéder à vos offres suivies.");
+            return;
+        }
         const messages = document.getElementById("chatbot-messages");
         const row      = el("div", { class: "chat-msg bot" });
         const bubble   = el("div", { class: "chat-bubble" });
@@ -373,7 +377,12 @@
             const res  = await fetch(`${API_BASE}/message`, {
                 method:  "POST",
                 headers: { "Content-Type": "application/json" },
-                body:    JSON.stringify({ sessionId, question, mode })
+                body:    JSON.stringify({
+                    sessionId: sessionId,
+                    question: question,
+                    mode: mode,
+                    compteId: userId ? parseInt(userId, 10) : null
+                })
             });
             const data = await res.json();
             stopDots();

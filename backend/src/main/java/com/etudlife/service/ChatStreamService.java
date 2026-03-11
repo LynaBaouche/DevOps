@@ -19,12 +19,11 @@ public class ChatStreamService {
         this.sessions = sessions;
     }
 
-    public Flux<String> streamAnswer(String sessionId, String question, String mode) {
+    public Flux<String> streamAnswer(String sessionId, String question, String mode, Long compteId) {
         if (sessionId == null || sessionId.isBlank()) {
             sessionId = sessions.newSession();
         }
-
-        ChatResponse res = chatService.ask(sessionId, question, mode);
+        ChatResponse res = chatService.ask(sessionId, question, mode, compteId);
         String full = (res.getResponse() == null) ? "" : res.getResponse();
 
         String sid = sessionId;
