@@ -30,13 +30,18 @@ public class ChatStreamService {
         String sid = sessionId;
         Flux<String> head = Flux.just("__SESSION__:" + sid);
 
+        // ✅ Si c'est des offres → un seul chunk, pas de découpage
+        if (full.contains("JOB_ITEM:")) {
+            return head.concatWith(Flux.just(full));
+        }
+
+        // Streaming normal mot par mot
         List<String> chunks = chunkByWords(full, 2);
         Flux<String> body = Flux.fromIterable(chunks)
                 .delayElements(Duration.ofMillis(35));
 
         return head.concatWith(body);
     }
-
 
     private List<String> chunkByWords(String text, int wordsPerChunk) {
         String[] words = text.split("\\s+");

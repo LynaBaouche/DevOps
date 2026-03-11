@@ -8,6 +8,7 @@ import com.etudlife.repository.SavedJobRepository;
 import com.etudlife.repository.CompteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
@@ -52,9 +53,19 @@ public class SavedJobService {
 
     public List<SavedJob> getJobsByStatus(JobStatus status) {
         Compte compte = compteRepository.findAll().get(0);
-        if (status == null) {
-            return savedJobRepository.findByCompte(compte);
-        }
-        return savedJobRepository.findByCompteAndStatus(compte, status);
+        List<SavedJob> jobs = (status == null)
+                ? savedJobRepository.findByCompte(compte)
+                : savedJobRepository.findByCompteAndStatus(compte, status);
+
+        // Dédoublonnage par externalJobId
+        return jobs.stream()
+                .collect(Collectors.toMap(
+                        SavedJob::getExternalJobId,
+                        j -> j,
+                        (existing, duplicate) -> existing
+                ))
+                .values()
+                .stream()
+                .toList();
     }
 }

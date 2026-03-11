@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.etudlife.model.SavedJob;
+import com.etudlife.model.JobStatus;
+import java.util.List;
 
 @Service
 public class ChatService {
@@ -31,6 +33,47 @@ public class ChatService {
 
         String q = (question == null) ? "" : question.trim();
         String qNorm = q.toLowerCase();
+
+        // INTENT: offres marquées "INTERESSÉ"
+        if (isJobsIntent(qNorm)) {
+            JobStatus statusFiltre;
+            String titre;
+
+            if (qNorm.contains("postul")) {
+                statusFiltre = JobStatus.POSTULE;
+                titre = "📨 Vos offres pour lesquelles vous avez postulé";
+            } else {
+                statusFiltre = JobStatus.INTERESSE;
+                titre = "🎯 Vos offres intéressantes";
+            }
+
+            List<SavedJob> jobs = savedJobService.getJobsByStatus(statusFiltre);
+
+            String answer;
+            if (jobs.isEmpty()) {
+                answer = statusFiltre == JobStatus.POSTULE
+                        ? "Vous n'avez postulé à aucune offre pour le moment."
+                        : "Vous n'avez aucune offre marquée comme intéressante pour le moment.";
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("JOB_TITLE:").append(titre).append("\n");
+                for (SavedJob job : jobs) {
+                    sb.append("JOB_ITEM:")
+                            .append(job.getTitle() != null ? job.getTitle() : "Offre sans titre")
+                            .append("|")
+                            .append(job.getLocation() != null && !job.getLocation().isBlank() ? job.getLocation() : "Localisation non précisée")
+                            .append("|")
+                            .append(job.getApplyLink() != null ? job.getApplyLink() : "")
+                            .append("\n");
+                }
+                answer = sb.toString().trim();
+            }
+
+            sessions.append(sessionId, "assistant", answer);
+            return new ChatResponse(true, sessionId, question, answer, "saved-jobs");
+        }
+
+
 
 
         // FORCE "sourcee.pdf" si on parle d'annonce, de compte, de menu ou de bouton
@@ -155,10 +198,24 @@ public class ChatService {
     }
 
 
-    private boolean isInterestedJobsIntent(String qNorm) {
-        return (qNorm.contains("liste") || qNorm.contains("affiche") || qNorm.contains("donne"))
-                && (qNorm.contains("offre") || qNorm.contains("annonce") || qNorm.contains("job") || qNorm.contains("candidature"))
-                && (qNorm.contains("intéress") || qNorm.contains("interess") || qNorm.contains("favori") || qNorm.contains("sauvegard"));
+    private boolean isJobsIntent(String qNorm) {
+        boolean hasVerbe = qNorm.contains("liste") || qNorm.contains("affiche")
+                || qNorm.contains("donne") || qNorm.contains("montre")
+                || qNorm.contains("voir") || qNorm.contains("quelles");
+
+        boolean hasOffre = qNorm.contains("offre") || qNorm.contains("job")
+                || qNorm.contains("stage") || qNorm.contains("candidature");
+
+        boolean hasStatut = qNorm.contains("intéress") || qNorm.contains("interess")
+                || qNorm.contains("interes")   || qNorm.contains("favori")
+                || qNorm.contains("sauvegard") || qNorm.contains("postul")
+                || qNorm.contains("marqué");
+
+        boolean casSimple = qNorm.contains("mes offres") || qNorm.contains("mes jobs")
+                || qNorm.contains("mes stages") || qNorm.contains("mes candidatures")
+                || qNorm.contains("j'ai postulé") || qNorm.contains("j'ai postule");
+
+        return casSimple || (hasVerbe && hasOffre) || (hasVerbe && hasStatut) || (hasOffre && hasStatut);
     }
 
 
