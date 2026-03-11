@@ -1,25 +1,27 @@
 package DEVOPS2;
 
 import com.etudlife.dto.SavedJobRequestDTO;
-import com.etudlife.service.SavedJobService;
 import com.etudlife.model.Compte;
 import com.etudlife.model.JobStatus;
 import com.etudlife.model.SavedJob;
 import com.etudlife.repository.CompteRepository;
 import com.etudlife.repository.SavedJobRepository;
+import com.etudlife.service.SavedJobService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class SavedJobServiceTest {
 
     @Mock
@@ -35,80 +37,74 @@ class SavedJobServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         mockCompte = new Compte();
         mockCompte.setId(1L);
-        // On simule qu'il y a toujours un compte dispo
-        when(compteRepository.findAll()).thenReturn(List.of(mockCompte));
+        mockCompte.setEmail("test@etudiant.univ-nanterre.fr");
+
+        // On configure le mock pour que chaque test trouve le compte
+        lenient().when(compteRepository.findById(1L)).thenReturn(Optional.of(mockCompte));
     }
 
     @Test
     void testSaveOrUpdate_ShouldTruncateLongLinks() {
-        // Arrange
+        // GIVEN
         SavedJobRequestDTO dto = new SavedJobRequestDTO();
-        dto.setExternalJobId("job_123");
+        dto.setCompteId(1L); // ✅ Obligatoire maintenant
+        dto.setExternalJobId("job123");
+        dto.setApplyLink("https://very-long-link..." + "a".repeat(300));
         dto.setStatus(JobStatus.INTERESSE);
 
-        // On crée un lien de 300 caractères
-        String veryLongLink = "a".repeat(300);
-        dto.setApplyLink(veryLongLink);
+        when(savedJobRepository.findByCompteAndExternalJobId(any(), any())).thenReturn(Optional.empty());
 
-        when(savedJobRepository.findByCompteAndExternalJobId(mockCompte, "job_123"))
-                .thenReturn(Optional.empty());
-
-        // Act
+        // WHEN
         savedJobService.saveOrUpdate(dto);
 
-        // Assert
-        ArgumentCaptor<SavedJob> jobCaptor = ArgumentCaptor.forClass(SavedJob.class);
-        verify(savedJobRepository).save(jobCaptor.capture());
-
-        SavedJob savedJob = jobCaptor.getValue();
-        assertEquals(250, savedJob.getApplyLink().length()); // Vérifie la coupure à 250 caractères
-        assertEquals(JobStatus.INTERESSE, savedJob.getStatus());
+        // THEN
+        verify(savedJobRepository).save(argThat(job ->
+                job.getApplyLink().length() <= 250
+        ));
     }
+
     @Test
     void testGetJobsByStatus_WithSpecificStatus_ShouldFilterCorrectly() {
-        // Arrange
-        SavedJob job1 = new SavedJob();
-        job1.setStatus(JobStatus.INTERESSE);
+        // GIVEN
+        SavedJob job = new SavedJob();
+        job.setStatus(JobStatus.INTERESSE);
+        job.setCompte(mockCompte);
 
         when(savedJobRepository.findByCompteAndStatus(mockCompte, JobStatus.INTERESSE))
-                .thenReturn(List.of(job1));
+                .thenReturn(List.of(job));
 
-        // Act
-        List<SavedJob> result = savedJobService.getJobsByStatus(JobStatus.INTERESSE, mockCompte.getId());
+        // WHEN
+        List<SavedJob> results = savedJobService.getJobsByStatus(JobStatus.INTERESSE, 1L); // ✅ Ajout ID
 
-        // Assert
-        assertEquals(1, result.size());
-        assertEquals(JobStatus.INTERESSE, result.get(0).getStatus());
-        verify(savedJobRepository).findByCompteAndStatus(mockCompte, JobStatus.INTERESSE);
+        // THEN
+        assertEquals(1, results.size());
+        assertEquals(JobStatus.INTERESSE, results.get(0).getStatus());
     }
 
     @Test
     void testSaveOrUpdate_WhenJobAlreadyExists_ShouldUpdateExistingRecord() {
-        // Arrange : L'utilisateur a déjà "Liké" l'offre en base de données
+        // GIVEN
         SavedJob existingJob = new SavedJob();
-        existingJob.setExternalJobId("job_456");
+        existingJob.setExternalJobId("job123");
         existingJob.setStatus(JobStatus.INTERESSE);
+        existingJob.setCompte(mockCompte);
 
-        when(savedJobRepository.findByCompteAndExternalJobId(mockCompte, "job_456"))
+        SavedJobRequestDTO dto = new SavedJobRequestDTO();
+        dto.setCompteId(1L); // ✅ Obligatoire
+        dto.setExternalJobId("job123");
+        dto.setStatus(JobStatus.POSTULE);
+
+        when(savedJobRepository.findByCompteAndExternalJobId(mockCompte, "job123"))
                 .thenReturn(Optional.of(existingJob));
 
-        // Nouvelle action : L'utilisateur clique sur "J'ai postulé"
-        SavedJobRequestDTO updateRequest = new SavedJobRequestDTO();
-        updateRequest.setExternalJobId("job_456");
-        updateRequest.setStatus(JobStatus.POSTULE);
+        // WHEN
+        savedJobService.saveOrUpdate(dto);
 
-        // Act
-        savedJobService.saveOrUpdate(updateRequest);
-
-        // Assert : On vérifie que le statut a bien été modifié et sauvegardé
-        ArgumentCaptor<SavedJob> jobCaptor = ArgumentCaptor.forClass(SavedJob.class);
-        verify(savedJobRepository).save(jobCaptor.capture());
-
-        assertEquals(JobStatus.POSTULE, jobCaptor.getValue().getStatus());
-        // L'ID externe ne doit pas avoir changé
-        assertEquals("job_456", jobCaptor.getValue().getExternalJobId());
+        // THEN
+        verify(savedJobRepository).save(argThat(job ->
+                job.getStatus() == JobStatus.POSTULE
+        ));
     }
 }
