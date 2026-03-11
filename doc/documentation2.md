@@ -91,6 +91,23 @@
 
 * **Streaming interactif** : les réponses longues peuvent être envoyées progressivement pour améliorer l’expérience utilisateur.
 
+* **Intégration des offres d'emploi** : le chatbot détecte les intentions liées aux offres sauvegardées et retourne directement les données depuis la base sans passer par Gemini ni le RAG.
+* **Détection d'intentions emploi** : les questions contenant des mots-clés liés aux offres ("liste mes offres", "mes candidatures", "j'ai postulé", etc.) sont interceptées avant le RAG et traitées via le service dédié.
+* **Statuts gérés** : INTERESSE (offres marquées intéressantes) et POSTULE (offres pour lesquelles l'étudiant a postulé).
+* **Dédoublonnage** : les offres sont dédoublonnées par externalJobId avant d'être retournées.
+* **Format de réponse structuré** : les offres sont encodées au format JOB_TITLE: / JOB_ITEM:titre|localisation|lien pour permettre un rendu en cartes cliquables côté frontend.
+
+
+Dans "Classes Impliquées", ajoute :
+
+SavedJobService — récupération et dédoublonnage des offres sauvegardées par statut pour un compte donné.
+JobSearchService — appel à l'API externe JSearch (RapidAPI) pour la recherche d'offres LinkedIn/Indeed.
+SavedJob — entité représentant une offre sauvegardée avec son statut (INTERESSE, POSTULE, REFUSE, SUGGESTION).
+
+
+Dans "Algorithme & Logique Backend", ajoute un paragraphe :
+Avant d'effectuer la recherche RAG, le système vérifie si la question correspond à une intention liée aux offres d'emploi sauvegardées. Si c'est le cas, les offres sont récupérées depuis la base de données selon leur statut (INTERESSE ou POSTULE), dédoublonnées par identifiant externe, puis encodées dans un format structuré (JOB_ITEM). Ce format est interprété par le frontend pour afficher des cartes cliquables avec titre, localisation et lien de candidature, sans aucun appel à Gemini. Sonnet 4.6
+
 ### Classes Impliquées
 * `ChatController` endpoints REST pour créer une session, envoyer un message, consulter l’historique et fermer une session.
 
@@ -105,6 +122,12 @@
 * `GeminiClient` appel à l’API externe Gemini pour générer les réponses.
 
 * `PdfKnowledgeBase` recherche des extraits pertinents dans la base documentaire.
+
+* `SavedJobService`  récupération et dédoublonnage des offres sauvegardées par statut pour un compte donné.
+
+* `JobSearchService` appel à l'API externe JSearch (RapidAPI) pour la recherche d'offres LinkedIn/Indeed.
+
+* `SavedJob` entité représentant une offre sauvegardée avec son statut (INTERESSE, POSTULE, REFUSE, SUGGESTION).
 ### Algorithme & Logique Backend :
 
 Le chatbot expose plusieurs endpoints REST permettant de créer une session, envoyer un message, consulter l’historique, fermer une session ou activer le streaming temps réel.
@@ -117,10 +140,16 @@ Si aucun contenu pertinent n’est trouvé, une réponse standardisée est renvo
 
 En mode streaming, la réponse est découpée et envoyée progressivement via SSE afin d’améliorer l’expérience utilisateur.
 
-![agentia.png](diagrammes_de_sequence/agentia.png)
-![agent ia.PNG](images/agent%20ia.PNG)
-![agentia1.PNG](images/agentia1.PNG)
-![agentia2.PNG](images/agentia2.PNG)
+Avant d'effectuer la recherche RAG, le système vérifie si la question correspond à une intention liée aux offres d'emploi sauvegardées. Si c'est le cas, les offres sont récupérées depuis la base de données selon leur statut (INTERESSE ou POSTULE), dédoublonnées par identifiant externe, puis encodées dans un format structuré (JOB_ITEM). Ce format est interprété par le frontend pour afficher des cartes cliquables avec titre, localisation et lien de candidature, sans aucun appel à Gemini.
+
+![agentia.png](diagrammes_de_sequence/diagramme_sequence_agentia.png)
+![agent ia.PNG](images/agentia_page_principale.png)
+![agentia1.PNG](images/agrntia_charte.png)
+![agentia2.PNG](images/agentia_source.png)
+![agentia2.PNG](images/agentia_offres_postulees.png)
+![agentia2.PNG](images/agentia_offres_interessantes.png)
+
+
 ---------------------------------------
 # **4. Tests effectués**
 ### 4.1 Tests du module "Chasseur de Stages" (JobSearch)

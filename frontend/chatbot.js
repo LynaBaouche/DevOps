@@ -20,237 +20,274 @@
         if (document.getElementById("etudlife-chatbot-style")) return;
         const style = el("style", { id: "etudlife-chatbot-style" });
         style.textContent = `
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --el-primary: #1a56db;
-  --el-primary-light: #3b76f6;
-  --el-primary-dark: #1341b0;
-  --el-bg: #f8faff;
-  --el-surface: #ffffff;
-  --el-border: #e2e8f8;
-  --el-text: #0f172a;
-  --el-text-muted: #64748b;
-  --el-user-bubble: linear-gradient(135deg, #1a56db, #3b76f6);
-  --el-shadow: 0 20px 60px rgba(26,86,219,0.15);
-  --el-radius: 20px;
-  --el-font: 'Plus Jakarta Sans', sans-serif;
+  --c-blue:       #2563eb;
+  --c-blue-dark:  #1d4ed8;
+  --c-blue-light: #eff6ff;
+  --c-bg:         #f5f7fb;
+  --c-surface:    #ffffff;
+  --c-border:     #e4e9f2;
+  --c-text:       #111827;
+  --c-muted:      #6b7280;
+  --c-online:     #22c55e;
+  --c-shadow:     0 24px 64px rgba(37,99,235,.14);
+  --c-radius:     18px;
+  --c-font:       'DM Sans', sans-serif;
+  --c-grad:       linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
 }
 
+/* ── Toggle button ───────────────────────────────────────────── */
 #chatbot-btn {
   position: fixed; right: 24px; bottom: 24px;
-  width: 60px; height: 60px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; background: var(--el-user-bubble);
-  color: #fff; font-size: 24px; border: none;
-  box-shadow: 0 8px 32px rgba(26,86,219,0.4); z-index: 9999;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer; background: var(--c-grad);
+  border: none; z-index: 9999;
+  box-shadow: 0 8px 28px rgba(37,99,235,.45);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
-#chatbot-btn:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 40px rgba(26,86,219,0.5); }
-#chatbot-btn:active { transform: scale(0.96); }
+#chatbot-btn svg { width:24px; height:24px; fill:#fff; }
+#chatbot-btn:hover  { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(37,99,235,.5); }
+#chatbot-btn:active { transform: scale(.94); }
 
+/* ── Panel ───────────────────────────────────────────────────── */
 #chatbot-panel {
-  position: fixed; right: 24px; bottom: 100px;
+  position: fixed; right: 24px; bottom: 96px;
   width: 360px; height: 540px;
-  background: var(--el-surface); border-radius: var(--el-radius);
-  box-shadow: var(--el-shadow); display: none; flex-direction: column;
-  overflow: hidden; z-index: 9999; font-family: var(--el-font);
-  border: 1px solid var(--el-border);
-  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  background: var(--c-surface); border-radius: var(--c-radius);
+  box-shadow: var(--c-shadow); display: none; flex-direction: column;
+  overflow: hidden; z-index: 9999; font-family: var(--c-font);
+  border: 1px solid var(--c-border);
+  animation: panelIn .28s cubic-bezier(.34,1.5,.64,1);
 }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes panelIn {
+  from { opacity:0; transform: translateY(16px) scale(.97); }
+  to   { opacity:1; transform: translateY(0)    scale(1);   }
 }
 
+/* ── Header ──────────────────────────────────────────────────── */
 #chatbot-header {
-  padding: 16px 18px; display: flex;
+  padding: 14px 16px; display: flex;
   justify-content: space-between; align-items: center;
-  background: var(--el-user-bubble); color: #fff; flex-shrink: 0;
+  background: var(--c-grad); flex-shrink: 0;
 }
-.chatbot-header-info { display: flex; align-items: center; gap: 10px; }
-.chatbot-header-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(255,255,255,0.2);
+.cb-header-left  { display: flex; align-items: center; gap: 10px; }
+.cb-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.18); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
 }
-.chatbot-header-text .title { font-weight: 700; font-size: 15px; letter-spacing: -0.2px; }
-.chatbot-header-text .subtitle {
-  font-size: 11px; opacity: 0.8; margin-top: 1px;
-  display: flex; align-items: center; gap: 4px;
+.cb-avatar svg { width:18px; height:18px; fill:#fff; }
+.cb-title   { font-weight:700; font-size:14px; color:#fff; letter-spacing:-.1px; }
+.cb-status  { display:flex; align-items:center; gap:5px; margin-top:2px; }
+.cb-dot {
+  width:7px; height:7px; border-radius:50%;
+  background: var(--c-online); box-shadow: 0 0 6px var(--c-online);
+  animation: blink 2.4s infinite;
 }
-.chatbot-online-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #4ade80; box-shadow: 0 0 6px #4ade80;
-  display: inline-block; animation: pulse-dot 2s infinite;
-}
-@keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+.cb-status-text { font-size:11px; color:rgba(255,255,255,.8); }
 
 #chatbot-close {
-  border: none; background: rgba(255,255,255,0.15);
-  cursor: pointer; font-size: 14px; color: #fff;
-  width: 30px; height: 30px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
+  width:28px; height:28px; border-radius:50%; border:none;
+  background: rgba(255,255,255,.15); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:13px;
+  transition: background .18s;
 }
-#chatbot-close:hover { background: rgba(255,255,255,0.3); }
+#chatbot-close:hover { background: rgba(255,255,255,.28); }
 
+/* ── Messages ────────────────────────────────────────────────── */
 #chatbot-messages {
-  flex: 1; padding: 16px; overflow-y: auto;
-  background: var(--el-bg); display: flex;
-  flex-direction: column; gap: 4px; scroll-behavior: smooth;
+  flex:1; padding:14px 12px; overflow-y:auto;
+  background: var(--c-bg); display:flex;
+  flex-direction:column; gap:6px; scroll-behavior:smooth;
 }
-#chatbot-messages::-webkit-scrollbar { width: 4px; }
-#chatbot-messages::-webkit-scrollbar-track { background: transparent; }
-#chatbot-messages::-webkit-scrollbar-thumb { background: var(--el-border); border-radius: 99px; }
+#chatbot-messages::-webkit-scrollbar { width:3px; }
+#chatbot-messages::-webkit-scrollbar-thumb { background:var(--c-border); border-radius:99px; }
 
-.chat-msg { display: flex; align-items: flex-end; gap: 8px; margin: 2px 0; }
-.chat-msg.user { justify-content: flex-end; }
-.chat-msg.bot  { justify-content: flex-start; }
+.chat-msg { display:flex; align-items:flex-end; gap:8px; }
+.chat-msg.user { justify-content:flex-end; }
+.chat-msg.bot  { justify-content:flex-start; }
 
 .chat-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  flex-shrink: 0; object-fit: cover;
-  border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width:30px; height:30px; border-radius:50%;
+  flex-shrink:0; object-fit:cover;
+  border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
 .chat-bubble {
-  max-width: 78%; padding: 10px 14px; border-radius: 18px;
-  font-size: 13.5px; line-height: 1.5; white-space: pre-wrap;
-  word-break: break-word; font-family: var(--el-font);
-  animation: fadeIn 0.2s ease;
+  max-width:78%; padding:10px 13px; border-radius:16px;
+  font-size:13px; line-height:1.55; white-space:pre-wrap;
+  word-break:break-word; font-family:var(--c-font);
+  animation: msgIn .18s ease;
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes msgIn {
+  from { opacity:0; transform:translateY(5px); }
+  to   { opacity:1; transform:translateY(0); }
 }
 .chat-msg.user .chat-bubble {
-  background: var(--el-user-bubble); color: #fff;
-  border-bottom-right-radius: 5px;
-  box-shadow: 0 4px 16px rgba(26,86,219,0.25);
+  background: var(--c-grad); color:#fff;
+  border-bottom-right-radius:4px;
+  box-shadow: 0 4px 14px rgba(37,99,235,.22);
 }
 .chat-msg.bot .chat-bubble {
-  background: var(--el-surface); color: var(--el-text);
-  border-bottom-left-radius: 5px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  border: 1px solid var(--el-border);
+  background: var(--c-surface); color: var(--c-text);
+  border-bottom-left-radius:4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  border: 1px solid var(--c-border);
 }
 
-.job-cards-intro {
-  font-weight: 700; font-size: 13px; color: var(--el-primary);
-  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+/* ── Job cards ───────────────────────────────────────────────── */
+.job-list-label {
+  font-size:11px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--c-blue);
+  margin-bottom:8px; padding-bottom:6px;
+  border-bottom:1px solid var(--c-border);
 }
 .job-card {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--el-bg); border: 1px solid var(--el-border);
-  border-radius: 12px; padding: 10px 12px; margin-bottom: 7px;
-  cursor: pointer; transition: all 0.18s ease;
+  display:flex; align-items:center; justify-content:space-between;
+  background: var(--c-bg); border:1px solid var(--c-border);
+  border-radius:10px; padding:9px 11px; margin-bottom:6px;
+  cursor:pointer; transition: all .16s ease;
+  text-decoration:none;
 }
+.job-card:last-child { margin-bottom:0; }
 .job-card:hover {
-  background: #eff6ff; border-color: var(--el-primary-light);
-  transform: translateX(3px); box-shadow: 0 4px 16px rgba(26,86,219,0.1);
+  background:#eff6ff; border-color:#93c5fd;
+  transform:translateX(2px);
+  box-shadow:0 3px 12px rgba(37,99,235,.1);
 }
-.job-card-info { flex: 1; min-width: 0; }
+.job-card-info { flex:1; min-width:0; }
 .job-card-title {
-  font-weight: 600; font-size: 12.5px; color: var(--el-text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
+  font-weight:600; font-size:12px; color:var(--c-text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  margin-bottom:2px;
 }
-.job-card-loc { font-size: 11px; color: var(--el-text-muted); display: flex; align-items: center; gap: 3px; }
-.job-card-arrow {
-  font-size: 16px; color: var(--el-primary);
-  margin-left: 8px; flex-shrink: 0; opacity: 0.7;
-  transition: opacity 0.15s, transform 0.15s;
+.job-card-loc {
+  font-size:11px; color:var(--c-muted);
+  display:flex; align-items:center; gap:3px;
 }
-.job-card:hover .job-card-arrow { opacity: 1; transform: translateX(2px); }
+.job-card-loc svg { width:10px; height:10px; flex-shrink:0; }
+.job-card-icon {
+  width:22px; height:22px; border-radius:6px;
+  background:#dbeafe; display:flex; align-items:center; justify-content:center;
+  margin-left:8px; flex-shrink:0;
+  transition: background .16s;
+}
+.job-card-icon svg { width:11px; height:11px; fill:#2563eb; }
+.job-card:hover .job-card-icon { background:#2563eb; }
+.job-card:hover .job-card-icon svg { fill:#fff; }
 
+/* ── Mode buttons ────────────────────────────────────────────── */
 #chatbot-suggestions {
-  display: flex; gap: 8px; padding: 10px 12px;
-  border-top: 1px solid var(--el-border);
-  background: var(--el-surface); flex-shrink: 0;
+  display:flex; gap:6px; padding:9px 12px;
+  border-top:1px solid var(--c-border);
+  background:var(--c-surface); flex-shrink:0;
 }
 #chatbot-suggestions button {
-  flex: 1; border: 1.5px solid var(--el-border);
-  background: var(--el-bg); border-radius: 10px;
-  padding: 7px 6px; cursor: pointer; font-size: 11.5px;
-  color: var(--el-text-muted); font-family: var(--el-font);
-  font-weight: 500; transition: all 0.18s ease;
+  flex:1; border:1.5px solid var(--c-border);
+  background:var(--c-bg); border-radius:8px;
+  padding:6px 4px; cursor:pointer; font-size:11px;
+  color:var(--c-muted); font-family:var(--c-font);
+  font-weight:500; transition:all .16s ease;
 }
 #chatbot-suggestions button:hover {
-  border-color: var(--el-primary-light); color: var(--el-primary); background: #eff6ff;
+  border-color:#93c5fd; color:var(--c-blue); background:#eff6ff;
 }
 #chatbot-suggestions button.active {
-  border-color: var(--el-primary); background: #eff6ff;
-  color: var(--el-primary); font-weight: 700;
+  border-color:var(--c-blue); background:#eff6ff;
+  color:var(--c-blue); font-weight:700;
 }
 
+/* ── Input ───────────────────────────────────────────────────── */
 #chatbot-input {
-  display: flex; gap: 8px; padding: 12px 14px;
-  border-top: 1px solid var(--el-border);
-  background: var(--el-surface); flex-shrink: 0;
+  display:flex; gap:8px; padding:10px 12px;
+  border-top:1px solid var(--c-border);
+  background:var(--c-surface); flex-shrink:0;
 }
 #chatbot-text {
-  flex: 1; border: 1.5px solid var(--el-border);
-  border-radius: 12px; padding: 10px 14px; outline: none;
-  font-size: 13.5px; font-family: var(--el-font);
-  color: var(--el-text); background: var(--el-bg);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  flex:1; border:1.5px solid var(--c-border);
+  border-radius:10px; padding:9px 13px; outline:none;
+  font-size:13px; font-family:var(--c-font);
+  color:var(--c-text); background:var(--c-bg);
+  transition:border-color .18s, box-shadow .18s;
 }
 #chatbot-text:focus {
-  border-color: var(--el-primary-light);
-  box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
 }
-#chatbot-text::placeholder { color: var(--el-text-muted); }
+#chatbot-text::placeholder { color:var(--c-muted); }
 
 #chatbot-send {
-  width: 42px; height: 42px; border: none; border-radius: 12px;
-  background: var(--el-user-bubble); color: #fff; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px; flex-shrink: 0;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 4px 14px rgba(26,86,219,0.3);
+  width:40px; height:40px; border:none; border-radius:10px;
+  background:var(--c-grad); color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; box-shadow:0 4px 12px rgba(37,99,235,.3);
+  transition:transform .15s, box-shadow .15s;
 }
-#chatbot-send:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
-#chatbot-send:active { transform: scale(0.94); }
+#chatbot-send svg { width:16px; height:16px; fill:#fff; }
+#chatbot-send:hover { transform:scale(1.06); box-shadow:0 6px 18px rgba(37,99,235,.4); }
+#chatbot-send:active { transform:scale(.93); }
 
+/* ── Typing dots ─────────────────────────────────────────────── */
+.typing-dots { display:flex; align-items:center; gap:4px; padding:2px 0; }
 .typing-dots span {
-  display: inline-block; width: 7px; height: 7px;
-  border-radius: 50%; background: var(--el-primary-light);
-  margin: 0 2px; animation: bounce 1.2s infinite;
+  width:6px; height:6px; border-radius:50%;
+  background:#93c5fd; animation:td 1.2s infinite;
 }
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce {
-  0%,80%,100% { transform: translateY(0); opacity: 0.5; }
-  40%          { transform: translateY(-6px); opacity: 1; }
+.typing-dots span:nth-child(2) { animation-delay:.2s; }
+.typing-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes td {
+  0%,80%,100% { transform:translateY(0); opacity:.4; }
+  40%         { transform:translateY(-5px); opacity:1; }
 }
         `;
         document.head.appendChild(style);
     }
 
-    // ── Typing dots ──────────────────────────────────────────────────────────
+    // ── Icons (inline SVG) ────────────────────────────────────────────────────
+    const SVG = {
+        chat: `<svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>`,
+        bot:  `<svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>`,
+        pin:  `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>`,
+        arr:  `<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+        send: `<svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>`,
+    };
+
+    function svgEl(key) {
+        const d = document.createElement("div");
+        d.innerHTML = SVG[key];
+        return d.firstElementChild;
+    }
+
+    // ── Typing dots ───────────────────────────────────────────────────────────
     function startDots(bubble) {
         bubble.innerHTML = "";
-        const dots = document.createElement("div");
-        dots.className = "typing-dots";
-        dots.innerHTML = "<span></span><span></span><span></span>";
-        bubble.appendChild(dots);
+        const d = document.createElement("div");
+        d.className = "typing-dots";
+        d.innerHTML = "<span></span><span></span><span></span>";
+        bubble.appendChild(d);
         return () => { bubble.innerHTML = ""; };
     }
 
-    // ── Render job cards ─────────────────────────────────────────────────────
+    // ── Job cards ─────────────────────────────────────────────────────────────
     function addJobCards(bubble, text) {
         bubble.innerHTML = "";
-        bubble.style.background = "var(--el-surface)";
-        bubble.style.padding = "12px 14px";
+        bubble.style.cssText = "background:var(--c-surface);padding:12px 13px;max-width:90%;";
 
-        const lines = text.split("\n");  // ← déplacé EN PREMIER
-        let titre = "🎯 Vos offres intéressantes";
+        const lines = text.split("\n");
+
+        let titre = "Vos offres";
         const titreLine = lines.find(l => l.trim().startsWith("JOB_TITLE:"));
         if (titreLine) titre = titreLine.replace("JOB_TITLE:", "").trim();
-        bubble.appendChild(el("div", { class: "job-cards-intro" }, [titre]));
-        let count = 0;
 
+        const label = el("div", { class: "job-list-label" }, [titre]);
+        bubble.appendChild(label);
+
+        let count = 0;
         lines.forEach(line => {
             const trimmed = line.trim();
             if (!trimmed.startsWith("JOB_ITEM:")) return;
@@ -262,12 +299,20 @@
 
             const card = el("div", { class: "job-card" });
             const info = el("div", { class: "job-card-info" });
+
             info.appendChild(el("div", { class: "job-card-title" }, [title]));
-            info.appendChild(el("div", { class: "job-card-loc"   }, ["📍 " + location]));
+
+            const loc = el("div", { class: "job-card-loc" });
+            loc.appendChild(svgEl("pin"));
+            loc.appendChild(document.createTextNode(location));
+            info.appendChild(loc);
             card.appendChild(info);
 
+            const iconBox = el("div", { class: "job-card-icon" });
+            iconBox.appendChild(svgEl("arr"));
+            card.appendChild(iconBox);
+
             if (link) {
-                card.appendChild(el("span", { class: "job-card-arrow" }, ["↗"]));
                 card.addEventListener("click", () => window.open(link, "_blank"));
             }
 
@@ -275,12 +320,10 @@
             count++;
         });
 
-        if (count === 0) {
-            bubble.textContent = "Aucune offre intéressante trouvée.";
-        }
+        if (count === 0) bubble.textContent = "Aucune offre trouvée.";
     }
 
-    // ── Add message row ──────────────────────────────────────────────────────
+    // ── Add message ───────────────────────────────────────────────────────────
     function addMessage(role, text) {
         const messages = document.getElementById("chatbot-messages");
         const isUser   = role === "user";
@@ -304,15 +347,15 @@
         return bubble;
     }
 
-    // ── Session ──────────────────────────────────────────────────────────────
+    // ── Session ───────────────────────────────────────────────────────────────
     async function newSession() {
-        const r    = await fetch(`${API_BASE}/new-session`, { method: "POST" });
-        const data = await r.json();
-        sessionId  = data.sessionId;
+        const r   = await fetch(`${API_BASE}/new-session`, { method: "POST" });
+        const d   = await r.json();
+        sessionId = d.sessionId;
         return sessionId;
     }
 
-    // ── Send message via /message (pas /stream) ──────────────────────────────
+    // ── Send message ──────────────────────────────────────────────────────────
     async function sendMessage(question) {
         if (!sessionId) await newSession();
 
@@ -332,12 +375,10 @@
                 headers: { "Content-Type": "application/json" },
                 body:    JSON.stringify({ sessionId, question, mode })
             });
-
             const data = await res.json();
             stopDots();
 
             if (data.sessionId) sessionId = data.sessionId;
-
             const text = data.response || "";
 
             if (text.includes("JOB_ITEM:")) {
@@ -345,7 +386,6 @@
             } else {
                 bubble.textContent = text;
             }
-
         } catch (e) {
             stopDots();
             bubble.textContent = "Désolé, une erreur est survenue.";
@@ -354,43 +394,54 @@
         messages.scrollTop = messages.scrollHeight;
     }
 
-    // ── Mount ────────────────────────────────────────────────────────────────
+    // ── Mount ─────────────────────────────────────────────────────────────────
     function mount() {
         addStyles();
         if (document.getElementById("chatbot-btn")) return;
 
-        const btn   = el("button", { id: "chatbot-btn", type: "button", "aria-label": "Chat" }, ["💬"]);
-        const panel = el("div",    { id: "chatbot-panel" });
+        // Toggle button
+        const btn = document.createElement("button");
+        btn.id = "chatbot-btn";
+        btn.setAttribute("aria-label", "Chat");
+        btn.appendChild(svgEl("chat"));
 
-        panel.appendChild(
-            el("div", { id: "chatbot-header" }, [
-                el("div", { class: "chatbot-header-info" }, [
-                    el("div", { class: "chatbot-header-avatar" }, ["🎓"]),
-                    el("div", { class: "chatbot-header-text"   }, [
-                        el("div", { class: "title"    }, ["EtudLife Assistant"]),
-                        el("div", { class: "subtitle" }, [
-                            el("span", { class: "chatbot-online-dot" }),
-                            "En ligne"
-                        ]),
-                    ]),
-                ]),
-                el("button", { id: "chatbot-close", type: "button" }, ["✕"]),
-            ])
-        );
+        const panel = el("div", { id: "chatbot-panel" });
 
+        // Header
+        const headerLeft = el("div", { class: "cb-header-left" });
+        const avatar = el("div", { class: "cb-avatar" });
+        avatar.appendChild(svgEl("bot"));
+        headerLeft.appendChild(avatar);
+
+        const headerText = el("div", {});
+        headerText.appendChild(el("div", { class: "cb-title" }, ["EtudLife Assistant"]));
+        const status = el("div", { class: "cb-status" });
+        status.appendChild(el("span", { class: "cb-dot" }));
+        status.appendChild(el("span", { class: "cb-status-text" }, ["En ligne"]));
+        headerText.appendChild(status);
+        headerLeft.appendChild(headerText);
+
+        const closeBtn = el("button", { id: "chatbot-close", type: "button" }, ["✕"]);
+
+        panel.appendChild(el("div", { id: "chatbot-header" }, [headerLeft, closeBtn]));
         panel.appendChild(el("div", { id: "chatbot-messages" }));
-
         panel.appendChild(
             el("div", { id: "chatbot-suggestions" }, [
-                el("button", { type: "button", id: "btn-reg"  }, ["📚 Règlement / examens"]),
-                el("button", { type: "button", id: "btn-site" }, ["💻 Fonctionnement du site"]),
+                el("button", { type: "button", id: "btn-reg"  }, ["Reglement / examens"]),
+                el("button", { type: "button", id: "btn-site" }, ["Fonctionnement du site"]),
             ])
         );
+
+        // Send button with SVG
+        const sendBtn = document.createElement("button");
+        sendBtn.id = "chatbot-send";
+        sendBtn.type = "button";
+        sendBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>`;
 
         panel.appendChild(
             el("div", { id: "chatbot-input" }, [
-                el("input",  { id: "chatbot-text", placeholder: "Écris ton message...", autocomplete: "off" }),
-                el("button", { id: "chatbot-send", type: "button" }, ["➤"]),
+                el("input", { id: "chatbot-text", placeholder: "Ecris ton message...", autocomplete: "off" }),
+                sendBtn,
             ])
         );
 
@@ -398,12 +449,12 @@
         document.body.appendChild(panel);
 
         addMessage("bot",
-            "Bienvenue sur EtudLife ! 👋\n\n" +
-            "Je peux vous aider à :\n" +
-            "• Consulter vos offres de stage / alternance\n" +
-            "• Gérer votre agenda et vos proches\n" +
-            "• Réserver des livres et salles\n" +
-            "• Répondre aux questions sur le règlement de Paris Nanterre\n\n" +
+            "Bienvenue sur EtudLife !\n\n" +
+            "Je peux vous aider a :\n" +
+            "- Consulter vos offres de stage / alternance\n" +
+            "- Gerer votre agenda et vos proches\n" +
+            "- Reserver des livres et salles\n" +
+            "- Repondre aux questions sur le reglement de Paris Nanterre\n\n" +
             "Que souhaitez-vous faire ?"
         );
 
@@ -414,11 +465,10 @@
             mode = newMode;
             btnReg.classList.toggle("active",  mode === "REGLEMENT");
             btnSite.classList.toggle("active", mode === "SITE");
-            if (mode === "REGLEMENT") {
-                addMessage("bot", "Posez-moi vos questions sur le règlement de l'Université Paris Nanterre : examens, fraude, plagiat, bizutage, retards…");
-            } else {
-                addMessage("bot", "Posez-moi vos questions sur le fonctionnement du site EtudLife.");
-            }
+            addMessage("bot", mode === "REGLEMENT"
+                ? "Posez-moi vos questions sur le reglement de l'Universite Paris Nanterre : examens, fraude, plagiat, retards..."
+                : "Posez-moi vos questions sur le fonctionnement du site EtudLife."
+            );
         }
 
         btnReg.addEventListener("click",  () => setMode("REGLEMENT"));
@@ -430,25 +480,20 @@
             if (!isOpen) panel.style.flexDirection = "column";
         });
 
-        document.getElementById("chatbot-close").addEventListener("click", () => {
-            panel.style.display = "none";
-        });
+        closeBtn.addEventListener("click", () => { panel.style.display = "none"; });
 
-        const input   = document.getElementById("chatbot-text");
-        const sendBtn = document.getElementById("chatbot-send");
+        const input = document.getElementById("chatbot-text");
 
         async function onSend() {
             const q = input.value.trim();
             if (!q) return;
             input.value = "";
             addMessage("user", q);
-
             const greetings = ["bonjour", "salut", "hello", "hey", "bonsoir"];
             if (greetings.includes(q.toLowerCase().trim())) {
-                addMessage("bot", "Bonjour ! 😊 Comment puis-je vous aider ?");
+                addMessage("bot", "Bonjour ! Comment puis-je vous aider ?");
                 return;
             }
-
             await sendMessage(q);
         }
 

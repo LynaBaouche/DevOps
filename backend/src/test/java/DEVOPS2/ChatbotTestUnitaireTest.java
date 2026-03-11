@@ -3,6 +3,12 @@ package DEVOPS2;
 import com.etudlife.controller.ChatController;
 import com.etudlife.controller.ChatStreamController;
 import com.etudlife.dto.ChatResponse;
+import com.etudlife.dto.SavedJobRequestDTO;
+import com.etudlife.model.Compte;
+import com.etudlife.model.JobStatus;
+import com.etudlife.model.SavedJob;
+import com.etudlife.repository.CompteRepository;
+import com.etudlife.repository.SavedJobRepository;
 import com.etudlife.service.*;
 
 import org.junit.jupiter.api.*;
@@ -23,6 +29,7 @@ import reactor.test.StepVerifier;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,6 +44,9 @@ public class ChatbotTestUnitaireTest {
         f.set(obj, value);
     }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  ChatService Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatServiceTests {
@@ -52,6 +62,8 @@ public class ChatbotTestUnitaireTest {
         void setup() {
             service = new ChatService(kb, gemini, sessions, savedJobService, savedJobService);
         }
+
+        // ── Salutations / Remerciements ──────────────────────────────────────
 
         @Test
         void merci_shouldReturnPolite_andNoGeminiNoKb() {
@@ -73,6 +85,127 @@ public class ChatbotTestUnitaireTest {
             verifyNoInteractions(gemini);
             verifyNoInteractions(kb);
         }
+
+        // ── Intent Emploi — Offres intéressantes ────────────────────────────
+
+        @Test
+        void interestedJobsIntent_shouldReturnJobItems_andNoGeminiNoKb() {
+            SavedJob job = new SavedJob();
+            job.setTitle("Stage Data Analyst");
+            job.setLocation("Paris");
+            job.setApplyLink("https://example.com/job1");
+            job.setExternalJobId("ext-001");
+
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+
+            assertTrue(res.isSuccess());
+            assertEquals("saved-jobs", res.getSource());
+            assertTrue(res.getResponse().contains("JOB_ITEM:"));
+            assertTrue(res.getResponse().contains("Stage Data Analyst"));
+            assertTrue(res.getResponse().contains("Paris"));
+            assertTrue(res.getResponse().contains("https://example.com/job1"));
+            verifyNoInteractions(gemini);
+            verifyNoInteractions(kb);
+        }
+
+        @Test
+        void interestedJobsIntent_whenEmpty_shouldReturnMessage_andNoGemini() {
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of());
+
+            ChatResponse res = service.ask("s1", "affiche mes offres intéressantes", "AUTO");
+
+            assertTrue(res.isSuccess());
+            assertEquals("saved-jobs", res.getSource());
+            assertTrue(res.getResponse().contains("aucune offre"));
+            verifyNoInteractions(gemini);
+            verifyNoInteractions(kb);
+        }
+
+        @Test
+        void interestedJobsIntent_jobWithNullCompany_shouldUseDefaultTitle() {
+            SavedJob job = new SavedJob();
+            job.setTitle(null);
+            job.setLocation("Lyon");
+            job.setApplyLink("https://example.com/job2");
+            job.setExternalJobId("ext-002");
+
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+
+            assertTrue(res.getResponse().contains("Offre sans titre"));
+            verifyNoInteractions(gemini);
+        }
+
+        @Test
+        void interestedJobsIntent_jobWithNullLocation_shouldUseFallback() {
+            SavedJob job = new SavedJob();
+            job.setTitle("Stage Dev");
+            job.setLocation(null);
+            job.setApplyLink("https://example.com/job3");
+            job.setExternalJobId("ext-003");
+
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+
+            assertTrue(res.getResponse().contains("Localisation non précisée"));
+            verifyNoInteractions(gemini);
+        }
+
+        @Test
+        void interestedJobsIntent_shouldIncludeJOBTITLE_line() {
+            SavedJob job = new SavedJob();
+            job.setTitle("Stage IA");
+            job.setLocation("Meudon");
+            job.setApplyLink("https://example.com");
+            job.setExternalJobId("ext-004");
+
+            when(savedJobService.getJobsByStatus(JobStatus.INTERESSE)).thenReturn(List.of(job));
+
+            ChatResponse res = service.ask("s1", "liste mes offres intéressantes", "AUTO");
+
+            assertTrue(res.getResponse().contains("JOB_TITLE:"));
+            assertTrue(res.getResponse().contains("JOB_ITEM:"));
+        }
+
+        // ── Intent Emploi — Offres postulées ────────────────────────────────
+
+        @Test
+        void postuleIntent_shouldReturnPostuleJobs_andNoGemini() {
+            SavedJob job = new SavedJob();
+            job.setTitle("Alternance DevOps");
+            job.setLocation("Nanterre");
+            job.setApplyLink("https://example.com/job4");
+            job.setExternalJobId("ext-005");
+
+            when(savedJobService.getJobsByStatus(JobStatus.POSTULE)).thenReturn(List.of(job));
+
+            ChatResponse res = service.ask("s1", "liste mes offres pour lesquelles j'ai postulé", "AUTO");
+
+            assertTrue(res.isSuccess());
+            assertEquals("saved-jobs", res.getSource());
+            assertTrue(res.getResponse().contains("JOB_ITEM:"));
+            assertTrue(res.getResponse().contains("Alternance DevOps"));
+            verify(savedJobService).getJobsByStatus(JobStatus.POSTULE);
+            verifyNoInteractions(gemini);
+            verifyNoInteractions(kb);
+        }
+
+        @Test
+        void postuleIntent_whenEmpty_shouldReturnMessage() {
+            when(savedJobService.getJobsByStatus(JobStatus.POSTULE)).thenReturn(List.of());
+
+            ChatResponse res = service.ask("s1", "mes candidatures postulées", "AUTO");
+
+            assertEquals("saved-jobs", res.getSource());
+            assertTrue(res.getResponse().contains("postulé") || res.getResponse().contains("aucune"));
+            verifyNoInteractions(gemini);
+        }
+
+        // ── RAG normal ───────────────────────────────────────────────────────
 
         @Test
         void autoMode_siteQuestion_shouldSearchSITE() {
@@ -117,8 +250,141 @@ public class ChatbotTestUnitaireTest {
             verifyNoInteractions(gemini);
         }
 
-    } // ← FIN ChatServiceTests
+    }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  SavedJobService Tests
+    // ════════════════════════════════════════════════════════════════════════
+    @Nested
+    @ExtendWith(MockitoExtension.class)
+    class SavedJobServiceTests {
+
+        @Mock SavedJobRepository savedJobRepository;
+        @Mock CompteRepository compteRepository;
+
+        SavedJobService service;
+        Compte compte;
+
+        @BeforeEach
+        void setup() {
+            compte = new Compte();
+            compte.setId(1L);
+            when(compteRepository.findAll()).thenReturn(List.of(compte));
+            service = new SavedJobService(savedJobRepository, compteRepository);
+        }
+
+        @Test
+        void getJobsByStatus_INTERESSE_shouldReturnFilteredJobs() {
+            SavedJob j = new SavedJob();
+            j.setExternalJobId("ext-1");
+            j.setStatus(JobStatus.INTERESSE);
+
+            when(savedJobRepository.findByCompteAndStatus(compte, JobStatus.INTERESSE))
+                    .thenReturn(List.of(j));
+
+            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE);
+
+            assertEquals(1, result.size());
+            assertEquals("ext-1", result.get(0).getExternalJobId());
+        }
+
+        @Test
+        void getJobsByStatus_null_shouldReturnAllJobs() {
+            SavedJob j1 = new SavedJob(); j1.setExternalJobId("ext-1");
+            SavedJob j2 = new SavedJob(); j2.setExternalJobId("ext-2");
+
+            when(savedJobRepository.findByCompte(compte)).thenReturn(List.of(j1, j2));
+
+            List<SavedJob> result = service.getJobsByStatus(null);
+
+            assertEquals(2, result.size());
+        }
+
+        @Test
+        void getJobsByStatus_shouldDeduplicate_byExternalJobId() {
+            SavedJob j1 = new SavedJob(); j1.setExternalJobId("ext-1"); j1.setTitle("Stage A");
+            SavedJob j2 = new SavedJob(); j2.setExternalJobId("ext-1"); j2.setTitle("Stage A (doublon)");
+
+            when(savedJobRepository.findByCompteAndStatus(compte, JobStatus.INTERESSE))
+                    .thenReturn(List.of(j1, j2));
+
+            List<SavedJob> result = service.getJobsByStatus(JobStatus.INTERESSE);
+
+            assertEquals(1, result.size());
+        }
+
+        @Test
+        void saveOrUpdate_newJob_shouldSaveCorrectly() {
+            SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setExternalJobId("ext-99");
+            dto.setTitle("Stage ML");
+            dto.setCompany("Google");
+            dto.setLocation("Paris");
+            dto.setApplyLink("https://example.com");
+            dto.setStatus(JobStatus.INTERESSE);
+
+            when(savedJobRepository.findByCompteAndExternalJobId(compte, "ext-99"))
+                    .thenReturn(Optional.empty());
+
+            service.saveOrUpdate(dto);
+
+            verify(savedJobRepository).save(argThat(j ->
+                    j.getTitle().equals("Stage ML") &&
+                            j.getStatus() == JobStatus.INTERESSE
+            ));
+        }
+
+        @Test
+        void saveOrUpdate_existingJob_shouldUpdateStatus() {
+            SavedJob existing = new SavedJob();
+            existing.setExternalJobId("ext-10");
+            existing.setStatus(JobStatus.INTERESSE);
+
+            SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setExternalJobId("ext-10");
+            dto.setTitle("Stage DevOps");
+            dto.setCompany("OVH");
+            dto.setLocation("Roubaix");
+            dto.setApplyLink("https://ovh.com");
+            dto.setStatus(JobStatus.POSTULE);
+
+            when(savedJobRepository.findByCompteAndExternalJobId(compte, "ext-10"))
+                    .thenReturn(Optional.of(existing));
+
+            service.saveOrUpdate(dto);
+
+            verify(savedJobRepository).save(argThat(j ->
+                    j.getStatus() == JobStatus.POSTULE
+            ));
+        }
+
+        @Test
+        void saveOrUpdate_longApplyLink_shouldTruncateTo250() {
+            String longLink = "https://example.com/" + "a".repeat(300);
+
+            SavedJobRequestDTO dto = new SavedJobRequestDTO();
+            dto.setExternalJobId("ext-long");
+            dto.setTitle("Stage");
+            dto.setCompany("Co");
+            dto.setLocation("Paris");
+            dto.setApplyLink(longLink);
+            dto.setStatus(JobStatus.INTERESSE);
+
+            when(savedJobRepository.findByCompteAndExternalJobId(compte, "ext-long"))
+                    .thenReturn(Optional.empty());
+
+            service.saveOrUpdate(dto);
+
+            verify(savedJobRepository).save(argThat(j ->
+                    j.getApplyLink() != null && j.getApplyLink().length() <= 250
+            ));
+        }
+
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  ChatSessionService Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatSessionServiceTests {
@@ -173,8 +439,11 @@ public class ChatbotTestUnitaireTest {
             verify(redis).delete("chat:session:S1");
         }
 
-    } // ← FIN ChatSessionServiceTests
+    }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  ChatStreamService Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatStreamServiceTests {
@@ -195,8 +464,27 @@ public class ChatbotTestUnitaireTest {
                     .verifyComplete();
         }
 
-    } // ← FIN ChatStreamServiceTests
+        @Test
+        void streamAnswer_jobItems_shouldEmitInSingleChunk() {
+            String jobResponse = "JOB_TITLE:Vos offres\nJOB_ITEM:Stage IA|Paris|https://example.com";
 
+            when(sessions.newSession()).thenReturn("S1");
+            when(chatService.ask(eq("S1"), eq("mes offres"), any()))
+                    .thenReturn(new ChatResponse(true, "S1", "mes offres", jobResponse, "saved-jobs"));
+
+            ChatStreamService svc = new ChatStreamService(chatService, sessions);
+
+            StepVerifier.create(svc.streamAnswer(null, "mes offres", "AUTO"))
+                    .expectNext("__SESSION__:S1")
+                    .expectNext(jobResponse)
+                    .verifyComplete();
+        }
+
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  PdfKnowledgeBase Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     class PdfKnowledgeBaseTests {
 
@@ -239,14 +527,18 @@ public class ChatbotTestUnitaireTest {
             assertFalse(kb.search("reglement", "???").isEmpty());
         }
 
-    } // ← FIN PdfKnowledgeBaseTests
+    }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  GeminiClient Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     class GeminiClientTests {
 
         @Test
         void generate_whenApiKeyMissing_returnsMessage() throws Exception {
-            GeminiClient client = new GeminiClient(org.springframework.web.reactive.function.client.WebClient.builder());
+            GeminiClient client = new GeminiClient(
+                    org.springframework.web.reactive.function.client.WebClient.builder());
 
             Field apiKeyField = GeminiClient.class.getDeclaredField("apiKey");
             apiKeyField.setAccessible(true);
@@ -257,8 +549,11 @@ public class ChatbotTestUnitaireTest {
             assertTrue(res.toLowerCase().contains("manquante"));
         }
 
-    } // ← FIN GeminiClientTests
+    }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  ChatController Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatControllerTests {
@@ -305,6 +600,22 @@ public class ChatbotTestUnitaireTest {
         }
 
         @Test
+        void message_withJobIntent_shouldReturnJobItems() throws Exception {
+            String jobResp = "JOB_TITLE:Vos offres\nJOB_ITEM:Stage IA|Paris|https://example.com";
+            when(sessions.newSession()).thenReturn("SJOB");
+            when(chatService.ask(eq("SJOB"), eq("liste mes offres intéressantes"), any()))
+                    .thenReturn(new ChatResponse(true, "SJOB",
+                            "liste mes offres intéressantes", jobResp, "saved-jobs"));
+
+            mvc.perform(post("/api/chat/message")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"question\":\"liste mes offres intéressantes\",\"mode\":\"AUTO\"}"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.source").value("saved-jobs"))
+                    .andExpect(jsonPath("$.response").value(org.hamcrest.Matchers.containsString("JOB_ITEM:")));
+        }
+
+        @Test
         void history_shouldReturnMessages() throws Exception {
             when(sessions.history("S1", 50)).thenReturn(List.of("user:hi", "assistant:yo"));
             mvc.perform(get("/api/chat/history").param("sessionId", "S1"))
@@ -320,8 +631,11 @@ public class ChatbotTestUnitaireTest {
             verify(sessions).delete("S1");
         }
 
-    } // ← FIN ChatControllerTests
+    }
 
+    // ════════════════════════════════════════════════════════════════════════
+    //  ChatStreamController Tests
+    // ════════════════════════════════════════════════════════════════════════
     @Nested
     @ExtendWith(MockitoExtension.class)
     class ChatStreamControllerTests {
@@ -357,6 +671,6 @@ public class ChatbotTestUnitaireTest {
                     });
         }
 
-    } // ← FIN ChatStreamControllerTests
+    }
 
-} // ← FIN ChatbotTestUnitaireTest
+}

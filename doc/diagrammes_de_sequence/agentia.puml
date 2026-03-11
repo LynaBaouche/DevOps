@@ -1,83 +1,94 @@
 @startuml
 title EtudLife Assistant (Agent IA) — Diagramme de séquence
 
-actor User as U
-participant "Front (chatbot.js)" as FE
-participant "ChatController\n(/api/chat/message)" as CC
-participant "ChatStreamController\n(/api/chat/stream)" as CSC
-participant "ChatStreamService" as CSS
-participant "ChatService" as CS
-participant "ChatSessionService\n(Redis)" as SESS
-participant "PdfKnowledgeBase\n(PDF RAG)" as KB
-participant "GeminiClient" as GEM
+actor User
+participant "Front (chatbot.js)" as Front
+participant "ChatController\n(/api/chat/message)" as ChatCtrl
+participant "ChatStreamController\n(/api/chat/stream)" as StreamCtrl
+participant "ChatStreamService" as StreamSvc
+participant "ChatService" as ChatSvc
+participant "SavedJobService\n(Offres BDD)" as JobSvc
+participant "ChatSessionService\n(Redis)" as Redis
+participant "PdfKnowledgeBase\n(PDF RAG)" as RAG
+participant "GeminiClient" as Gemini
 
 == Ouverture (optionnel) ==
-U -> FE: Ouvre le widget
-FE -> FE: addStyles() + mount()
-FE -> FE: addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
+User -> Front : Ouvre le widget
+Front -> Front : addStyles() + mount()
+Front -> Front : addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
 
 == Création de session (lazy) ==
-U -> FE: Saisit une question
-alt sessionId absent
-  FE -> CC: POST /api/chat/new-session
-  CC -> SESS: newSession()
-  SESS --> CC: sessionId
-  CC --> FE: { sessionId }
-  FE -> FE: sessionId = reçu
+User -> Front : Saisit une question
+alt [sessionId absent]
+    Front -> ChatCtrl : POST /api/chat/new-session
+    ChatCtrl -> Redis : newSession()
+    Redis --> ChatCtrl : sessionId
+    ChatCtrl --> Front : { sessionId }
+    Front -> Front : sessionId = reçu
 end
 
-== Envoi du message (SSE) ==
-U -> FE: Clique "Envoyer"
-FE -> FE: addMessage(user, q)
+== Envoi du message (POST /message) ==
+User -> Front : Clique "Envoyer"
+Front -> Front : addMessage(user, q)
 
-alt Salutation détectée côté front (ex: bonjour/salut)
-  FE -> FE: addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
-else Question normale
-  FE -> CSC: GET /api/chat/stream?question=q&sessionId=...
-  CSC -> CSS: streamAnswer(sessionId, q)
+alt [Salutation détectée côté front (ex: bonjour/salut)]
+    Front -> Front : addMessage(bot, "Bonjour, Comment puis-je vous aider ?")
+else [Question normale]
+    Front -> ChatCtrl : POST /api/chat/message\n{ sessionId, question, mode }
+    ChatCtrl -> ChatSvc : ask(sessionId, q, mode)
+    ChatSvc -> Redis : append(sessionId, "user", q)
 
-  alt sessionId absent dans la requête SSE
-    CSS -> SESS: newSession()
-    SESS --> CSS: sessionId
-  end
+    alt [Intent Emploi détecté (offres intéressantes / postulées)]
+        ChatSvc -> JobSvc : getJobsByStatus(INTERESSE | POSTULE)
+        JobSvc --> ChatSvc : List<SavedJob> (dédoublonnés)
+        ChatSvc -> ChatSvc : encode JOB_TITLE: + JOB_ITEM:titre|loc|lien
+        ChatSvc -> Redis : append(sessionId, "assistant", answer)
+        ChatSvc --> ChatCtrl : ChatResponse(answer, source="saved-jobs")
+        ChatCtrl --> Front : { response: "JOB_TITLE:...\nJOB_ITEM:..." }
+        Front -> Front : addJobCards(bubble, text)\n→ cartes cliquables
 
-  CSS -> CS: ask(sessionId, q)
+    else [Salutation / Remerciement]
+        ChatSvc -> Redis : append(sessionId, "assistant", answer)
+        ChatSvc --> ChatCtrl : ChatResponse(réponse rapide)
+        ChatCtrl --> Front : { response: "..." }
+        Front -> Front : bubble.textContent = text
 
-  CS -> SESS: append(sessionId, "user", q)
-  CS -> SESS: history(sessionId, 10)
-  SESS --> CS: lastMessages
-  CS -> CS: chatHistory = join(lastMessages)
-
-  CS -> KB: search(q)
-  KB --> CS: hits (chunks PDF)
-
-  CS -> CS: context = concat(SOURCE+EXTRAIT from hits)
-  CS -> GEM: generate(prompt(history+context+question))
-  GEM --> CS: answer
-
-  CS -> SESS: append(sessionId, "assistant", answer)
-  CS -> CS: sources = distinct(hits.source)
-  CS --> CSS: ChatResponse(success, sessionId, q, answer, sources)
-
-  CSS -> CSS: head = "__SESSION__:" + sessionId
-  CSS --> CSC: Flux(head + chunksByWords(answer))
-  CSC --> FE: SSE event "chunk" (__SESSION__...)
-  FE -> FE: sessionId = reçu (mis à jour)
-
-  loop Pour chaque chunk
-    CSC --> FE: SSE event "chunk" (texte)
-    FE -> FE: bubble += chunk + " "
-  end
-
-  CSC --> FE: SSE event "done" ("[DONE]")
-  FE -> FE: es.close()
+    else [Question normale → RAG]
+        ChatSvc -> Redis : history(sessionId, 10)
+        Redis --> ChatSvc : lastMessages
+        ChatSvc -> ChatSvc : chatHistory = join(lastMessages)
+        ChatSvc -> RAG : searchInFile(q, fileName)
+        RAG --> ChatSvc : hits (chunks PDF)
+        alt [hits vides → fallback autre mode]
+            ChatSvc -> RAG : search(q, autreMode)
+            RAG --> ChatSvc : hits2
+        end
+        alt [hits toujours vides]
+            ChatSvc --> ChatCtrl : "Désolé, je n'ai pas d'information sur ce sujet."
+        else [hits trouvés]
+            ChatSvc -> ChatSvc : context = concat(SOURCE+EXTRAIT from hits)
+            ChatSvc -> Gemini : generate(prompt+history+context+question)
+            Gemini --> ChatSvc : answer
+            ChatSvc -> Redis : append(sessionId, "assistant", answer)
+            ChatSvc --> ChatCtrl : ChatResponse(success, sessionId, q, answer, sources)
+        end
+        ChatCtrl --> Front : { response: "..." }
+        Front -> Front : bubble.textContent = text
+    end
 end
+
+== Streaming (optionnel, pour questions normales) ==
+note over StreamCtrl, StreamSvc
+  Le streaming SSE reste disponible via
+  GET /api/chat/stream pour les réponses longues.
+  Il n'est plus utilisé pour les offres d'emploi.
+end note
 
 == Fermeture (clean) ==
-U -> FE: Quitte/ferme la page
-FE -> CC: POST (sendBeacon) /api/chat/close?sessionId=...
-CC -> SESS: delete(sessionId)
-SESS --> CC: OK
-CC --> FE: 200 OK
+User -> Front : Quitte/ferme la page
+Front -> ChatCtrl : POST (sendBeacon) /api/chat/close?sessionId=...
+ChatCtrl -> Redis : delete(sessionId)
+Redis --> ChatCtrl : OK
+ChatCtrl --> Front : 200 OK
 
 @enduml
