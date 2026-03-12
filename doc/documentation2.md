@@ -200,7 +200,9 @@ Afin de garantir la fiabilité du processus automatisé et d'optimiser l'utilisa
   * 
 ## 4.2 Tests du module "Agent IA EtudLife"
 ### 4.2.1 Tests du Chatbot (ChatService)
+
 Pour garantir la fiabilité du chatbot et la justesse de ses réponses, nous avons mis en place une couverture de tests hybride via JUnit 5 et Mockito.
+
 ---
 ####  Tests Unitaires
 
