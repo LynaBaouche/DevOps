@@ -197,7 +197,42 @@ Afin de garantir la fiabilité du processus automatisé et d'optimiser l'utilisa
 * **Test d'Intégration Complet (`BatchIntegrationTest`) :**
   * Le test ultime avec @SpringBootTest et une base de données en mémoire (H2).
   * On simule un compte, on simule une fausse réponse de l'API ("Stage Java"), on lance le Batch manuellement, et on vérifie que la base de données contient bien exactement une nouvelle ligne avec le statut SUGGESTION.
+  * 
+## 4.2 Tests du module "Agent IA EtudLife"
+### 4.2.1 Tests du Chatbot (ChatService)
+Pour garantir la fiabilité du chatbot et la justesse de ses réponses, nous avons mis en place une couverture de tests hybride via JUnit 5 et Mockito.
+---
+####  Tests Unitaires
 
+- **`ChatServiceTest`** : Validation des règles de détection d'intentions. Nous testons que les salutations (`"bonjour"`, `"salut"`, `"hello"`) et les remerciements (`"merci"`, `"merci beaucoup"`) sont interceptés avant tout appel à Gemini ou au RAG, et retournent une réponse immédiate appropriée. Ces tests vérifient également que la méthode `isJobsIntent()` détecte correctement les intentions liées aux offres sauvegardées à partir de mots-clés variés (`"mes offres"`, `"j'ai postulé"`, `"liste mes candidatures"`), sans faux positifs sur des questions sans rapport.
+
+- **`ChatSessionServiceTest`** : Validation de la gestion des sessions conversationnelles. On vérifie que l'historique est bien conservé dans Redis, que les messages sont correctement appendés dans l'ordre, et que la session expire après 30 minutes d'inactivité conformément aux règles métiers.
+---
+#### Tests de Non-Régression
+
+- Vérification que l'ajout de nouvelles intentions (offres postulées, offres intéressantes) n'a pas cassé les flux existants (RAG documentaire, appel Gemini). On s'assure que les questions relatives au règlement intérieur ou aux annonces du site continuent de transiter par le bon pipeline sans être interceptées par le filtre emploi.
+---
+
+####  Tests Fonctionnels (Scénarios End-to-End)
+
+| Scénario | Question envoyée | Vérification |
+|---|---|---|
+| Offres intéressantes | `"montre mes offres intéressantes"` | `isJobsIntent()` retourne `true`, `SavedJobService` appelé avec `INTERESSE`, réponse encodée en `JOB_TITLE` / `JOB_ITEM`, **aucun appel Gemini** |
+| Offres postulées | `"liste mes candidatures"` | Même vérification avec le statut `POSTULE` |
+| Aucune offre | Base vide simulée | Retourne `"Vous n'avez postulé à aucune offre pour le moment."` sans erreur |
+| Fallback RAG | Question hors-périmètre | Retourne `"Désolé, je n'ai pas d'information sur ce sujet."` sans hallucination Gemini |
+
+---
+
+####  Tests d'Interface (Rendu Frontend)
+
+Validation que le format structuré `JOB_ITEM:titre|localisation|lien` est correctement interprété par le frontend pour générer des cartes cliquables. Vérification des cas limites :
+
+| Cas limite | Comportement attendu |
+|---|---|
+| Titre absent | Affiché `"Offre sans titre"` |
+| Localisation vide | Affiché `"Localisation non précisée"` |
+| Lien manquant | Carte affichée sans bouton de candidature |
   
 ---------------------------------------
 ## 5. Guide d'Installation & Déploiement
