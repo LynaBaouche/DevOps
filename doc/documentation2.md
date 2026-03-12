@@ -125,17 +125,6 @@ Résultat : Ce découplage entre la logique métier (embarquée dans le conteneu
 * **Dédoublonnage** : les offres sont dédoublonnées par externalJobId avant d'être retournées.
 * **Format de réponse structuré** : les offres sont encodées au format JOB_TITLE: / JOB_ITEM:titre|localisation|lien pour permettre un rendu en cartes cliquables côté frontend.
 
-
-Dans "Classes Impliquées", ajoute :
-
-SavedJobService — récupération et dédoublonnage des offres sauvegardées par statut pour un compte donné.
-JobSearchService — appel à l'API externe JSearch (RapidAPI) pour la recherche d'offres LinkedIn/Indeed.
-SavedJob — entité représentant une offre sauvegardée avec son statut (INTERESSE, POSTULE, REFUSE, SUGGESTION).
-
-
-Dans "Algorithme & Logique Backend", ajoute un paragraphe :
-Avant d'effectuer la recherche RAG, le système vérifie si la question correspond à une intention liée aux offres d'emploi sauvegardées. Si c'est le cas, les offres sont récupérées depuis la base de données selon leur statut (INTERESSE ou POSTULE), dédoublonnées par identifiant externe, puis encodées dans un format structuré (JOB_ITEM). Ce format est interprété par le frontend pour afficher des cartes cliquables avec titre, localisation et lien de candidature, sans aucun appel à Gemini. Sonnet 4.6
-
 ### Classes Impliquées
 * `ChatController` endpoints REST pour créer une session, envoyer un message, consulter l’historique et fermer une session.
 
