@@ -235,7 +235,49 @@ Validation que le format structuré `JOB_ITEM:titre|localisation|lien` est corre
 | Titre absent | Affiché `"Offre sans titre"` |
 | Localisation vide | Affiché `"Localisation non précisée"` |
 | Lien manquant | Carte affichée sans bouton de candidature |
-  
+
+ ### Tests d’Intégration (Chatbot API)
+
+Afin de valider le bon fonctionnement des endpoints REST du chatbot, nous avons mis en place deux tests d’intégration basés sur `@SpringBootTest` et `WebTestClient`.
+
+Ces tests permettent de vérifier le comportement global de l’API (sessions, messages, historique, streaming) dans un environnement proche de l’exécution réelle.
+
+---
+
+#### ChatbotIntegrationTest
+
+| Fonction testée        | Endpoint                | Vérification principale |
+|----------------------|------------------------|------------------------|
+| Création de session  | `/api/chat/new-session` | Retour d’un `sessionId` |
+| Validation entrée    | `/api/chat/message`     | Erreur `400` si question absente |
+| Message "bonjour"    | `/api/chat/message`     | Réponse cohérente + succès |
+| Historique           | `/api/chat/history`     | Messages correctement retournés |
+| Fermeture session    | `/api/chat/close`       | Session supprimée |
+| Streaming SSE        | `/api/chat/stream`      | Envoi des chunks + `[DONE]` |
+
+Ce test valide les endpoints principaux et le contrat API backend.
+
+---
+
+#### ChatbotConversationIntegrationTest
+
+| Fonction testée              | Vérification |
+|-----------------------------|-------------|
+| Session persistante         | Même `sessionId` entre plusieurs messages |
+| Enregistrement messages     | Messages utilisateur + assistant stockés |
+| Historique complet          | Conversation complète récupérée |
+
+Ce test valide la continuité conversationnelle du chatbot.
+
+---
+
+#### Choix techniques
+
+Les dépendances externes sont mockées (`GeminiClient`, `PdfKnowledgeBase`, etc.) afin de garantir des tests :
+
+- indépendants des services externes  
+- rapides et stables  
+- compatibles avec la CI/CD  
 ---------------------------------------
 ## 5. Guide d'Installation & Déploiement
 
