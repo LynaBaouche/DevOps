@@ -15,12 +15,14 @@ public class ChatService {
     private final GeminiClient gemini;
     private final ChatSessionService sessions;
     private final SavedJobService savedJobService;
+    private final RecipeChatService recipeChatService;
 
-    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions, SavedJobService savedJobService) {
+    public ChatService(PdfKnowledgeBase kb, GeminiClient gemini, ChatSessionService sessions, SavedJobService savedJobService, RecipeChatService recipeChatService) {
         this.kb = kb;
         this.gemini = gemini;
         this.sessions = sessions;
         this.savedJobService = savedJobService;
+        this.recipeChatService = recipeChatService;
 
     }
 
@@ -100,6 +102,17 @@ public class ChatService {
                     "Comment puis-je vous aider aujourd’hui ?";
             sessions.append(sessionId, "assistant", answer);
             return new ChatResponse(true, sessionId, question, answer, "none");
+        }
+
+        if (recipeChatService.isRecipeQuestion(qNorm)) {
+            var lastMessages = sessions.history(sessionId, 10);
+            String chatHistory = lastMessages.isEmpty()
+                    ? "(vide)"
+                    : String.join("\n", lastMessages);
+
+            String answer = recipeChatService.handleRecipeQuestion(question, chatHistory);
+            sessions.append(sessionId, "assistant", answer);
+            return new ChatResponse(true, sessionId, question, answer, "recipes-ai");
         }
 
         //  récupérer un peu d’historique
