@@ -25,10 +25,8 @@ public class ChatService {
         this.recipeChatService = recipeChatService;
 
     }
-
     public ChatResponse ask(String sessionId, String question, String mode,Long compteId)
     {
-
         //  stocker le message user dans Redis
         sessions.append(sessionId, "user", question);
 

@@ -10,7 +10,6 @@ public class RecipeChatService {
     public RecipeChatService(GeminiClient gemini) {
         this.gemini = gemini;
     }
-
     public boolean isRecipeQuestion(String question) {
         if (question == null) return false;
 
