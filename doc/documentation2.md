@@ -130,6 +130,7 @@ Résultat : Ce découplage entre la logique métier (embarquée dans le conteneu
 * **Gestion des sessions** : chaque conversation possède un identifiant unique et expire après 30 minutes d’inactivité.
 
 * **Détection d’intentions simples** : les salutations et remerciements sont traités immédiatement pour fournir une réponse rapide.
+* **Détection d’intentions recettes** : les questions liées à la cuisine (budget, ingrédients, recettes) sont interceptées avant le RAG et traitées via RecipeChatService avec génération dynamique via l’API Gemini.
 
 * **Modes de question** : les questions sont classées en AUTO, SITE ou REGLEMENT selon leur nature.
 
@@ -162,6 +163,8 @@ Résultat : Ce découplage entre la logique métier (embarquée dans le conteneu
 
 * `JobSearchService` appel à l'API externe JSearch (RapidAPI) pour la recherche d'offres LinkedIn/Indeed.
 
+* `RecipeChatService` détection des questions liées aux recettes et génération de réponses dynamiques via l’API Gemini.
+
 * `SavedJob` entité représentant une offre sauvegardée avec son statut (INTERESSE, POSTULE, REFUSE, SUGGESTION).
 ### Algorithme & Logique Backend :
 
@@ -177,6 +180,16 @@ En mode streaming, la réponse est découpée et envoyée progressivement via SS
 
 Avant d'effectuer la recherche RAG, le système vérifie si la question correspond à une intention liée aux offres d'emploi sauvegardées. Si c'est le cas, les offres sont récupérées depuis la base de données selon leur statut (INTERESSE ou POSTULE), dédoublonnées par identifiant externe, puis encodées dans un format structuré (JOB_ITEM). Ce format est interprété par le frontend pour afficher des cartes cliquables avec titre, localisation et lien de candidature, sans aucun appel à Gemini.
 
+### 2.2.3 Extension : recettes via IA
+
+Une fonctionnalité de génération de recettes a été ajoutée au chatbot.
+
+Les questions liées à la cuisine (budget, ingrédients, recettes) sont détectées et traitées via `RecipeChatService`, qui génère une réponse dynamique grâce à l’API Gemini.
+
+Les réponses sont identifiées par la source "recipes-ai". Elle permet à l'utilisateur de :
+
+demander une recette selon un budget, proposer une recette à partir d’ingrédients disponibles, obtenir des idées de repas simples et rapides
+
 ![agentia.png](diagrammes_de_sequence/agentia.png)
 ![agent ia.PNG](images/agentia_page_principale.png)
 ![agentia1.PNG](images/agrntia_charte.png)
@@ -184,6 +197,9 @@ Avant d'effectuer la recherche RAG, le système vérifie si la question correspo
 ![agentia2.PNG](images/agentia_offres_postulees.png)
 ![agentia2.PNG](images/agentia_offres_interessantes.png)
 
+![question chatbot .jpg](images/question%20chatbot%20.jpg)
+
+![question 2 chtbot .jpg](images/question%202%20chtbot%20.jpg)
 
 ---------------------------------------
 # **4. Tests effectués**
@@ -227,6 +243,9 @@ Pour garantir la fiabilité du chatbot et la justesse de ses réponses, nous avo
 - **`ChatServiceTest`** : Validation des règles de détection d'intentions. Nous testons que les salutations (`"bonjour"`, `"salut"`, `"hello"`) et les remerciements (`"merci"`, `"merci beaucoup"`) sont interceptés avant tout appel à Gemini ou au RAG, et retournent une réponse immédiate appropriée. Ces tests vérifient également que la méthode `isJobsIntent()` détecte correctement les intentions liées aux offres sauvegardées à partir de mots-clés variés (`"mes offres"`, `"j'ai postulé"`, `"liste mes candidatures"`), sans faux positifs sur des questions sans rapport.
 
 - **`ChatSessionServiceTest`** : Validation de la gestion des sessions conversationnelles. On vérifie que l'historique est bien conservé dans Redis, que les messages sont correctement appendés dans l'ordre, et que la session expire après 30 minutes d'inactivité conformément aux règles métiers.
+- **`RecipeChatService`** : ajout d’un service dédié à la détection des questions liées aux recettes et à la génération de réponses dynamiques via l’API Gemini.
+
+* Intégration dans ChatService : ajout d’une nouvelle branche de traitement interceptant les questions liées à la cuisine avant le RAG et déléguant la génération de la réponse à RecipeChatService.
 ---
 #### Tests de Non-Régression
 
@@ -288,6 +307,16 @@ Ce test valide les endpoints principaux et le contrat API backend.
 Ce test valide la continuité conversationnelle du chatbot.
 
 ---
+
+### ChatbotRecipeIntegrationTest
+
+| Fonction testée | Vérification |
+|----------------|-------------|
+| Question recette budget | Réponse générée via `RecipeChatService` avec source `"recipes-ai"` |
+| Question recette ingrédients | Réponse cohérente basée sur les ingrédients fournis |
+| Non régression | Les questions classiques (ex: "bonjour") conservent le comportement initial |
+
+Ce test valide l’intégration complète de la fonctionnalité recettes dans l’API chatbot.
 
 #### Choix techniques
 
