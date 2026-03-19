@@ -279,6 +279,24 @@ Les dépendances externes sont mockées (`GeminiClient`, `PdfKnowledgeBase`, etc
 - rapides et stables  
 - compatibles avec la CI/CD  
 ---------------------------------------
+## 5. Matrice de Responsabilités & Réalisations
+
+| Fonctionnalité                                          | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
+|---------------------------------------------------------|:------------:|:-------------------:|:-----------:|:------------:|
+| Architecture Backend et conteneurisation                |      ✅       |          ✅          |      ✅      |      ✅       |
+| Gestion BDD                                             |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Gestion des Releases & CI/CD                            |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Documentation & UML                                     |      ✅       |          ✅          |      ✅      |      ✅       |
+| Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
+| Chasseur de stages                                      |      ✅       |          ✅          |      ✅      |      ⬜       |
+| Agent IA -Chatbot                                       |      ⬜       |          ⬜          |      ✅      |      ✅       |
+| Tests Postman                                           |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests intégration                                       |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests unitaires                                         |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests focntionnels                                      |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests non regréssion                                    |      ✅       |          ✅          |      ✅      |      ✅       |
+
+---------------------------------------
 ## 5. Guide d'Installation & Déploiement
 
 ### Prérequis
