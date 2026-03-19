@@ -41,7 +41,7 @@
 ## 🏗️ Architecture
 
 **Backend :**
-- **Langage :** Java 17
+- **Langage :** Java 21
 - **Framework :** Spring Boot 3.x (Spring Web, Spring Data JPA, Validation)
 - **Base de données :** MySQL (hébergée sur AlwaysData)
 - **Services Métiers :**
@@ -67,7 +67,7 @@
 - **CI/CD :** GitHub Actions pour les tests, le build JAR et la génération de documentation PDF automatique.
 
 **Backend :**
-- **Langage :** Java 17
+- **Langage :** Java 21
 - **Framework :** Spring Boot 3.x (Spring Web, Spring Data JPA, Validation)
 - **Base de données :** MySQL (Hébergée sur AlwaysData & Docker local)
 - **Services Métiers :**
@@ -89,7 +89,7 @@
 | Outil | Version minimale | Description |
 |--------|------------------|--------------|
 | **Docker** | 20.x | Requis pour l'architecture conteneurisée |
-| **Java** | 17 | Requis pour le Backend |
+| **Java** | 17 minimim | Requis pour le Backend |
 | **Gradle** | 8.x | Outil de build (inclus via wrapper) |
 | **MySQL** | 8.0 | Base de données  |
 | **Navigateur** | Récent | Pour l'interface utilisateur |
