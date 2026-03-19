@@ -23,21 +23,29 @@
 
 ## 📑 Sommaire
 
-**1. Architecture Technique**
+**1. [Architecture Technique](#1-architecture-technique)**
 
-* [3.1 Stack Technologique](#31-stack-technologique)
-* [3.2 Modélisation (UML) & Structure des Données](#32-modélisation-uml--structure-des-données)
+**2. [Fonctionnalités Détaillées](#3-fonctionnalités-détaillées)**
 
-**2. Fonctionnalités Détaillées (User Guide)**
+**4. [Tests effectués](#4-tests-effectués)**
 
-**4. [Tests effectués](#6-tests-effectués)**
-
-**5. [Guide d'Installation & Déploiement](#7-guide-dinstallation--déploiement)**
+**5. [Guide d'Installation & Déploiement](#5-guide-dinstallation--déploiement)**
 
 ---
 
 ## 1. Architecture Technique
+### 1.1 Stack Technologique
+L'application EtudLife repose sur une architecture moderne, conteneurisée et modulaire.
 
+* **Frontend (Client) :** Interface utilisateur développée en HTML5, CSS3 et JavaScript (Vanilla), servie par un serveur Web léger **Nginx** (exposé sur le port 80).
+* **Backend (Serveur) :** API REST développée en Java avec le framework **Spring Boot** (exposé sur le port 8080). Il embarque la logique métier, la sécurisation des requêtes et l'ordonnancement des tâches automatiques (Spring Batch).
+* **Bases de Données :**
+  * **MySQL** (port 3306) : Base de données relationnelle principale stockant les entités durables (Comptes, Offres sauvegardées, Préférences utilisateurs, Événements).
+  * **Redis** : Base de données clé-valeur en mémoire utilisée comme système de cache ultra-rapide pour maintenir l'historique et les sessions du Chatbot IA.
+* **Services & APIs Externes :**
+  * **RapidAPI (JSearch)** : Fournisseur de données en temps réel pour l'extraction des offres de stages et d'alternances sur les plateformes professionnelles.
+  * **Google Gemini API** : Grand Modèle de Langage (LLM) utilisé pour propulser l'agent conversationnel et exploiter la base de connaissances (RAG).
+* **DevOps & CI/CD :** Infrastructure gérée via **Docker** et **Docker-compose** pour un déploiement unifié. L'intégration continue est automatisée via **GitHub Actions**.
 ## 2. Fonctionnalités Détaillées 
 
 2.1 Chasseur d'offres de stages Feature
@@ -49,16 +57,26 @@
 * **Gestion des candidatures (ATS) :** L'étudiant peut sauvegarder une offre (statut `INTERESSE`), marquer qu'il a candidaté (statut `POSTULE`), ou masquer une offre non pertinente (statut `REFUSE`).
 * **Tableau de bord (KPIs) :** Une page dédiée "Mes candidatures" permet de visualiser les offres sauvegardées, de les filtrer par statut, et d'afficher des indicateurs clés (KPIs) en temps réel (ex: nombre d'offres postulées).
 * **Sécurisation des données :** Le système gère dynamiquement la taille des URLs provenant des plateformes externes (LinkedIn, Indeed) pour éviter les erreurs de base de données (Data Truncation).
-
+* **Optimisation des performances via le cache :** Afin de limiter les appels réseau redondants, le module Javascript implémente un système de mise en cache local (`currentJobsCache`). Lorsqu'un utilisateur sauvegarde une offre, le script récupère instantanément les données depuis ce cache mémoire plutôt que de refaire une requête vers le backend.
+* **Résilience et Tolérance aux pannes :** Le service d'appel à l'API externe (`JobSearchService`) intègre une gestion stricte des erreurs. En cas d'indisponibilité ou de crash de JSearch, l'application intercepte l'exception et retourne une liste vide à l'utilisateur, empêchant ainsi un crash global du serveur (Erreur 500).
+* **Sécurisation et Dédoublonnage :** Le système gère dynamiquement la taille des URLs pour éviter les erreurs de base de données (Data Truncation). Il intègre également une logique de dédoublonnage basée sur l'identifiant externe unique de chaque offre (`externalJobId`), garantissant qu'aucune offre ne s'affiche en double.
 **Classes Impliquées :**
 * `JobController` : Expose les endpoints REST pour la recherche, la sauvegarde et les statistiques.
 * `JobSearchService` : Gère la communication HTTP avec l'API externe JSearch.
 * `SavedJobService` : Contient la logique métier d'insertion, de mise à jour des statuts et de sécurisation des données.
+
+**Implémentation technique**
+
+
 ![JobSearch.png](diagrammes_de_sequence/JobSearch.png)
 
+**Vue Utilisateur**
 
-![img.png](images/img.png)
+* L'utilisateur saisit sa recherche d'emplois, il a ensuite la possibilité de sauvegarder ces offres 
 ![img_1.png](images/img_1.png)
+* Les offres sauvegardées, s'afficheront dans la page du dashboard en cliquand sur 'Mes candidatures suivies'
+![img.png](images/img.png)
+
 
 
 ### 2.1.2 Système de Batch Automatisé pour la recherche d'offres
@@ -235,7 +253,67 @@ Validation que le format structuré `JOB_ITEM:titre|localisation|lien` est corre
 | Titre absent | Affiché `"Offre sans titre"` |
 | Localisation vide | Affiché `"Localisation non précisée"` |
 | Lien manquant | Carte affichée sans bouton de candidature |
-  
+
+ ### Tests d’Intégration (Chatbot API)
+
+Afin de valider le bon fonctionnement des endpoints REST du chatbot, nous avons mis en place deux tests d’intégration basés sur `@SpringBootTest` et `WebTestClient`.
+
+Ces tests permettent de vérifier le comportement global de l’API (sessions, messages, historique, streaming) dans un environnement proche de l’exécution réelle.
+
+---
+
+#### ChatbotIntegrationTest
+
+| Fonction testée        | Endpoint                | Vérification principale |
+|----------------------|------------------------|------------------------|
+| Création de session  | `/api/chat/new-session` | Retour d’un `sessionId` |
+| Validation entrée    | `/api/chat/message`     | Erreur `400` si question absente |
+| Message "bonjour"    | `/api/chat/message`     | Réponse cohérente + succès |
+| Historique           | `/api/chat/history`     | Messages correctement retournés |
+| Fermeture session    | `/api/chat/close`       | Session supprimée |
+| Streaming SSE        | `/api/chat/stream`      | Envoi des chunks + `[DONE]` |
+
+Ce test valide les endpoints principaux et le contrat API backend.
+
+---
+
+#### ChatbotConversationIntegrationTest
+
+| Fonction testée              | Vérification |
+|-----------------------------|-------------|
+| Session persistante         | Même `sessionId` entre plusieurs messages |
+| Enregistrement messages     | Messages utilisateur + assistant stockés |
+| Historique complet          | Conversation complète récupérée |
+
+Ce test valide la continuité conversationnelle du chatbot.
+
+---
+
+#### Choix techniques
+
+Les dépendances externes sont mockées (`GeminiClient`, `PdfKnowledgeBase`, etc.) afin de garantir des tests :
+
+- indépendants des services externes  
+- rapides et stables  
+- compatibles avec la CI/CD  
+---------------------------------------
+## 5. Matrice de Responsabilités & Réalisations
+
+| Fonctionnalité                                          | Lyna Baouche | Alicya-Pearl Marras | Kenza Menad | Dyhia Sellah |
+|---------------------------------------------------------|:------------:|:-------------------:|:-----------:|:------------:|
+| Architecture Backend et conteneurisation                |      ✅       |          ✅          |      ✅      |      ✅       |
+| Gestion BDD                                             |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Gestion des Releases & CI/CD                            |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Documentation & UML                                     |      ✅       |          ✅          |      ✅      |      ✅       |
+| Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
+| Chasseur de stages                                      |      ✅       |          ✅          |      ✅      |      ⬜       |
+| Agent IA -Chatbot                                       |      ⬜       |          ⬜          |      ✅      |      ✅       |
+| Tests Postman                                           |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests intégration                                       |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests unitaires                                         |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests focntionnels                                      |      ✅       |          ✅          |      ✅      |      ✅       |
+| Tests non regréssion                                    |      ✅       |          ✅          |      ✅      |      ✅       |
+
 ---------------------------------------
 ## 5. Guide d'Installation & Déploiement
 
