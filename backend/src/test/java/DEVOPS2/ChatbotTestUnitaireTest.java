@@ -55,15 +55,62 @@ public class ChatbotTestUnitaireTest {
         @Mock GeminiClient gemini;
         @Mock ChatSessionService sessions;
         @Mock SavedJobService savedJobService;
+        @Mock RecipeChatService recipeChatService;
 
         ChatService service;
 
-        @BeforeEach
+        /*@BeforeEach
         void setup() {
             // CORRECTION : un seul argument savedJobService au lieu de deux
             service = new ChatService(kb, gemini, sessions, savedJobService);
+        }*/
+        @BeforeEach
+        void setup() {
+            service = new ChatService(kb, gemini, sessions, savedJobService, recipeChatService);
+
+            // Par défaut, les anciens tests ne doivent pas tomber dans la branche "recettes"
+            lenient().when(recipeChatService.isRecipeQuestion(anyString())).thenReturn(false);
+        }
+        // CHATBOT - RECETTE
+        @Test
+        void recipeQuestion_shouldUseRecipeChatService_andSkipKbAndGemini() {
+            when(recipeChatService.isRecipeQuestion("donne-moi une recette pas chère")).thenReturn(true);
+            when(sessions.history("s1", 10)).thenReturn(List.of("user:bonjour", "assistant:salut"));
+            when(recipeChatService.handleRecipeQuestion(eq("donne-moi une recette pas chère"), anyString()))
+                    .thenReturn("Recette IA");
+
+            ChatResponse res = service.ask("s1", "donne-moi une recette pas chère", "AUTO", 1L);
+
+            assertTrue(res.isSuccess());
+            assertEquals("recipes-ai", res.getSource());
+            assertEquals("Recette IA", res.getResponse());
+
+            verify(sessions).append("s1", "user", "donne-moi une recette pas chère");
+            verify(sessions).append("s1", "assistant", "Recette IA");
+            verify(recipeChatService).isRecipeQuestion("donne-moi une recette pas chère");
+            verify(recipeChatService).handleRecipeQuestion(eq("donne-moi une recette pas chère"), contains("user:bonjour"));
+
+            verifyNoInteractions(gemini);
+            verifyNoInteractions(kb);
         }
 
+        @Test
+        void recipeQuestion_withoutHistory_shouldUseVideHistory() {
+            when(recipeChatService.isRecipeQuestion("j'ai des courgettes, tomates et poivrons")).thenReturn(true);
+            when(sessions.history("s1", 10)).thenReturn(List.of());
+            when(recipeChatService.handleRecipeQuestion(eq("j'ai des courgettes, tomates et poivrons"), eq("(vide)")))
+                    .thenReturn("Poêlée de légumes");
+
+            ChatResponse res = service.ask("s1", "j'ai des courgettes, tomates et poivrons", "AUTO", 1L);
+
+            assertTrue(res.isSuccess());
+            assertEquals("recipes-ai", res.getSource());
+            assertEquals("Poêlée de légumes", res.getResponse());
+
+            verify(recipeChatService).handleRecipeQuestion("j'ai des courgettes, tomates et poivrons", "(vide)");
+            verifyNoInteractions(gemini);
+            verifyNoInteractions(kb);
+        }
         // ── Salutations / Remerciements ──────────────────────────────────────
 
         @Test
