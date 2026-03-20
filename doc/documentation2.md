@@ -335,7 +335,7 @@ Les dépendances externes sont mockées (`GeminiClient`, `PdfKnowledgeBase`, etc
 | Gestion des Releases & CI/CD                            |      ✅       |          ⬜          |      ⬜      |      ⬜       |
 | Documentation & UML                                     |      ✅       |          ✅          |      ✅      |      ✅       |
 | Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
-| Chasseur de stages                                      |      ✅       |          ✅          |      ✅      |      ⬜       |
+| Chasseur de stages                                      |      ✅       |          ✅          |      ⬜      |      ⬜       |
 | Agent IA-Chatbot(Réglement intérieur, Charte, Examnes)  |      ⬜       |          ⬜          |      ✅      |      ⬜       |
 | Agent IA-Chatbot(Focntionnalités de site)               |      ⬜       |          ⬜          |      ⬜      |      ✅       |
 | Agent IA-Chatbot(Recettes générées par Gemini (Sans RAG))|      ⬜      |          ⬜          |      ⬜      |      ✅       |
