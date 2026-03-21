@@ -339,8 +339,14 @@ Les dépendances externes sont mockées (`GeminiClient`, `PdfKnowledgeBase`, etc
 | Gestion des Releases & CI/CD                            |      ✅       |          ⬜          |      ⬜      |      ⬜       |
 | Documentation & UML                                     |      ✅       |          ✅          |      ✅      |      ✅       |
 | Organisation & Pilotage Agile                           |      ✅       |          ✅          |      ✅      |      ✅       |
-| Chasseur de stages                                      |      ✅       |          ✅          |      ✅      |      ⬜       |
-| Agent IA -Chatbot                                       |      ⬜       |          ⬜          |      ✅      |      ✅       |
+| Chasseur de stages - Moteur de recherche d'offres via appel API ( Sans automatisation )       |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Chasseur de stages - Sauvegarde des offres ( SavedJobs) |      ✅       |          ⬜          |      ⬜      |      ⬜       |
+| Chasseur de stages - Sauvegarde des préférences         |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Chasseur de stages - Mise en place du Batch             |      ⬜       |          ✅          |      ⬜      |      ⬜       |
+| Agent IA-Chatbot(Réglement intérieur, Charte, Examnes)  |      ⬜       |          ⬜          |      ✅      |      ⬜       |
+| Agent IA-Chatbot(Focntionnalités de site)               |      ⬜       |          ⬜          |      ⬜      |      ✅       |
+| Agent IA-Chatbot(Recettes générées par Gemini (Sans RAG))|      ⬜      |          ⬜          |      ⬜      |      ✅       |
+| Agent IA -Chatbot(offres de stages(postulées et intéressées))|      ⬜  |          ⬜          |      ✅      |      ⬜       |
 | Tests Postman                                           |      ✅       |          ✅          |      ✅      |      ✅       |
 | Tests intégration                                       |      ✅       |          ✅          |      ✅      |      ✅       |
 | Tests unitaires                                         |      ✅       |          ✅          |      ✅      |      ✅       |
