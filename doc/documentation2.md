@@ -189,6 +189,10 @@ Les questions liées à la cuisine (budget, ingrédients, recettes) sont détect
 Les réponses sont identifiées par la source "recipes-ai". Elle permet à l'utilisateur de :
 
 demander une recette selon un budget, proposer une recette à partir d’ingrédients disponibles, obtenir des idées de repas simples et rapides
+<br>
+<br>
+
+
 
 ![agentia.png](diagrammes_de_sequence/agentia.png)
 ![agent ia.PNG](images/agentia_page_principale.png)
