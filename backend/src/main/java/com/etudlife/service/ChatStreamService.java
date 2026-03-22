@@ -29,7 +29,7 @@ public class ChatStreamService {
         String sid = sessionId;
         Flux<String> head = Flux.just("__SESSION__:" + sid);
 
-        // ✅ Si c'est des offres → un seul chunk, pas de découpage
+        // Si c'est des offres → un seul chunk, pas de découpage
         if (full.contains("JOB_ITEM:")) {
             return head.concatWith(Flux.just(full));
         }

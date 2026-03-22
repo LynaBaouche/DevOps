@@ -116,7 +116,7 @@ public class PdfKnowledgeBase {
                 .collect(Collectors.toList());
     }
 
-    // ✅ FIX: le nettoyage est appliqué (tu ne retournes plus getText(doc) 2 fois)
+    //  FIX: le nettoyage est appliqué (tu ne retournes plus getText(doc) 2 fois)
     private String extractText(Resource pdf) throws Exception {
         try (InputStream in = pdf.getInputStream(); PDDocument doc = PDDocument.load(in)) {
             PDFTextStripper stripper = new PDFTextStripper();
@@ -143,20 +143,20 @@ public class PdfKnowledgeBase {
         if (filename == null) return "REGLEMENT";
         String f = filename.toLowerCase(Locale.ROOT);
 
-        // ✅ Si le nom indique clairement du règlement → REGLEMENT
+        //  Si le nom indique clairement du règlement → REGLEMENT
         if (f.contains("reglement") || f.contains("règlement")
                 || f.contains("charte") || f.contains("examen") || f.contains("examens")
                 || f.contains("fraude") || f.contains("plagiat") || f.contains("bizutage")) {
             return "REGLEMENT";
         }
 
-        // ✅ Si le nom indique clairement un guide du site → SITE
+        //  Si le nom indique clairement un guide du site → SITE
         if (f.contains("site") || f.contains("fonction") || f.contains("fonctionnement")
                 || f.contains("guide") || f.contains("manuel") || f.contains("tuto")) {
             return "SITE";
         }
 
-        // ✅ Par défaut : REGLEMENT (plus safe pour ton cas)
+        //  Par défaut : REGLEMENT (plus safe pour ton cas)
         return "REGLEMENT";
     }
     // À ajouter dans PdfKnowledgeBase.java
