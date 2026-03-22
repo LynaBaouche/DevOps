@@ -760,4 +760,63 @@ com.etudlife.controller.LivreController --* com.etudlife.repository.CatalogueRep
 com.etudlife.controller.PostController --* com.etudlife.service.PostService
 com.etudlife.controller.DocumentController --* com.etudlife.service.DocumentService
 
+' =========================================
+' NOUVEAUTÉS SEMESTRE 2 : CHASSEUR DE STAGES
+' =========================================
+
+enum JobStatus {
+  INTERESSE
+  POSTULE
+  REFUSE
+  SUGGESTION
+}
+
+class SavedJob {
+  - Long id
+  - String externalJobId
+  - String title
+  - String company
+  - String location
+  - String applyLink
+  - JobStatus status
+}
+
+class JobPreference {
+  - Long id
+  - String motsCles
+  - String localisation
+  - String frequence
+}
+
+' Relations pour le module Stages
+Compte "1" -- "0..*" SavedJob : "sauvegarde >"
+Compte "1" -- "0..1" JobPreference : "paramètre >"
+SavedJob "1" -> "1" JobStatus : "possède"
+
+' =========================================
+' NOUVEAUTÉS SEMESTRE 2 : SERVICES & BATCH
+' =========================================
+
+class JobBatchScheduler <<@Scheduled>> {
+  + runNightlyBatch()
+}
+
+class ChatService <<Service IA>> {
+  + ask(sessionId: String, question: String, mode: String, compteId: Long): ChatResponse
+}
+
+class GeminiClient <<API Externe>> {
+  + generate(prompt: String): String
+}
+
+class PdfKnowledgeBase <<RAG>> {
+  + searchInFile(query: String, fileName: String): List<Chunk>
+}
+
+' Relations logiques (Dépendances)
+JobBatchScheduler ..> JobPreference : "lit"
+JobBatchScheduler ..> SavedJob : "crée (SUGGESTION)"
+ChatService ..> GeminiClient : "interroge"
+ChatService ..> PdfKnowledgeBase : "extrait le contexte"
+ChatService ..> SavedJob : "récupère les offres"
 @enduml
