@@ -142,7 +142,7 @@ public class ChatService {
         }
 
 
-        // ✅ Si rien trouvé : on force une réponse “safe” et on n'appelle pas Gemini
+        //  Si rien trouvé : on force une réponse “safe” et on n'appelle pas Gemini
         if (hits.isEmpty()) {
             String answer = "Désolé, je n’ai pas d’information sur ce sujet.";
             sessions.append(sessionId, "assistant", answer);
