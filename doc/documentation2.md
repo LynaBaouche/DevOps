@@ -4,7 +4,7 @@
 
 ## Projet DevOps - Application EtudLife
 
-**Verson :** v1.0.0
+**Verson :** v1.2.0
 
 **Auteurs :**
 
@@ -13,7 +13,7 @@
 * Kenza Menad
 * Dyhia Sellah
 
-**Date :** 02 Février 2026
+**Date :** 24/03/2026
 
 </div>
 
