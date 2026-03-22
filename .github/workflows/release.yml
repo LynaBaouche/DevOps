@@ -55,7 +55,7 @@ jobs:
    
           md-to-pdf doc/documentation2.md --stylesheet style.css --launch-options '{"args": ["--no-sandbox"]}'
        
-          mv doc/documentation.pdf Documentation_EtudLife.pdf
+          mv doc/documentation2.pdf Documentation_EtudLife.pdf
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
