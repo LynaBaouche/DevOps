@@ -794,7 +794,7 @@ Compte "1" -- "0..1" JobPreference : "paramètre >"
 SavedJob "1" -> "1" JobStatus : "possède"
 
 ' =========================================
-' NOUVEAUTÉS SEMESTRE 2 : SERVICES & BATCH
+' NOUVEAUTÉS SEMESTRE 2 : SERVICES IA & BATCH
 ' =========================================
 
 class JobBatchScheduler <<@Scheduled>> {
