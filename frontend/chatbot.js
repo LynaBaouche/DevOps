@@ -38,7 +38,7 @@
   --c-grad:       linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
 }
 
-/* ── Toggle button /
+/* ── Toggle button ───────────────────────────────────────────── */
 #chatbot-btn {
   position: fixed; right: 24px; bottom: 24px;
   width: 56px; height: 56px; border-radius: 50%;
@@ -52,7 +52,7 @@
 #chatbot-btn:hover  { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(37,99,235,.5); }
 #chatbot-btn:active { transform: scale(.94); }
 
-/* ── Panel /
+/* ── Panel ───────────────────────────────────────────────────── */
 #chatbot-panel {
   position: fixed; right: 24px; bottom: 96px;
   width: 360px; height: 540px;
@@ -67,7 +67,7 @@
   to   { opacity:1; transform: translateY(0)    scale(1);   }
 }
 
-/* ── Header  */
+/* ── Header ──────────────────────────────────────────────────── */
 #chatbot-header {
   padding: 14px 16px; display: flex;
   justify-content: space-between; align-items: center;
@@ -99,7 +99,7 @@
 }
 #chatbot-close:hover { background: rgba(255,255,255,.28); }
 
-/* ── Messages /
+/* ── Messages ────────────────────────────────────────────────── */
 #chatbot-messages {
   flex:1; padding:14px 12px; overflow-y:auto;
   background: var(--c-bg); display:flex;
@@ -140,7 +140,7 @@
   border: 1px solid var(--c-border);
 }
 
-/* ── Job cards /
+/* ── Job cards ───────────────────────────────────────────────── */
 .job-list-label {
   font-size:11px; font-weight:600; letter-spacing:.06em;
   text-transform:uppercase; color:var(--c-blue);
@@ -181,7 +181,7 @@
 .job-card:hover .job-card-icon { background:#2563eb; }
 .job-card:hover .job-card-icon svg { fill:#fff; }
 
-/* ── Mode buttons /
+/* ── Mode buttons ────────────────────────────────────────────── */
 #chatbot-suggestions {
   display:flex; gap:6px; padding:9px 12px;
   border-top:1px solid var(--c-border);
@@ -202,7 +202,7 @@
   color:var(--c-blue); font-weight:700;
 }
 
-/* ── Input /
+/* ── Input ───────────────────────────────────────────────────── */
 #chatbot-input {
   display:flex; gap:8px; padding:10px 12px;
   border-top:1px solid var(--c-border);
@@ -232,7 +232,7 @@
 #chatbot-send:hover { transform:scale(1.06); box-shadow:0 6px 18px rgba(37,99,235,.4); }
 #chatbot-send:active { transform:scale(.93); }
 
-/* ── Typing dots /
+/* ── Typing dots ─────────────────────────────────────────────── */
 .typing-dots { display:flex; align-items:center; gap:4px; padding:2px 0; }
 .typing-dots span {
   width:6px; height:6px; border-radius:50%;
@@ -248,7 +248,7 @@
         document.head.appendChild(style);
     }
 
-    // ── Icons (inline SVG) ─
+    // ── Icons (inline SVG) ────────────────────────────────────────────────────
     const SVG = {
         chat: `<svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>`,
         bot:  `<svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>`,
@@ -263,7 +263,7 @@
         return d.firstElementChild;
     }
 
-    // ── Typing dots
+    // ── Typing dots ───────────────────────────────────────────────────────────
     function startDots(bubble) {
         bubble.innerHTML = "";
         const d = document.createElement("div");
@@ -273,7 +273,7 @@
         return () => { bubble.innerHTML = ""; };
     }
 
-    // ── Job cards
+    // ── Job cards ─────────────────────────────────────────────────────────────
     function addJobCards(bubble, text) {
         bubble.innerHTML = "";
         bubble.style.cssText = "background:var(--c-surface);padding:12px 13px;max-width:90%;";
@@ -323,7 +323,7 @@
         if (count === 0) bubble.textContent = "Aucune offre trouvée.";
     }
 
-    // ── Add message
+    // ── Add message ───────────────────────────────────────────────────────────
     function addMessage(role, text) {
         const messages = document.getElementById("chatbot-messages");
         const isUser   = role === "user";
@@ -347,7 +347,7 @@
         return bubble;
     }
 
-    // ── Session
+    // ── Session ───────────────────────────────────────────────────────────────
     async function newSession() {
         const r   = await fetch(`${API_BASE}/new-session`, { method: "POST" });
         const d   = await r.json();
@@ -355,7 +355,7 @@
         return sessionId;
     }
 
-    // ── Send message
+    // ── Send message ──────────────────────────────────────────────────────────
     async function sendMessage(question) {
         if (!sessionId) await newSession();
         const userId = localStorage.getItem('userId');
@@ -403,7 +403,7 @@
         messages.scrollTop = messages.scrollHeight;
     }
 
-    // ── Mount
+    // ── Mount ─────────────────────────────────────────────────────────────────
     function mount() {
         addStyles();
         if (document.getElementById("chatbot-btn")) return;
